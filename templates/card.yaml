@@ -1,0 +1,122 @@
+template_card:
+  card: 
+    type: picture-elements
+    image: /local/images/overview/overview-transparent.png
+    card_mod: 
+      style: 'ha-card { --ha-card-background: none; border-radius: 10px; --primary-text-color: white; --paper-item-icon-color: silver; --state-icon-active-color: orange; --ha-card-border-width: 0px; }'
+    elements: 
+    
+    # Image
+    - type: image
+      entity: 'sensor.overview_state_[[room]]'
+      state_image:
+        'an': '/local/images/overview/overview-[[room]]-light-heat.jpg'
+        'licht': '/local/images/overview/overview-[[room]]-light.jpg'
+        'heizung': '/local/images/overview/overview-[[room]]-heat.jpg'
+        'aus': '/local/images/overview/overview-[[room]]-sw.jpg'
+      tap_action: none
+      hold_action: none
+      card_mod:
+        style: 'z-index: -10 !important; overflow: hidden !important; '
+      style:
+        left: 50%
+        top: 50%
+        width: 100%
+        height: 100%
+
+    # Thermostat
+    - type: custom:decluttering-card
+      template: template_clima
+      variables:
+        - room: '[[room]]'
+      style:
+        top: 50%
+        right: -1%
+        left: -1%
+        transform: translate(0%, -50%)
+
+    # Header
+    - type: custom:hui-element
+      card_type: custom:decluttering-card
+      template: template_bar
+      variables:
+        - type: header
+        - room: '[[room]]'
+      style:
+        top: 0%
+        left: -4%
+        right: -6%
+        transform: translate(0%, -0%)
+
+    # Footer
+    - type: custom:hui-element
+      card_type: custom:decluttering-card
+      template: template_bar
+      variables:
+        - type: footer
+        - room: '[[room]]'
+      style:
+        bottom: 0%
+        left: -3%
+        right: -3%
+        transform: translate(0%, -0%)
+
+  variables: 
+    - room: '[[room]]'
+
+# Template: Bar
+
+template_bar:
+  card: 
+    type: custom:stack-in-card
+    card_mod:
+      style: |
+        ha-card { --ha-card-background: rgba(61, 61, 61, 0.6); }
+        ha-card div { 
+        --ha-card-background: none;
+          margin: 5px;
+          letter-spacing: 1.1px;
+          font-weight: 300;
+          font-variant: small-caps;
+        }
+    cards:
+      - type: custom:decluttering-card
+        template: template_data_[[type]]_[[room]]
+
+template_bar_header_button: 
+  card:
+    type: custom:decluttering-card
+    template: template_bar_button
+    variables: 
+      - show_name: true
+      - show_icon: false
+      - name: '[[name]]'
+      - entity: '[[entity]]'
+
+template_bar_footer_button: 
+  card:
+    type: custom:decluttering-card
+    template: template_bar_button
+    variables: 
+      - show_name: false
+      - show_icon: true
+      - name: ''
+      - entity: '[[entity]]'
+      - icon_height: '[[icon_height]]'
+      
+template_bar_button: 
+  card: 
+    type: button
+    entity: '[[entity]]'
+    name: '[[name]]'
+    show_name: '[[show_name]]'
+    show_icon: '[[show_icon]]'
+    icon_height: '[[icon_height]]px'
+    tap_action:
+      action: toggle
+    hold_action:
+      action: more-info
+    double_tap_action:
+      action: more-info
+  default:
+    - icon_height: 23

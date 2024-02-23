@@ -1,0 +1,67 @@
+template_weather:
+  card:
+    type: custom:hui-element
+    card_type: markdown
+    content: |
+      {% set weather_icon_mapper = {
+        'clear-night': 'night',
+        'cloudy': 'cloudy',
+        'fog': 'fog',
+        'hail': 'hail',
+        'lightning': 'lightning', 
+        'lightning-rainy': 'lightning-rainy',
+        'partlycloudy': 'partly-cloudy',
+        'pouring': 'pouring',
+        'rainy': 'rainy',
+        'snowy': 'snowy',
+        'snowy-rainy': 'snowy-rainy',
+        'sunny': 'sunny',
+        'windy': 'windy',
+        'windy-variant': 'windy-variant',
+        'exceptional': 'cloudy'
+      } %}
+      
+      {% set state = states('sensor.openweathermap_condition') %}
+      {% set weather = weather_icon_mapper[state] if state in weather_icon_mapper else 'weather-cloudy' %}
+      
+      <font size="6.9em">{{ states('sensor.openweathermap_temperature') | float(0) | round(1) | replace ('.', ',') }}</font> <sup>°C</sup>
+      <ha-icon icon='mdi:weather-{{ weather }}'></ha-icon>&nbsp;&nbsp;<font size="3em">{{ states('sensor.openweathermap_humidity') }}</font> %
+    card_mod:
+      style: |
+        ha-card {
+          text-align: right;
+          --ha-card-background: none;
+        }
+
+template_forecast:
+  card:
+    type: custom:hui-element
+    card_type: weather-forecast
+    show_current: false
+    show_forecast: true
+    entity: weather.openweathermap
+    card_mod:
+      style: |
+        ha-card {
+          --ha-card-background: rgba(61, 61, 61, 0.7);
+          padding: 0px !important; 
+          font-size: 8px;
+        }
+        ha-card div {
+          padding: 0px !important; 
+        }
+        ha-card .forecast .temp {
+          font-size: 11px;
+          margin: 0px !important; 
+          padding-left: 3px !important;
+          padding-bottom: 2px !important;
+        }
+        ha-card .forecast-image-icon {
+          padding: 0px !important;
+          padding-right: 1px !important;
+        }
+        ha-card .forecast-image-icon > * {
+          width: 20px;
+          height: 20px;
+          margin: 0px !important;
+        }

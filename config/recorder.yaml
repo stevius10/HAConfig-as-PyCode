@@ -1,0 +1,9 @@
+recorder:
+  auto_purge: true
+  auto_repack: true
+  commit_interval: 600
+  purge_keep_days: 3
+  exclude:
+      entities:
+        - binary_sensor.couch_sensor_occupancy
+        - fan.sz_ventilator

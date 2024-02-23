@@ -1,0 +1,148 @@
+template_badges: 
+  card: 
+    type: 'custom:badge-card'
+    state_color: false
+    show_header_toggle: false
+    badges:
+
+      # Media
+      - type: entity-filter
+        entities:
+          - entity: media_player.wohnzimmer
+          - entity: media_player.schlafzimmer
+          - entity: media_player.bad
+          - entity: media_player.kueche
+        state_filter:
+          - playing
+      
+      # Utils
+      - entity: sensor.adguard_home_dns_abfragen_blockiert
+        name: DNS-Filter
+        tap_action:
+          action: call-service
+          service: switch.toggle
+          data:
+            entity_id: switch.adguard_home_schutz
+        card_mod:
+          style: | 
+            :host { 
+              --label-badge-text-color: white;
+              {% if states('switch.adguard_home_schutz') == "on" %} 
+
+              {% else %}
+
+              {% endif %} 
+            }
+
+      - type: entity-filter
+        entities:
+          - entity: sensor.qbittorrent_status
+        state_filter:
+          - operator: not in
+            value:
+              - ''
+              - unavailable
+
+      # System
+      - entity: sensor.v_last_backup
+        name: Sicherung
+        tap_action:
+          action: navigate
+          navigation_path: /cebe7a76_hassio_google_drive_backup/ingress
+  
+      - entity: script.s_aus
+        name: Aus
+        style: |
+          :host { 
+            display: none
+  
+            {% if states('script.gh_luften') == "on" or
+              states('climate.wz_klima') == "on" or
+              states('climate.sz_klima') == "on" or
+              states('light.wz_beleuchtung') == "on" or
+              states('light.sz_beleuchtung') == "on" or
+              states('switch.wz_ventilator') == "on" or
+              states('switch.g_tischlampe') == "on" or
+              states('light.sz_beleuchtung') == "on" or
+              states('light.k_beleuchtung') == "on" or
+              states('light.g_lampe') == "on" or
+              states('switch.g_tischlampe') == "on" or
+              states('fan.sz_ventilator') == "on" or         
+              states('switch.sofa') == "on" or
+              states('switch.couch') == "on" or
+              states('switch.bett') == "on" or
+  
+              states('media_player.kueche') == "playing" or
+              states('media_player.bad') == "playing" or
+              states('media_player.schlafzimmer') == "playing" or
+              states('media_player.wohnzimmer') == "playing" %}
+              
+                display: block;
+  
+            {% endif %}
+          }
+        tap_action:
+          action: call-service
+          service: script.s_aus
+
+      # Timer
+      - entity: timer.h_timer_sz_ventilator
+        name: Ventilator
+        tap_action:
+          action: call-service
+          service: timer.finish
+          target:
+            entity_id: timer.h_timer_sz_ventilator
+        card_mod:
+          style: | 
+            :host { 
+              {% if states('timer.h_timer_sz_ventilator') != 'idle' %}
+                display: inline-block;
+              {% else %}
+                display: none;
+              {% endif %} 
+            }
+
+      - entity: timer.h_timer_luftreiniger
+        name: Reiniger
+        tap_action:
+          action: call-service
+          service: timer.finish
+          target:
+            entity_id: timer.h_timer_luftreiniger
+        card_mod:
+          style: | 
+            :host { 
+              {% if states('timer.h_timer_luftreiniger') != 'idle' %}
+                display: inline-block;
+              {% else %}
+                display: none;
+              {% endif %} 
+            }
+            
+      - entity: sensor.luftreiniger_geschwindigkeit
+        name: Reinigen
+        card_mod: 
+          style: |
+            :host { 
+              {% if states('fan.luftreiniger') == 'on' %}
+                display: inline-block;
+              {% else %}
+                display: none;
+              {% endif %} 
+            
+              {% if states('sensor.luftreiniger_geschwindigkeit') != "Sleep" and
+                 states('sensor.luftreiniger_geschwindigkeit') != "Aus" %} 
+                --label-badge-background-color: white;
+                --label-badge-red: white;
+              {% endif %} 
+            }
+        tap_action:
+          action: call-service
+          service: script.s_reset_luft
+        double_tap_action:
+          action: call-service
+          service: script.s_reset_luft_aus
+        hold_action:
+          action: call-service
+          service: script.s_reset_luft_aus

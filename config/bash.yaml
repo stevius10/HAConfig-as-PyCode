@@ -1,0 +1,4 @@
+shell_command:
+  filebackup: 'bash /config/scripts/cmd_backup-pi.sh > /dev/null 2>&1 &'
+  gdrivesync: 'bash /config/scripts/cmd_gdrive-sync.sh > /dev/null 2>&1 &'
+  clear_log: 'bash /config/scripts/cmd_clear-log.sh'
