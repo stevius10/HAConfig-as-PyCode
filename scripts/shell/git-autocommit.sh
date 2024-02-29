@@ -9,6 +9,7 @@ GIT_CONFIG_PATH=${4:-$GIT_CONFIG_PATH}
 GIT_COMMIT_MESSAGE=${5:-$GIT_COMMIT_MESSAGE}
 
 cd /config
+git config --global user.name "Steven Koch"
 
 if [[ $(git status --porcelain) ]]; then
     
