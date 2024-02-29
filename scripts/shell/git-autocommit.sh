@@ -12,7 +12,7 @@ cd /config
 
 if [[ $(git status --porcelain) ]]; then
     
-    # git checkout -b $BRANCH_NAME
+    git checkout -b $BRANCH_NAME
     
     git add .
     git commit -m "$GIT_COMMIT_MESSAGE"
