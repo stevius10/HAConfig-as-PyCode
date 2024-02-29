@@ -1,25 +1,14 @@
 logger: 
-  default: warn
+  default: error
   logs:
-    custom_components.browser_mod: error
     custom_components.pyscript: info
-    custom_components.tapo: error
     custom_components.xiaomi_miot: critical
     androidtv: critical
-    plugp100.api.tapo_client: error
     pychromecast.socket_client: critical
-    homeassistant: error
-    homeassistant.core: error
-    homeassistant.components: error
-    homeassistant.helpers: error
-    homeassistant.loader: error
-    homeassistant.setup: error
-    homeassistant.const: error
   filters:
     homeassistant:
-      - "Error doing job: Future exception was never retrieved" # TADO 
-      - "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))" # TADO
-      - "not been tested by Home Assistant"
+      - "Error doing job: Future exception was never retrieved" # Tado
+      - "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))" # Tado
     custom_components.hacs:
       - "https://api.github.com/rate_limit"
     homeassistant.components.google_assistant.http:
@@ -29,6 +18,10 @@ logger:
       - "io.robbie.HomeAssistant"
     aiohttp.server: 
       - "Error handling request"
+    root:
+      - "VEVENT"
+      - "ical"
+      - "caldav"
 
 logbook: 
   exclude:

@@ -1,13 +1,33 @@
 from homeassistant.const import EVENT_CALL_SERVICE
 from custom_components.pyscript.global_ctx import GlobalContext, GlobalContextMgr
 
-from constants import EVENT_FOLDER_WATCHER, HA_PATH_LOG, HA_PATH_LOG_ARCHIVE, SIZE_LOG_ENTRIES, SIZE_LOG_ARCHIVE_ENTRIES
+from constants import EVENT_FOLDER_WATCHER, HA_PATH_LOG, HA_PATH_LOG_ARCHIVE, PATH_CONSTANTS, SIZE_LOG_ENTRIES, SIZE_LOG_ARCHIVE_ENTRIES
 
 import asyncio
 from aiofiles import open as aopen
 from datetime import datetime, timedelta
 from pathlib import Path
 
+@service
+@time_trigger('startup')
+def ha_env_variables():
+  def get_constants(file):
+    constants = {}
+    with aopen(file, 'r') as f:
+      lines = f.readlines()
+      for line in lines:
+          match = re.match(r'^([A-Z0-9_]+)\s*=\s*(.+)$', line)
+          if match:
+              key = match.group(1)
+              value = match.group(2).strip()
+              constants[key] = value
+    return constants
+
+  constants = get_constants(PATH_CONSTANTS)
+
+  for key, value in constants.items():
+      os.environ[key] = value
+  
 # Show Pyscript trigger
 @service
 def ha_py_context(): 

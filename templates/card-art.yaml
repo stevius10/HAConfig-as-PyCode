@@ -43,10 +43,11 @@ template_card_art:
           right: -1%
           left: -1%
           transform: translate(0%, -50%)
-          '--label-badge-text-color': rgb(227, 227, 227)
-          '--label-badge-red': rgba(200, 200, 200, 0.3) # rgb(53, 53, 53)
-          '--label-badge-background-color': rgba(87,87,87, 0.9) # rgb(145, 145, 145)
-
+          '--label-badge-text-color': rgb(80, 80, 80)
+          '--label-badge-red': rgb(80, 80, 80)
+          '--label-badge-background-color': rgb(227, 227, 227)
+          'margin': '50px !important'
+          'padding': '50px !important'
       # Forecast
       - type: custom:decluttering-card
         template: template_forecast

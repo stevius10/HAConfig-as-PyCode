@@ -26,11 +26,12 @@ template_badges:
         card_mod:
           style: | 
             :host { 
-              --label-badge-text-color: white;
               {% if states('switch.adguard_home_schutz') == "on" %} 
-
-              {% else %}
-
+                --label-badge-red: #556B2F;
+                # --label-badge-text-color: #556B2F;
+                {% else %}
+                --label-badge-text-color: rgba(128, 0, 0, 0.5); 
+                --label-badge-red: maroon;
               {% endif %} 
             }
 

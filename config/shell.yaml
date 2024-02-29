@@ -1,0 +1,4 @@
+shell_command:
+  ha_filebackup: 'bash /config/scripts/shell/ha-filebackup.sh > /dev/null 2>&1 &'
+  ha_clearlogs: 'bash /config/scripts/shell/ha-clearlogs.sh'
+  gdrive_sync: 'bash /config/scripts/shell/gdrive-sync.sh > /dev/null 2>&1 &'

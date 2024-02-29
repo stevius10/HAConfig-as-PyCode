@@ -10,6 +10,8 @@
 
 !pyscript
 !pyscript/**/*
+pyscript/environment/**/*
+pyscript/modules/gdrive-sync.py
 pyscript/snippets/*
 
 !scripts

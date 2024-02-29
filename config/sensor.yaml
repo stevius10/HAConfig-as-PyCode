@@ -10,37 +10,37 @@ command_line:
 
   - sensor: 
       name: V-Last-Backup
-      command: "bash /config/scripts/sensor_v-last-backup.sh"
+      command: "bash /config/scripts/sensors/v-lastbackup.sh"
       scan_interval: 3600
       
   - sensor: 
       name: V-Wetter-Pollenflug
-      command: "python3 /config/scripts/sensor_v-pollenflug.py"
+      command: "python3 /config/scripts/sensors/v-pollenflug.py"
       scan_interval: 86400
       
   - sensor: 
       name: V-Friedrichsheim
-      command: "python3 /config/scripts/sensor_v-friedrichsheim.py"
+      command: "python3 /config/scripts/sensors/v-friedrichsheim.py"
       scan_interval: 86400
   
   - sensor: 
       name: V-Neukölln
-      command: "python3 /config/scripts/sensor_v-neukoelln.py"
+      command: "python3 /config/scripts/sensors/v-neukolln.py"
       scan_interval: 86400
   
   - sensor: 
       name: V-InBerlinWohnen
-      command: "python3 /config/scripts/sensor_v-ibw.py"
+      command: "python3 /config/scripts/sensors/v-ibw.py"
       scan_interval: 86400
   
   - sensor: 
       name: V-WBM
-      command: "python3 /config/scripts/sensor_v-wbm.py"
+      command: "python3 /config/scripts/sensors/v-wbm.py"
       scan_interval: 86400
   
   - sensor: 
       name: V-Gewobag
-      command: "python3 /config/scripts/sensor_v-gewobag.py"
+      command: "python3 /config/scripts/sensors/v-gewobag.py"
       scan_interval: 86400
   
   # - platform: qbittorrent
@@ -50,7 +50,7 @@ command_line:
   
   # - sensor: 
   #     name: V-BWV
-  #     command: "python3 /scripts/sensor_v-bwv.py"
+  #     command: "python3 /scripts/sensors/v-bwv.py"
   #    scan_interval: 86400
 
 ### Binary ###

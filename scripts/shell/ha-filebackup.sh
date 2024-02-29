@@ -5,7 +5,7 @@ apk add rsync
 backup_path="/share/Extern/Sicherungen/Pi"
 current_date=$(date +"%d-%m-%Y")
 backup_folder="$backup_path/$current_date"
-log_file="$backup_folder/backup-log.txt"
+log_file="/config/logs/ha-filebackup.log"
 
 ulimit -n 4096
 

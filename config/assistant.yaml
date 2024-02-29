@@ -1,5 +1,5 @@
 google_assistant: 
-  project_id: raspberry-pi-b2e74
+  project_id: !secret google_project_id
   service_account: !include /config/.storage/google_assistant_auth.json
   report_state: true
   exposed_domains:
