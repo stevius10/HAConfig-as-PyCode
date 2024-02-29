@@ -10,7 +10,7 @@ GIT_COMMIT_MESSAGE=${5:-$GIT_COMMIT_MESSAGE}
 
 cd /config
 git config --global user.name "Steven Koch"
-
+git config --global user.email steven.johann.koch@googlemail.com
 if [[ $(git status --porcelain) ]]; then
     
     git checkout -b $BRANCH_NAME
