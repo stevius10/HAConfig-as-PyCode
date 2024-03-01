@@ -8,9 +8,13 @@ GIT_CREDENTIALS_PATH=${3:-$GIT_CREDENTIALS_PATH}
 GIT_CONFIG_PATH=${4:-$GIT_CONFIG_PATH}
 GIT_COMMIT_MESSAGE=${5:-$GIT_COMMIT_MESSAGE}
 
+
 cd /config
+
 git config --global user.name "Steven Koch"
 git config --global user.email steven.johann.koch@googlemail.com
+git config core.sshCommand "ssh -i /homeassistant/.storage/git/git-ssh -F /dev/null"
+
 git push --set-upstream origin feature/ha-config-changes
 if [[ $(git status --porcelain) ]]; then
     
