@@ -1,13 +1,12 @@
 #!/bin/bash
 
-apk add  git # git-credential-store
+apk add git
 
 REPO_URL=${1:-$REPO_URL}
 BRANCH_NAME=${2:-$BRANCH_NAME}
 GIT_CREDENTIALS_PATH=${3:-$GIT_CREDENTIALS_PATH}
 GIT_CONFIG_PATH=${4:-$GIT_CONFIG_PATH}
 GIT_COMMIT_MESSAGE=${5:-$GIT_COMMIT_MESSAGE}
-
 
 cd /config
 
@@ -24,5 +23,7 @@ if [[ $(git status --porcelain) ]]; then
     git commit -m "$GIT_COMMIT_MESSAGE"
     
     git push origin $BRANCH_NAME
+    
+    git push -o merge_request.create -o merge_request.target=develop
     
 fi
