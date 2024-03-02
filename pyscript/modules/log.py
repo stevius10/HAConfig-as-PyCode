@@ -12,6 +12,7 @@ class Log:
                     datefmt='%H:%M:%S',
                     level=logging.INFO)
         self.logger = logging.getLogger(name)
+        self.logger.addHandler(logging.FileHandler(logpath, mode='w', encoding="UTF-8"))
     
     def __call__(self, message):
       if self.logger:
@@ -19,4 +20,4 @@ class Log:
     
     def log(self, message):
       if message: 
-        self.logger.error(message)
+        self.logger.info(message)
