@@ -5,7 +5,10 @@ import subprocess
 
 @service
 def service_git_sync(repo_url=GIT_REPO_URL, branch_name=GIT_BRANCH_NAME, credentials_path=GIT_CREDENTIALS_PATH, key_path=GIT_CREDENTIALS_KEY,config_path=GIT_CREDENTIALS_CONFIG, commit_message=GIT_COMMIT_MESSAGE):
-  log = Log(pyscript.get_global_ctx())
+  name = pyscript.get_global_ctx()
+  
+  log = Log(name)
+  log(name)
   try:
     
     log("test")
