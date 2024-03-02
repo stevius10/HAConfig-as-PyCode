@@ -1,9 +1,9 @@
 import logging
 import os
 
-class Loggg:
+class Log:
 
 
-  def new(self, message):
+  def log(self, message):
     print(message)
     logging.info(message)
