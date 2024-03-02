@@ -8,8 +8,7 @@ class Log:
         self.name = name.replace("scripts.", "")
         logpath = os.path.join(PATH_LOGS, self.name) + ".log"
         self.logger = logging.getLogger(self.name)
-        self.logger.addHandler(logging.FileHandler(logpath, mode='w'))
-        # self.logger.addHandler(logging.handlers.WatchedFileHandler(logpath, mode='w'))
+        self.logger.addHandler(logging.handlers.WatchedFileHandler(logpath, mode='w'))
 
     def __call__(self, message):
       if self.logger:
