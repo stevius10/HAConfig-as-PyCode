@@ -15,7 +15,7 @@ class Log:
     logging.info(message)
 
   def __setup(self):
-    if os.path.exists(self.logpath):
-      os.remove(self.logpath)
+    # if os.path.exists(self.logpath):
+      # os.remove(self.logpath)
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", handlers=[logging.StreamHandler(), logging.FileHandler(self.logpath)])
