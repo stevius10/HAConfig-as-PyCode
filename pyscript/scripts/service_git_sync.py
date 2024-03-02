@@ -1,4 +1,4 @@
-from constants import GIT_REPO_URL, GIT_BRANCH_NAME, GIT_COMMIT_MESSAGE, GIT_CREDENTIALS_PATH, GIT_CREDENTIALS_KEY, GIT_CREDENTIALS_CONFIG, SERVICE_CRON_GIT, PATH_LOGS
+from constants import GIT_REPO_URL, GIT_BRANCH_NAME, GIT_COMMIT_MESSAGE, GIT_CREDENTIALS_PATH, GIT_CREDENTIALS_KEY, GIT_CREDENTIALS_CONFIG, SERVICE_CRON_GIT
 from log import Log
 
 import subprocess
@@ -8,20 +8,20 @@ def service_git_sync(repo_url=GIT_REPO_URL, branch_name=GIT_BRANCH_NAME, credent
     log = Log(pyscript.get_global_ctx())
     try:
         config_output = subprocess.run(f"git config --local include.path '{config_path}'", shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        log(config_output.stdout)
-        log(config_output.stderr)
+        log.log(config_output.stdout)
+        log.log(config_output.stderr)
 
         ssh_output = subprocess.run(f"eval $(ssh-agent); ssh-add {key_path}", shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        log(ssh_output.stdout)
-        log(ssh_output.stderr)
+        log.log(ssh_output.stdout)
+        log.log(ssh_output.stderr)
 
         add_output = subprocess.run(["git", "add", "."], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        log(add_output.stdout)
-        log(add_output.stderr)
+        log.log(add_output.stdout)
+        log.log(add_output.stderr)
 
         commit_output = subprocess.run(["git", "commit", "-m", commit_message], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        log(commit_output.stdout)
-        log(commit_output.stderr)
+        log.log(commit_output.stdout)
+        log.log(commit_output.stderr)
 
         # subprocess.run(["git", "push", "origin", branch_name], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
@@ -29,4 +29,4 @@ def service_git_sync(repo_url=GIT_REPO_URL, branch_name=GIT_BRANCH_NAME, credent
         # subprocess.run(merge_request_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     except subprocess.CalledProcessError as e:
-        log(f"Error: {e}")
+        log.log(f"Error: {e}")
