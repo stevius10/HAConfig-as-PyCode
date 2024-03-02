@@ -11,7 +11,7 @@ def service_git_sync(repo_url=GIT_REPO_URL, branch_name=GIT_BRANCH_NAME, credent
   log(name)
   try:
     
-    log("test")
+    log.log("test")
     subprocess.run(f"git config --local include.path '$(config_path)'", shell=True, check=True)
 
     subprocess.run(f"eval $(ssh-agent); ssh-add {key_path}", shell=True, check=True)
