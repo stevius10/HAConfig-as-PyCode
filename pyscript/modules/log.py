@@ -12,7 +12,8 @@ class Log:
         self.log(self, message)
     
     def log(self, message):
-      log.info(message)
+      if message: 
+        log.info(message)
 
     def __setup(self):
       os.remove(self.logfile)
