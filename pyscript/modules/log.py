@@ -1,3 +1,5 @@
+from constants import PATH_LOGS
+
 import logging
 import os
 
@@ -5,6 +7,7 @@ class Log:
 
   def __init__(self, logfile):
       self.logfile = logfile
+      self.logpath = f"{PATH_LOGS}{logfile}"
       self.__setup()
 
   def __call__(self, message):
@@ -12,7 +15,7 @@ class Log:
     logging.info(message)
 
   def __setup(self):
-    if os.path.exists(self.logfile):
-      os.remove(self.logfile)
+    if os.path.exists(self.logpath):
+      os.remove(self.logpath)
 
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", handlers=[logging.StreamHandler(), logging.FileHandler(self.logfile)])
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", handlers=[logging.StreamHandler(), logging.FileHandler(self.logpath)])
