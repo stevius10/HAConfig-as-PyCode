@@ -8,20 +8,20 @@ def service_git_sync(repo_url=GIT_REPO_URL, branch_name=GIT_BRANCH_NAME, credent
     log = Log(pyscript.get_global_ctx())
     try:
         config_output = subprocess.run(f"git config --local include.path '{config_path}'", shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        log.log(config_output.stdout)
-        log.log(config_output.stderr)
+        log(config_output.stdout)
+        log(config_output.stderr)
 
         ssh_output = subprocess.run(f"eval $(ssh-agent); ssh-add {key_path}", shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        log.log(ssh_output.stdout)
-        log.log(ssh_output.stderr)
+        log(ssh_output.stdout)
+        log(ssh_output.stderr)
 
         add_output = subprocess.run(["git", "add", "."], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        log.log(add_output.stdout)
-        log.log(add_output.stderr)
+        log(add_output.stdout)
+        log(add_output.stderr)
 
         commit_output = subprocess.run(["git", "commit", "-m", commit_message], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        log.log(commit_output.stdout)
-        log.log(commit_output.stderr)
+        log(commit_output.stdout)
+        log(commit_output.stderr)
 
         # subprocess.run(["git", "push", "origin", branch_name], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
