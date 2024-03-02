@@ -23,11 +23,9 @@ def expressions(entities, expression="", defined=True, log=True):
   if not expression:
     
     if isinstance(entities, list):
-      for entity in entities:
-        exprs.append(expr(entity))
-      
-      print("|".join(exprs))
-      return "|".join(exprs)
+      expr_concatenated = ['(' + expr(entity) + ')' for entity in entities]
+      return " or ".join(expr_concatenated)
+    
     if isinstance(entities, dict):
       pass
 
