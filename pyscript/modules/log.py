@@ -5,8 +5,9 @@ import os
 
 class Log:
     def __init__(self, name):
-        logpath = os.path.join(PATH_LOGS, name) + ".log"
-        self.logger = logging.getLogger(name)
+        self.name = name.replace("script.", "")
+        logpath = os.path.join(PATH_LOGS, self.name) + ".log"
+        self.logger = logging.getLogger(self.name)
         self.logger.addHandler(logging.FileHandler(logpath, mode='w'))
         self.logger.addHandler(logging.handlers.WatchedFileHandler(logpath, mode='w'))
 
