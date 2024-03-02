@@ -10,13 +10,12 @@ GOOGLE_DRIVE_FOLDER_ID ="1-vl3qWDz5Fm8QtiQFBx-4uuwRO7dHls1"
 GOOGLE_DRIVE_TRASH_FOLDER_ID ="19q7mSrN0iFBhicZ6PESPgshyRFeuAQpe"
 GOOGLE_DRIVE_CREDENTIALS_FILE = "/homeassistant/.storage/google/google_auth.json"
 
-GIT_SSH_KEY_PATH = "/config/.storage/git/git-ssh"
-GIT_SYNC_CRON = "cron(0 5 * * *)"
-GIT_CMD_FILE = "/config/scripts/shell/git-autocommit.sh"
+GIT_CREDENTIALS_PATH="/config/.storage/git/git-credentials"
+GIT_CREDENTIALS_KEY = "/config/.storage/git/git-ssh"
+GIT_CREDENTIALS_CONFIG="/config/.storage/git/.gitconfig"
+
 GIT_REPO_URL="git@github.com/stevius10/home-assistant-config.git"
 GIT_BRANCH_NAME="feature/ha-config-changes"
-GIT_CREDENTIALS_PATH="/config/.storage/git/git-credentials"
-GIT_CONFIG_PATH="/config/.storage/git/.gitconfig"
 GIT_COMMIT_MESSAGE="auto commit"
 
 HA_PATH_LOG = "/config/home-assistant.log"
@@ -30,6 +29,8 @@ HA_STATES_UNDEFINED = [HA_STATE_NONE, HA_STATE_UNAVAILABLE, HA_STATE_UNKNOWN]
 
 PATH_CONSTANTS = "/config/pyscript/modules/constants.py"
 PATH_LOGS = "/config/logs/"
+
+SERVICE_CRON_GIT = "cron(0 5 * * *)"
 
 SIZE_LOG_ENTRIES = 10
 SIZE_LOG_ARCHIVE_ENTRIES = 10

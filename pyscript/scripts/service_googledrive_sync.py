@@ -1,4 +1,3 @@
-import json
 import os
 import io
 import time
@@ -11,12 +10,12 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.service_account import Credentials
-from apiclient.http import MediaFileUpload, MediaIoBaseDownload
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 from constants import *
 
 IGNORE_FOLDERS = ["Spotlight-V100", ".Spotlight-V100", "Downloads", "Sicherungen"]
-    
+
 class Drive():
 
     def __init__(self):

@@ -1,4 +1,4 @@
-loguru==0.5.3
-google-api-python-client==2.38.0
-google-auth==2.6.0
-google-auth-oauthlib==0.4.6
+loguru
+google-api-python-client
+google-auth
+google-auth-oauthlib
