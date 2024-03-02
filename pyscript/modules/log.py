@@ -10,7 +10,9 @@ class Log:
 
     def __call__(self, message):
         print(message)
+        logging.warn("xxx")
         logging.info(message)
 
     def __setup(self):
       logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", handlers=[logging.StreamHandler(), logging.FileHandler(self.logfile)])
+      logging.error("testerei")
