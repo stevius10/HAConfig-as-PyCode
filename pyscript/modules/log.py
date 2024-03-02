@@ -13,4 +13,5 @@ class Log:
         logging.info(message)
 
     def __setup(self):
-        logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", handlers=[logging.StreamHandler(), logging.FileHandler(self.logfile)])
+      logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", handlers=[logging.StreamHandler(), logging.FileHandler(self.logfile)])
+
