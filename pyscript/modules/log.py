@@ -11,6 +11,7 @@ class Log:
     def __call__(self, message):
         print(message)
         logging.warn("xxx")
+        logging.error("testerei")
         logging.info(message)
 
     def __setup(self):
