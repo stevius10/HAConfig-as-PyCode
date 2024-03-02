@@ -17,4 +17,4 @@ class Log:
     
     def log(self, message):
       if message: 
-        self.logger.error(message)
+        self.logger.info(message)
