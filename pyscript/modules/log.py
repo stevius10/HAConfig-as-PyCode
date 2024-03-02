@@ -18,5 +18,3 @@ class Log:
     def log(self, message):
       if message: 
         self.logger.error(message)
-        logging.error(message)
-      
