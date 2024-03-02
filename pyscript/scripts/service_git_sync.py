@@ -11,25 +11,28 @@ def git_sync(repo_url=GIT_REPO_URL, branch_name=GIT_BRANCH_NAME, credentials_pat
     log = Log(pyscript.get_global_ctx())
     try:
         result = subprocess.run(f"git config --local include.path '{config_path}'", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        log.log(result.stdout)
-        log.log(result.stderr)
+        log(result.stdout)
+        log(result.stderr)
 
         result = subprocess.run(f"eval $(ssh-agent); ssh-add {key_path}", shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        log.log(result.stdout)
-        log.log(result.stderr)
+        log(result.stdout)
+        log(result.stderr)
 
         result = subprocess.run(["git", "add", "."], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        log.log(result.stdout)
-        log.log(result.stderr)
+        log(result.stdout)
+        log(result.stderr)
 
         result = subprocess.run(["git", "commit", "-m", commit_message], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        log.log(result.stdout)
-        log.log(result.stderr)
+        log(result.stdout)
+        log(result.stderr)
 
-        # subprocess.run(["git", "push", "origin", branch_name], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-        # merge_request_command = ["git", "push", "-o", "merge_request.create", "-o", "merge_request.target=develop"]
-        # subprocess.run(merge_request_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
+        result = subprocess.run(["git", "push", "origin", branch_name], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        log(result.stdout)
+        log(result.stderr)
+        
+        result = subprocess.run(["git", "push", "-o", "merge_request.create", "-o", "merge_request.target=develop"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        log(result.stdout)
+        log(result.stderr)
+        
     except subprocess.CalledProcessError as e:
-        log.log(f"Error: {e}")
+        log(f"Error: {e}")
