@@ -47,4 +47,5 @@ def service_git_sync(repo_url=GIT_REPO_URL, branch_name=GIT_BRANCH_NAME, credent
       # subprocess.run(merge_request_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       
   log.info("[executed] service_git_sync")
+  log.info(logdict)
   return logdict
