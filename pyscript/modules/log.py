@@ -16,7 +16,7 @@ class Log:
     self.logger = logging.getLogger(self.name)
     # self.logger.setLevel(logging.INFO)
     handler = logging.FileHandler(logpath, mode='w')
-    # handler.setLevel(logging.INFO)
+    handler.setLevel(logging.INFO)
     # handler.setFormatter(format)
     self.logger.addHandler(handler)
 
