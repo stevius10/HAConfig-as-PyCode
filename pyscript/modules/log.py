@@ -12,15 +12,19 @@ class Log:
   def __init__(self, name):
     self.name = name.replace("scripts.", "")
     logpath = os.path.join(PATH_LOGS, self.name) + ".log"
-    self.logger = logging.getLogger(self.name)
     self.logs = []
-    
+    self.logger = logging.getLogger(self.name)
+    self.logger.setLevel(logging.INFO)
     handler = logging.handlers.WatchedFileHandler(logpath, mode='w')
     handler.setLevel(logging.INFO)
     handler.setFormatter(format)
+    stream = logging.StreamHandler()
+    stream.setLevel(logging.INFO)
+    stream.setFormatter(format)
     
     self.logger.addHandler(handler)
-  
+    self.logger.addHandler(stream)
+
   def log(self, message, ha=False):
     
     if isinstance(message, dict): 
