@@ -9,16 +9,16 @@ def service_git_sync(repo_url=GIT_REPO_URL, branch_name=GIT_BRANCH_NAME, credent
 
   try:
     result = subprocess.run(f"git config --local include.path '{config_path}'", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    util.log([result.stdout, result.stderr])
+    # util.log([result.stdout, result.stderr])
 
     result = subprocess.run(f"eval $(ssh-agent); ssh-add {key_path}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    util.log([result.stdout, result.stderr])
+    util.log(f"{result.stdout}, {result.stderr}")
 
     result = subprocess.run(["git", "add", "."], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    util.log([result.stdout, result.stderr])
+    util.log(f"{result.stdout}, {result.stderr}")
 
     result = subprocess.run(["git", "commit", "-m", commit_message], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    util.log([result.stdout, result.stderr])
+    util.log(f"{result.stdout}, {result.stderr}")
 
   except subprocess.CalledProcessError as e:
     util.log(e)
