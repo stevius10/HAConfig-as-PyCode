@@ -21,7 +21,7 @@ class Logs:
 
   def __call__(self, message):
     # if self.logger:
-      self.log(message)
+      self.info(message)
   
   def log(self, message):
     if message: 
