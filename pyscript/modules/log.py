@@ -27,6 +27,6 @@ class Log:
         log.info(message)
   
   def finished(self):
-    logs = "\n".join(self.logs)
+    logs = "".join(self.logs)
     self.log(f"[executed] {self.name} ({logs})", ha=True)
     return { "logs":  logs }
