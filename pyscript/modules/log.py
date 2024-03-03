@@ -20,11 +20,6 @@ class Log:
 
   def log(self, message, ha=False):
     
-    if isinstance(message, dict): 
-      for msg in message.values():
-       for k, v in msg.items():
-         self.log(v) 
-    
     if isinstance(message, list): 
       self.log("".join(message))
     
