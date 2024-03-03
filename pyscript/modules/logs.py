@@ -26,6 +26,6 @@ class Logs:
     if message: 
       self.logger.info(message)
   
-  def finished(logs):
+  def finished(self, logs):
     logs.log(f"[executed] {self.name} ({logs}")
     return logs
