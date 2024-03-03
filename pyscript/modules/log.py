@@ -3,6 +3,8 @@ from constants import PATH_LOGS
 import logging
 import os
 
+from subprocess import CompletedProcess
+
 class Log:
   
   format = logging.Formatter('%(asctime)s %(funcName)s:%(lineno)d %(message)s')
@@ -20,15 +22,18 @@ class Log:
     self.logger.addHandler(handler)
   
   def log(self, message, ha=False):
+    
     if isinstance(message, dict): 
       for msg in message.values():
        for k, v in msg.items():
          self.log(v) 
-    if message: 
+    
+    if isinstance(message, CompletedProcess): 
+      self.log(message.stdout)
+      self.log(message.stderr)
+      
+    if isinstance(message, str):
       self.logger.info(message)
-      self.logs.append(message)
-      if ha:
-        log.info(message)
   
   def finished(self):
     logs = "".join(self.logs)
