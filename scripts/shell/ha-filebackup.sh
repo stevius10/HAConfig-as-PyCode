@@ -18,7 +18,7 @@ else
     echo "Fehler beim Erstellen des Backup-Ordners" >&2
 fi
 
-if rsync -av --exclude='.storage/xiaomi_miot' --exclude='/homeassistant/.storage/xiaomi_miot' /config/ "$backup_folder" >> "$log_file" 2>&1; then
+if rsync -av --exclude='.git/' --exclude='/homeassistant/.git/' --exclude='.storage/xiaomi_miot' --exclude='/homeassistant/.storage/xiaomi_miot' /config/ "$backup_folder" >> "$log_file" 2>&1; then
     echo "Backup erfolgreich" >> "$log_file"
 else
     echo "Fehler beim Erstellen des Backups" >> "$log_file"
