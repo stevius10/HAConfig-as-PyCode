@@ -31,7 +31,7 @@ HA_STATES_UNDEFINED = [HA_STATE_NONE, HA_STATE_UNAVAILABLE, HA_STATE_UNKNOWN]
 PATH_CONSTANTS = "/config/pyscript/modules/constants.py"
 PATH_LOGS = "/config/logs/"
 
-SERVICE_CRON_GIT = "cron(0 5 * * *)"
+SERVICE_CRON_GIT = "cron(0 2 * * *)"
 
 SIZE_LOG_ENTRIES = 25
 SIZE_LOG_ARCHIVE_ENTRIES = 75
