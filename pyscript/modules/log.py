@@ -3,7 +3,7 @@ from constants import PATH_LOGS
 import logging
 import os
 
-class Logs:
+class Log:
   
   format = logging.Formatter('%(asctime)s %(funcName)s:%(lineno)d %(message)s')
   
@@ -18,9 +18,6 @@ class Logs:
     handler.setFormatter(format)
     
     self.logger.addHandler(handler)
-
-  def __call__(self, message):
-    self.log(message)
   
   def log(self, message, ha=False):
     if message: 
