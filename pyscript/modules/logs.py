@@ -15,6 +15,7 @@ class Logs:
     handler = logging.handlers.WatchedFileHandler(logpath, mode='a')
     handler.setLevel(logging.INFO)
     handler.setFormatter(format)
+    
     self.logger.addHandler(handler)
 
   def __call__(self, message):
