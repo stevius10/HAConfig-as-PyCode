@@ -34,4 +34,4 @@ class Logs:
   
   def finished(self):
     self.info(f"[executed] {self.name} ({self.logs})")
-    return { "logs": self.logs }
+    return { "logs": ", ".join(self.logs) }
