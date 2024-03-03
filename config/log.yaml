@@ -5,6 +5,7 @@ logger:
     custom_components.xiaomi_miot: critical
     androidtv: critical
     pychromecast.socket_client: critical
+    scripts: info
   filters:
     homeassistant:
       - "Error doing job: Future exception was never retrieved" # Tado

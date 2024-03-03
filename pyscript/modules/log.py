@@ -8,30 +8,36 @@ import subprocess
 
 class Log:
   
-  format = logging.Formatter('%(asctime)s %(funcName)s:%(lineno)d %(message)s')
+  format = logging.Formatter('%(asctime)s: %(message)s')
   
   def __init__(self, name):
     self.name = name.replace("scripts.", "")
     logpath = os.path.join(PATH_LOGS, self.name) + ".log"
+    
+    pyscript.ha_logs_truncate(logpath=logpath)
+
     self.logs = []
     self.logger = logging.getLogger(self.name)
-    handler = logging.FileHandler(logpath, mode='w')
-    handler.setLevel(logging.INFO)
-    self.logger.addHandler(handler)
-
-  def log(self, message, ha=False):
+    self.logger.propagate = False
+    self.logger.setLevel(logging.DEBUG)
+    self.logger.addHandler(logging.FileHandler(logpath, mode='w'))
+    
+  def log(self, message=None):
     
     if isinstance(message, list): 
-      self.log("".join(message))
+      for msg in message:
+        self.log(msg.replace("\n", ""))
+      self.log(" ")
     
     if isinstance(message, str):
       if re.search('[a-zA-Z]', message): 
-        self.logger.info(message)
+        self.logger.debug(message)
         self.logs.append(message)
-      if ha:
-        log.info(message)
-  
+        
+    if message == " ":
+        self.logger.debug('\n')
+        
   def finished(self):
     logs = ("; ".join(filter(None, self.logs))).replace("\n", "")
-    self.log(f"[executed] {self.name}: {logs}", ha=True)
+    log.info(f"[executed] {self.name}: {logs}")
     return { "logs":  logs }
