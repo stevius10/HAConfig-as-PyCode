@@ -28,10 +28,9 @@ class Log:
        for k, v in msg.items():
          self.log(v) 
     
-    if isinstance(message, subprocess.CompletedProcess): 
-      self.log(message.stdout)
-      self.log(message.stderr)
-      
+    if isinstance(message, list): 
+      self.log("\n".join(message))
+    
     if isinstance(message, str):
       self.logger.info(message)
   
