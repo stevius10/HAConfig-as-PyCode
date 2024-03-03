@@ -20,8 +20,7 @@ class Logs:
     self.logger.addHandler(handler)
 
   def __call__(self, message):
-    if self.logger:
-      self.log(message)
+    self.log(message)
   
   def log(self, message, ha=False):
     if message: 
