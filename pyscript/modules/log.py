@@ -3,7 +3,7 @@ from constants import PATH_LOGS
 import logging
 import os
 
-from subprocess import CompletedProcess
+import subprocess
 
 class Log:
   
@@ -28,7 +28,7 @@ class Log:
        for k, v in msg.items():
          self.log(v) 
     
-    if isinstance(message, CompletedProcess): 
+    if isinstance(message, subprocess.CompletedProcess): 
       self.log(message.stdout)
       self.log(message.stderr)
       
