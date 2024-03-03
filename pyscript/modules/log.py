@@ -37,6 +37,6 @@ class Log:
       log.info(message)
   
   def finished(self):
-    logs = "".join(self.logs)
-    self.log(f"[executed] {self.name} ({logs})", ha=True)
+    logs = ("".join(self.logs)).replace("\n", "")
+    self.log(f"[executed] {self.name}: {logs}", ha=True)
     return { "logs":  logs }
