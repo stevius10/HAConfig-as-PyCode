@@ -33,6 +33,7 @@ class Log:
     
     if isinstance(message, str):
       self.logger.info(message)
+      log.info(message)
   
   def finished(self):
     logs = "".join(self.logs)
