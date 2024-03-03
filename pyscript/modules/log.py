@@ -43,5 +43,5 @@ class Log:
   
   def finished(self):
     logs = ("".join(self.logs)).replace("\n", "")
-    self.log(f"[executed] {self.name}: {logs}", ha=True)
+    self.log(f"[executed] {self.name}: {logs}")
     return { "logs":  logs }
