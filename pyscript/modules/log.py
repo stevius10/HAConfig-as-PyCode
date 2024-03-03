@@ -33,7 +33,7 @@ class Log:
          self.log(v) 
     
     if isinstance(message, list): 
-      self.log("\n".join(message))
+      self.log("".join(message))
     
     if isinstance(message, str):
       self.logger.info(message)
