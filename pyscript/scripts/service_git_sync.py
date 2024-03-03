@@ -18,10 +18,10 @@ def service_git_sync(repo_url=GIT_REPO_URL, branch_name=GIT_BRANCH_NAME, credent
     logs.log([result.stdout, result.stderr])
 
     result = subprocess.run(["git", "commit", "-m", commit_message], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    log.log([result.stdout, result.stderr])
+    logs.log([result.stdout, result.stderr])
 
   except subprocess.CalledProcessError as e:
-    log.log(e)
+    logs.log(e)
   
       # subprocess.run(["git", "push", "origin", branch_name], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
