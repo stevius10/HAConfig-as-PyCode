@@ -30,6 +30,6 @@ class Log:
         log.info(message)
   
   def finished(self):
-    logs = (" ".join(filter(None, self.logs))).replace("\n", ",")
+    logs = (",".join(filter(None, self.logs))).replace("\n", "")
     self.log(f"[executed] {self.name}: {logs}", ha=True)
     return { "logs":  logs }
