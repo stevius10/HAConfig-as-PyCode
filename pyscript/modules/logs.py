@@ -12,7 +12,7 @@ class Logs:
     logpath = os.path.join(PATH_LOGS, self.name) + ".log"
     self.logger = logging.getLogger(self.name)
     
-    handler = logging.handlers.WatchedFileHandler(logpath, mode='w+')
+    handler = logging.handlers.WatchedFileHandler(logpath, mode='a')
     handler.setLevel(logging.INFO)
     handler.setFormatter(format)
     self.logger.addHandler(handler)
