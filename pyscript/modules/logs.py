@@ -12,16 +12,20 @@ class Logs:
     logpath = os.path.join(PATH_LOGS, self.name) + ".log"
     self.logger = logging.getLogger(self.name)
     
-    handler = logging.handlers.WatchedFileHandler(logpath, mode='a')
+    handler = logging.handlers.WatchedFileHandler(logpath, mode='w')
     handler.setLevel(logging.INFO)
     handler.setFormatter(format)
     
     self.logger.addHandler(handler)
 
   def __call__(self, message):
-    if self.logger:
+    # if self.logger:
       self.log(message)
   
   def log(self, message):
     if message: 
       self.logger.info(message)
+  
+  def finished(logs):
+    logs.log(f"[executed] {self.name} ({logs}")
+    return logs
