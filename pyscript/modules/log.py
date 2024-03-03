@@ -14,10 +14,10 @@ class Log:
     logpath = os.path.join(PATH_LOGS, self.name) + ".log"
     self.logs = []
     self.logger = logging.getLogger(self.name)
-    self.logger.setLevel(logging.INFO)
+    # self.logger.setLevel(logging.INFO)
     handler = logging.FileHandler(logpath, mode='w')
-    handler.setLevel(logging.INFO)
-    handler.setFormatter(format)
+    # handler.setLevel(logging.INFO)
+    # handler.setFormatter(format)
     self.logger.addHandler(handler)
 
     # stream = logging.StreamHandler()
