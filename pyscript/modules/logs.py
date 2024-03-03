@@ -21,18 +21,16 @@ class Logs:
 
   def __call__(self, message):
     if self.logger:
-      self.info(message)
+      self.log(message)
   
-  def log(self, message):
+  def log(self, message, ha=False):
     if message: 
       self.logger.info(message)
       self.logs.append(message)
-  
-  def info(self, message):
-    log.info(message)
-    self.log(message)
+    if ha:
+      log.info(message)
   
   def finished(self):
     logs = ", ".join(self.logs)
-    self.info(f"[executed] {self.name} ({logs})")
+    self.log(f"[executed] {self.name} ({logs})", ha=True)
     return { "logs":  logs }
