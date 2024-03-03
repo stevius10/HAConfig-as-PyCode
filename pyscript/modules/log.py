@@ -20,6 +20,10 @@ class Log:
     self.logger.addHandler(handler)
   
   def log(self, message, ha=False):
+    if isinstance(message, dict): 
+      for msg in message.values():
+       for k, v in msg.items():
+         self.log(v) 
     if message: 
       self.logger.info(message)
       self.logs.append(message)

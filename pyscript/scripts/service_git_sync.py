@@ -9,8 +9,7 @@ def service_git_sync(repo_url=GIT_REPO_URL, branch_name=GIT_BRANCH_NAME, credent
   log.log("test")
   try:
     result = subprocess.run(f"git config --local include.path '{config_path}'", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    log.log(result.stdout)
-    log.log(result.stderr)
+    log.log(result)
   except subprocess.CalledProcessError as e:
     log.log(e)
 
