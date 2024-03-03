@@ -15,15 +15,15 @@ class Log:
     self.logs = []
     self.logger = logging.getLogger(self.name)
     self.logger.setLevel(logging.INFO)
-    handler = logging.handlers.WatchedFileHandler(logpath, mode='w')
+    handler = logging.FileHandler(logpath, mode='w')
     handler.setLevel(logging.INFO)
     handler.setFormatter(format)
-    stream = logging.StreamHandler()
-    stream.setLevel(logging.INFO)
-    stream.setFormatter(format)
-    
     self.logger.addHandler(handler)
-    #self.logger.addHandler(stream)
+
+    # stream = logging.StreamHandler()
+    # stream.setLevel(logging.INFO)
+    # stream.setFormatter(format)
+    # self.logger.addHandler(stream)
 
   def log(self, message, ha=False):
     
@@ -36,7 +36,7 @@ class Log:
       self.log("".join(message))
     
     if isinstance(message, str):
-      self.logger.info(message)
+      #self.logger.info(message)
       self.logs.append(message)
       #if ha:
         #log.info(message)
