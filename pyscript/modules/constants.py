@@ -10,8 +10,8 @@ GOOGLE_DRIVE_FOLDER_ID ="1-vl3qWDz5Fm8QtiQFBx-4uuwRO7dHls1"
 GOOGLE_DRIVE_TRASH_FOLDER_ID ="19q7mSrN0iFBhicZ6PESPgshyRFeuAQpe"
 GOOGLE_DRIVE_CREDENTIALS_FILE = "/config/.storage/google/google_auth.json"
 
-GIT_CREDENTIALS_PATH="/config/.storage/git/git-credentials"
-GIT_CREDENTIALS_KEY = "/config/.storage/git/git-ssh"
+# GIT_CREDENTIALS_PATH="/config/.storage/git/git-credentials"
+GIT_CREDENTIALS_KEY = "/config/.storage/git/id_rsa"
 GIT_CREDENTIALS_CONFIG="/config/.storage/git/.gitconfig"
 
 GIT_REPO_URL="git@github.com/stevius10/home-assistant-config.git"
