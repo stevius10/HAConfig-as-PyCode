@@ -33,5 +33,5 @@ class Logs:
     self.log(message)
   
   def finished(self):
-    self.info(f"[executed] {self.name} ({self.logs}")
+    self.info(f"[executed] {self.name} ({self.logs})")
     return { "logs": self.logs }
