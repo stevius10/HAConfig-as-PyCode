@@ -34,7 +34,8 @@ class Log:
     if isinstance(message, str):
       self.logger.info(message)
       self.logs.append(message)
-      log.info(message)
+      if ha:
+        log.info(message)
   
   def finished(self):
     logs = ("".join(self.logs)).replace("\n", "")
