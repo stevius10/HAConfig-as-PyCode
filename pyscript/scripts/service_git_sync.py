@@ -9,7 +9,6 @@ def service_git_sync(repo_url=GIT_REPO_URL, branch_name=GIT_BRANCH_NAME, branch_
   util = Log(pyscript.get_global_ctx())
   
   commands = [
-    f"pwd",
     f"git config --local include.path '{config_path}'",
     f"eval $(ssh-agent); ssh-add {key_path}", 
     f"git add .",
