@@ -23,10 +23,10 @@ class Log:
     if message: 
       self.logger.info(message)
       self.logs.append(message)
-    if ha:
-      log.info(message)
+      if ha:
+        log.info(message)
   
   def finished(self):
-    logs = ", ".join(self.logs)
+    logs = "\n".join(self.logs)
     self.log(f"[executed] {self.name} ({logs})", ha=True)
     return { "logs":  logs }
