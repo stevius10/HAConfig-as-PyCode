@@ -23,7 +23,7 @@ class Log:
     stream.setFormatter(format)
     
     self.logger.addHandler(handler)
-    self.logger.addHandler(stream)
+    #self.logger.addHandler(stream)
 
   def log(self, message, ha=False):
     
