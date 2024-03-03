@@ -1,6 +1,7 @@
 from constants import PATH_LOGS
 
 import logging
+import re
 import os
 
 import subprocess
@@ -24,8 +25,9 @@ class Log:
       self.log("".join(message))
     
     if isinstance(message, str):
-      self.logger.info(message)
-      self.logs.append(message)
+      if re.search('[a-zA-Z]', message): 
+        self.logger.info(message)
+        self.logs.append(message)
       if ha:
         log.info(message)
   
