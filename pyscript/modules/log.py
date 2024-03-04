@@ -11,11 +11,11 @@ class Log:
   format = logging.Formatter('%(asctime)s: %(message)s')
   
   def __init__(self, name):
+    # pyscript.log_truncate(log_file=log_file, size_log_entries=0)
+    
     self.name = name.replace("scripts.", "")
     log_file = os.path.join(PATH_LOGS, self.name) + ".log"
     
-    pyscript.log_truncate(log_file=log_file)
-
     self.logs = []
     self.logger = logging.getLogger(self.name)
     self.logger.propagate = False
