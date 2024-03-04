@@ -12,15 +12,15 @@ class Log:
   
   def __init__(self, name):
     self.name = name.replace("scripts.", "")
-    logpath = os.path.join(PATH_LOGS, self.name) + ".log"
+    log_file = os.path.join(PATH_LOGS, self.name) + ".log"
     
-    pyscript.ha_logs_truncate(logpath=logpath)
+    pyscript.log_truncate(log_file=log_file)
 
     self.logs = []
     self.logger = logging.getLogger(self.name)
     self.logger.propagate = False
     self.logger.setLevel(logging.DEBUG)
-    self.logger.addHandler(logging.FileHandler(logpath, mode='w'))
+    self.logger.addHandler(logging.FileHandler(log_file, mode='w'))
     
   def log(self, message=None):
     
