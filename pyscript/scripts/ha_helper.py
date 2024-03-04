@@ -14,6 +14,7 @@ from pathlib import Path
 @task_unique("ha_log_truncate", kill_me=True)
 def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_LOG_ENTRIES, size_archive_entries=SIZE_LOG_ARCHIVE_ENTRIES, file="", folder="", path=""):
   try: 
+    log.error(f"{trigger_type}: Trunc to size_log_entries {size_log_entries}")
     if trigger_type == "time": 
       system_log.clear()
       size_log_entries = 0
