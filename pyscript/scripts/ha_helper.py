@@ -20,7 +20,7 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
       size_log_entries = 0
       log.error(trigger_type)
   
-    async with aopen(log_file, 'w+') as log_file_object:
+    async with aopen(log_file, 'r') as log_file_object:
       log_content = log_file_object.readlines()
 
     if ((size_log_entries > 0) and (len(log_content) > (1.5 * size_log_entries))): 
@@ -38,7 +38,7 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
       log.error("null")
 
     log_trunc = log_content[-size_log_entries:-1000]
-    async with aopen(log_file, 'w') as log_file_object:
+    async with aopen(log_file, 'a') as log_file_object:
       await log_file_object.writelines(log_trunc)
       await log_file_object.writelines(f"\n \n {size_log_entries} # {datetime.now()}")
     
