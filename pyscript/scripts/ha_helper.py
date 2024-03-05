@@ -7,7 +7,7 @@ from aiofiles import open as aopen
 from datetime import datetime, timedelta
 from pathlib import Path
 
-@time_trigger('startup')
+# @time_trigger('startup')
 @time_trigger('shutdown')
 @event_trigger(EVENT_FOLDER_WATCHER) 
 @service
@@ -37,7 +37,7 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
     elif size_log_entries == 0:
       log.error("null")
 
-    log_trunc = log_content[-size_log_entries:-10]
+    log_trunc = log_content[-size_log_entries:-1000]
     async with aopen(log_file, 'w') as log_file_object:
       await log_file_object.writelines(log_trunc)
       await log_file_object.writelines(f"\n \n {size_log_entries} # {datetime.now()}")
