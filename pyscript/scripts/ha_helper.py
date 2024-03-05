@@ -14,6 +14,8 @@ from pathlib import Path
 @service
 @task_unique("ha_log_truncate", kill_me=True)
 def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_LOG_ENTRIES, size_archive_entries=SIZE_LOG_ARCHIVE_ENTRIES, file="", folder="", path=""):
+  await task.sleep(3)
+
   try:    
     log_content = ""
     log_trunc = ""
