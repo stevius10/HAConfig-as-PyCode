@@ -13,17 +13,18 @@ from pathlib import Path
 @service
 @task_unique("ha_log_truncate", kill_me=True)
 def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_LOG_ENTRIES, size_archive_entries=SIZE_LOG_ARCHIVE_ENTRIES, file="", folder="", path=""):
-  try: 
+  try:    
     log_content = ""
     if trigger_type == "time": 
       system_log.clear()
       size_log_entries = 0
+      log.error("time")
   
     async with aopen(log_file, 'w+') as log_file_object:
       log_content = log_file_object.readlines()
-      log.info(log_content)
 
-    if ((size_log_entries > 0) and (len(log) > (1.5 * size_log_entries))): 
+    if ((size_log_entries > 0) and (len(log_content) > (1.5 * size_log_entries))): 
+      log.error(size_log_entries)
       log_to_archive = log[:-size_log_entries]
       async with aopen(f"{log_file}.archive", 'a') as archive_file_object:
         await archive_file_object.writelines(log_to_archive)
@@ -32,13 +33,15 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
       archive_trunc = archive_content[-size_archive_entries:]
       async with aopen(f"{log_file}.archive", 'w') as archive_file_object:
         await archive_file_object.writelines(archive_trunc)
-      
-    log.info(size_log_entries)
-    log_trunc = log_content[-size_log_entries:]
-    log.info(log_trunc)
+    
+    elif size_log_entries == 0:
+      log.error("null")
 
+    log_trunc = log_content[-size_log_entries:]
     async with aopen(log_file, 'w') as log_file_object:
       await log_file_object.writelines(log_trunc)
+      await log_file_object.writelines(f"\n \n # {datetime.now()}")
+    
   except Exception as e:
     log.error(e)
   finally: 

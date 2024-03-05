@@ -15,7 +15,7 @@ template_badges:
         state_filter:
           - playing
       
-      # Utils
+      # AdGuard
       - entity: sensor.adguard_home_dns_abfragen_blockiert
         name: DNS-Filter
         tap_action:
@@ -28,13 +28,13 @@ template_badges:
             :host { 
               {% if states('switch.adguard_home_schutz') == "on" %} 
                 --label-badge-red: #556B2F;
-                # --label-badge-text-color: #556B2F;
-                {% else %}
+              {% else %}
                 --label-badge-text-color: rgba(128, 0, 0, 0.5); 
                 --label-badge-red: maroon;
               {% endif %} 
             }
 
+      # Torrent
       - type: entity-filter
         entities:
           - entity: sensor.qbittorrent_status
@@ -44,7 +44,7 @@ template_badges:
               - ''
               - unavailable
 
-      # System
+      # Backup
       - entity: sensor.v_last_backup
         name: Sicherung
         tap_action:
@@ -120,7 +120,8 @@ template_badges:
                 display: none;
               {% endif %} 
             }
-            
+      
+      # Luftreiniger
       - entity: sensor.luftreiniger_geschwindigkeit
         name: Reinigen
         card_mod: 
@@ -134,9 +135,16 @@ template_badges:
             
               {% if states('sensor.luftreiniger_geschwindigkeit') != "Sleep" and
                  states('sensor.luftreiniger_geschwindigkeit') != "Aus" %} 
-                --label-badge-background-color: white;
-                --label-badge-red: white;
+                --label-badge-background-color': rgb(255, 255, 255);
               {% endif %} 
+              
+              {% if states('sensor.luftreiniger_pm2_5') | int > 5 %}
+                --label-badge-text-color: #556B2F;
+              {% elif  states('sensor.luftreiniger_pm2_5') | int > 15 %}
+                --label-badge-text-color: orange;
+              {% elif  states('sensor.luftreiniger_pm2_5') | int > 25 %}
+                --label-badge-text-color: maroon;
+              {% endif %}
             }
         tap_action:
           action: call-service

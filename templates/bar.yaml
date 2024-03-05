@@ -1,3 +1,60 @@
+template_bar:
+  card: 
+    type: custom:stack-in-card
+    card_mod:
+      style: |
+        ha-card { --ha-card-background: rgba(61, 61, 61, 0.6); }
+        ha-card div { 
+        --ha-card-background: none;
+          margin: 5px;
+          letter-spacing: 1.1px;
+          font-weight: 300;
+          font-variant: small-caps;
+        }
+    cards:
+      - type: custom:decluttering-card
+        template: template_data_[[type]]_[[room]]
+
+template_bar_header_button: 
+  card:
+    type: custom:decluttering-card
+    template: template_bar_button
+    variables: 
+      - show_name: true
+      - show_icon: false
+      - name: '[[name]]'
+      - entity: '[[entity]]'
+
+template_bar_footer_button: 
+  card:
+    type: custom:decluttering-card
+    template: template_bar_button
+    variables: 
+      - show_name: false
+      - show_icon: true
+      - name: ''
+      - entity: '[[entity]]'
+      - icon_height: '[[icon_height]]'
+      
+template_bar_button: 
+  card: 
+    type: button
+    entity: '[[entity]]'
+    name: '[[name]]'
+    show_name: '[[show_name]]'
+    show_icon: '[[show_icon]]'
+    icon_height: '[[icon_height]]px'
+    tap_action:
+      action: toggle
+    hold_action:
+      action: more-info
+    double_tap_action:
+      action: more-info
+  default:
+    - icon_height: 23
+
+# Model: Entities 
+
 # Wohnzimmer
 
 template_data_header_wz: 
@@ -162,10 +219,10 @@ template_data_footer_k:
       variables: 
         - entity: humidifier.luftbefeuchter
         - icon_height: 25
-    - type: custom:decluttering-card
-      template: template_bar_footer_button
-      variables: 
-        - entity: fan.luftreiniger
+    # - type: custom:decluttering-card
+    #   template: template_bar_footer_button
+    #   variables: 
+    #     - entity: fan.luftreiniger
 
 template_data_header_art: 
   card: 
