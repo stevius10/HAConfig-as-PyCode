@@ -32,12 +32,12 @@ class Log:
         self.log(msg.replace("\n", ""))
       self.log(" ")
     
-    if isinstance(message, str):
+    elif isinstance(message, str):
       if re.search('[a-zA-Z]', message): 
         self.logger.debug(message)
         self.logs.append(message)
         
-    if message == " ":
+    elif message == " ":
         self.logger.debug('\n')
         
   def finished(self):
