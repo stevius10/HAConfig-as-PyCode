@@ -26,7 +26,7 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
       log.error(trigger_type)
   
     async with aopen(log_file, 'r') as log_file_object:
-      await log_content = log_file_object.readlines()
+      log_content = log_file_object.readlines()
 
     if ((size_log_entries > 0) and (len(log_content) > (1.25 * size_log_entries))): 
       log_to_archive = log_content[:-size_log_entries]
