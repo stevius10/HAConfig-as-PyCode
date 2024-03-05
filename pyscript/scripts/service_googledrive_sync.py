@@ -20,11 +20,12 @@ from google.auth.transport.requests import Request
 from google.oauth2.service_account import Credentials
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
+util = Log(pyscript.get_global_ctx())
+
 @service
 @time_trigger(SERVICE_CRON_GOGLE_DRIVE)
 class Drive():
   
-    util = Log(pyscript.get_global_ctx())
     os.environ["GOOGLE_DRIVE_IGNORE_FOLDERS"] = GOOGLE_DRIVE_IGNORE_FOLDERS
     
     def __init__(self, google_drive_credentials_file):

@@ -14,31 +14,35 @@ from pathlib import Path
 @task_unique("ha_log_truncate", kill_me=True)
 def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_LOG_ENTRIES, size_archive_entries=SIZE_LOG_ARCHIVE_ENTRIES, file="", folder="", path=""):
   try: 
-    log.error(f"{trigger_type}: Trunc to size_log_entries {size_log_entries}")
+    log_content = ""
     if trigger_type == "time": 
       system_log.clear()
       size_log_entries = 0
   
     async with aopen(log_file, 'w+') as log_file_object:
-      log = log_file_object.readlines()
-      
+      log_content = log_file_object.readlines()
+      log.info(log_content)
+
     if ((size_log_entries > 0) and (len(log) > (1.5 * size_log_entries))): 
       log_to_archive = log[:-size_log_entries]
       async with aopen(f"{log_file}.archive", 'a') as archive_file_object:
         await archive_file_object.writelines(log_to_archive)
       async with aopen(f"{log_file}.archive", 'r') as archive_file_object:
-        archive = archive_file_object.readlines()
-      archive_trunc = archive[-size_archive_entries:]
+        archive_content = archive_file_object.readlines()
+      archive_trunc = archive_content[-size_archive_entries:]
       async with aopen(f"{log_file}.archive", 'w') as archive_file_object:
         await archive_file_object.writelines(archive_trunc)
       
-    log_trunc = log[-size_log_entries:]
+    log.info(size_log_entries)
+    log_trunc = log_content[-size_log_entries:]
+    log.info(log_trunc)
+
     async with aopen(log_file, 'w') as log_file_object:
       await log_file_object.writelines(log_trunc)
   except Exception as e:
     log.error(e)
   finally: 
-    await task.sleep(3)
+    await task.sleep(5)
 
 # @service
 # @time_trigger('startup')
@@ -68,4 +72,4 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
 #     browser_mod.popup(browser_id="THIS", content=debug)
 
 # def ha_log_events(**kwargs):
-#   log.info(f"[Event] {kwargs}")
+#   log_content.info(f"[Event] {kwargs}")
