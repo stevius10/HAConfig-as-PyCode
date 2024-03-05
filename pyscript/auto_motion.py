@@ -12,9 +12,6 @@ motion_trigger = []
 
 def on_motion_factory(entity):
  
-  # time_expr = f"range(sunset - {entities.get(entity)['sunset_diff']}min, sunrise + {entities.get(entity)['sunset_diff']}min)"  if 'sunset_diff' in entities.get(entity) else "not range(0, 0)"
-  # @time_active(time_expr)
-  # @time_active(f"range(sunset - {entities.get(entity)['sunset_diff']}min, sunrise + {entities.get(entity)['sunset_diff']}min)")
   @time_active((f"range(sunset - {entities.get(entity)['sunset_diff']}min, sunrise + {entities.get(entity)['sunset_diff']}min)" if 'sunset_diff' in entities.get(entity) else "not range(0, 0)"))
   @state_trigger(expr(entity, "on"), state_check_now=True)
   def on_motion(var_name=None): 
@@ -28,9 +25,9 @@ def off_motion_factory(entity):
   
   @state_trigger(expr(entity, "off"), state_hold=AUTO_CONFIG_MOTION_TIMEOUT, state_check_now=True)
   def off_motion(var_name=None):
-    scene.turn_on(entity_id=entities.get(var_name)["off"], transition=entities.get(var_name)["transition"])
-    # scene.turn_on(entity_id=entities.get(var_name).get("off"), transition=entities.get(var_name).get("transition"))
-  
+    if 'var_name' in entities and "off" in entities.get(var_name):
+      scene.turn_on(entity_id=entities.get(var_name)["off"], transition=entities.get(var_name)["transition"])
+
   motion_trigger.append(off_motion)
 
 # [Küche, Gang]: Bewegung 

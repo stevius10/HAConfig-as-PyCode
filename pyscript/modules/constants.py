@@ -19,7 +19,6 @@ GIT_BRANCH_NAME="feature/ha-config-changes"
 GIT_BRANCH_TARGET="develop"
 GIT_COMMIT_MESSAGE="auto/sync"
 
-
 HA_STATE_NONE = "None"
 HA_STATE_UNAVAILABLE = "unavailable"
 HA_STATE_UNKNOWN = "unknown"
