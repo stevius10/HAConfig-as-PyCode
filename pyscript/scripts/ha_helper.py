@@ -32,11 +32,11 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
       log_to_archive = log_content[:-size_log_entries]
       # async with aopen(f"{log_file}.archive", 'a') as archive_file_object:
       #   await archive_file_object.writelines(log_to_archive)
-      async with aopen(f"{log_file}.archive", 'r') as archive_file_object:
+      async with aopen(f"{log_file}.archive", 'w+') as archive_file_object:
         archive_content = archive_file_object.readlines()
-      archive_trunc = (archive_content + log_to_archive)[-size_archive_entries:]
-      async with aopen(f"{log_file}.archive", 'w') as archive_file_object:
-        await archive_file_object.writelines(archive_trunc)
+        archive_trunc = archive_content + log_to_archive
+      # async with aopen(f"{log_file}.archive", 'w') as archive_file_object:
+        await archive_file_object.writelines(archive_trunc[-size_archive_entries:])
     
     log_trunc = log_content[-size_log_entries:]
     if size_log_entries == 0:

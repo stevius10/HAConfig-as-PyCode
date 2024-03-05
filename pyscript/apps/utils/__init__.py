@@ -10,6 +10,5 @@ def log_state_factory(expr):
   
   log.info(f"Logging: {expr}")
 
-@service
 def log_state(expr):
   log_state_factory(expr)

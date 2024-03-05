@@ -1,6 +1,8 @@
 from helper import expr
 
-entities = { 
+entities = {
+  "fan.luftreiniger": { "state": "playing", "timeout": 60, "timer": "timer.h_timer_luftreiniger" }, 
+  "fan.sz_ventilator": { "state": "playing", "timeout": 60, "timer": "timer.h_timer_sz_ventilator" }, 
   "media_player.schlafzimmer": { "state": "playing", "timeout": 60, "timer": "h_timer_media_sz" }, 
 }
 
@@ -8,7 +10,7 @@ timer_off_trigger = []
 timer_timeout_trigger = []
 
 def timer_timeout_factory(entity, entity_state, entity_timeout, entity_timer):
-  @state_trigger(expr(entity, entity_state), state_hold=entity_timeout, state_check_now=True)
+  @state_trigger(expr(entity, entity_state), state_check_now=True)
   def timer_timeout(var_name=None):
     timer.cancel(entity_id=entity_timer)
     timer.start(entity_id=entity_timer, duration=entity_timeout)
