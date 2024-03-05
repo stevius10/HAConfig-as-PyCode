@@ -40,7 +40,7 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
       log_trunc = ""
       
     async with aopen(log_file, 'w+') as log_file_object:
-      await log_file_object.writelines(log_trunc + f"\n \n {size_log_entries} # {datetime.now()}")
+      await log_file_object.writelines([log_trunc, f"\n \n {size_log_entries} # {datetime.now()}"])
     
   except Exception as e:
     log.error(e)
