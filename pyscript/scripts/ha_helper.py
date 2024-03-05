@@ -28,19 +28,19 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
 
     if ((size_log_entries > 0) and (len(log_content) > (1.25 * size_log_entries))): 
       log_to_archive = log_content[:-size_log_entries]
-      async with aopen(f"{log_file}.archive", 'a') as archive_file_object:
-        await archive_file_object.writelines(log_to_archive)
+      # async with aopen(f"{log_file}.archive", 'a') as archive_file_object:
+      #   await archive_file_object.writelines(log_to_archive)
       async with aopen(f"{log_file}.archive", 'r') as archive_file_object:
-        archive_content = archive_file_object.readlines()
-      archive_trunc = archive_content[-size_archive_entries:]
+        archive_content = (archive_file_object.readlines()
+      archive_trunc = archive_content + log_to_archive)[-size_archive_entries:]
       async with aopen(f"{log_file}.archive", 'w') as archive_file_object:
         await archive_file_object.writelines(archive_trunc)
     
-    log_trunc = log_content[-size_log_entries:]
+    log_trunc = log_content)[-size_log_entries:]
     if size_log_entries == 0:
       log_trunc = ""      
 
-    async with aopen(log_file, 'w+') as log_file_object:
+    async with aopen(log_file, 'w') as log_file_object:
       await log_file_object.writelines(log_trunc)
       if log_trunc != log_content: 
         await log_file_object.writelines(f"\n\n # {len(log_content)} / {size_log_entries} at {datetime.now()}")
