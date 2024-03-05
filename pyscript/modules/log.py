@@ -22,7 +22,7 @@ class Log:
     self.logger.propagate = False
     self.logger.setLevel(logging.DEBUG)
     self.logger.addHandler(logging.FileHandler(log_file, mode='w+'))
-    self.log(f"# {datetime}")
+    self.log(f"# {datetime.now()}")
     
   def log(self, message=None):
     
@@ -33,6 +33,7 @@ class Log:
     
     if isinstance(message, str):
       if re.search('[a-zA-Z]', message): 
+        message = f"{datetime} {message}"
         self.logger.debug(message)
         self.logs.append(message)
         

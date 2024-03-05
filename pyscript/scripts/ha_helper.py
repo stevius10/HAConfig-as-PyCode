@@ -3,8 +3,9 @@ from homeassistant.const import EVENT_CALL_SERVICE
 from constants import PATH_LOG_HA, EVENT_FOLDER_WATCHER, SIZE_LOG_ENTRIES, SIZE_LOG_ARCHIVE_ENTRIES 
 
 import asyncio
+
 from aiofiles import open as aopen
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 @time_trigger('startup')
@@ -25,7 +26,7 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
     async with aopen(log_file, 'r') as log_file_object:
       log_content = log_file_object.readlines()
 
-    if ((size_log_entries > 0) and (len(log_content) > (1.5 * size_log_entries))): 
+    if ((size_log_entries > 0) and (len(log_content) > (1.25 * size_log_entries))): 
       log_to_archive = log_content[:-size_log_entries]
       async with aopen(f"{log_file}.archive", 'a') as archive_file_object:
         await archive_file_object.writelines(log_to_archive)
@@ -42,7 +43,7 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
     async with aopen(log_file, 'w+') as log_file_object:
       await log_file_object.writelines(log_trunc)
       if log_trunc != log_content: 
-        await log_file_object.writelines(f"\n\n # {size_log_entries} at {datetime.now()}")
+        await log_file_object.writelines(f"\n\n # {len(log_content)} / {size_log_entries} at {datetime.now()}")
 
   except Exception as e:
     log.error(e)

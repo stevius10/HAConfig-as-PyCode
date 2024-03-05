@@ -1,7 +1,6 @@
 from constants import GIT_REPO_URL, GIT_BRANCH_NAME, GIT_BRANCH_TARGET, GIT_COMMIT_MESSAGE, GIT_CREDENTIALS_KEY, GIT_CREDENTIALS_CONFIG, SERVICE_CRON_GIT
 from log import Log
 
-import datetime
 import subprocess
 
 @service
