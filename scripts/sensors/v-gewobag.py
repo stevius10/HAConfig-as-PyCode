@@ -15,7 +15,7 @@ contentWebsite = parserWebsite.find(class_ = 'filtered-mietangebote')
 if contentWebsite is not None: 
 	
 	itemsWebsite = contentWebsite.find_all(class_='angebot-content')
-	# print(itemsWebsite)
+	print(itemsWebsite)
 	
 	'''
 	<tr class="angebot-address">
@@ -43,7 +43,7 @@ if contentWebsite is not None:
 	for itemWebsite in itemsWebsite: 
 		
 		if itemWebsite is not None: 
-			
+			print(itemsWebsite)
 			tmp = itemWebsite.find('address', class_=None); address = tmp.get_text().replace('\t', '').replace('Berlin/', '') if tmp else None 
 			tmp = itemWebsite.find(class_='angebot-area').find('td'); area =  tmp.get_text() if tmp else None
 			tmp = itemWebsite.find(class_='angebot-kosten').find('td'); rent =  tmp.get_text() if tmp else None
@@ -51,5 +51,9 @@ if contentWebsite is not None:
 			if address is not None:
 				item = "{} ({}, {})".format(address, area, rent).replace('\n', '')
 				items.append(item)
-	
+
+else:
+  if not parserWebsite: 
+    print("Error parse")
+    
 print(', '.join(map(str, items)))
