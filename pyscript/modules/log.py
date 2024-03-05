@@ -8,9 +8,7 @@ import subprocess
 from datetime import datetime
 
 class Log:
-  
-  format = logging.Formatter('%(asctime)s: %(message)s')
-  
+    
   def __init__(self, name):
     # pyscript.log_truncate(log_file=log_file, size_log_entries=0)
     
@@ -21,8 +19,11 @@ class Log:
     self.logger = logging.getLogger(self.name)
     self.logger.propagate = False
     self.logger.setLevel(logging.DEBUG)
-    self.logger.addHandler(logging.FileHandler(log_file, mode='w+'))
-    self.log(f"# {datetime.now()}")
+    handler = logging.FileHandler(log_file, mode='w+')
+    format = logging.Formatter('%(asctime)s: %(message)s')
+    handler.setFormatter(format)
+    self.logger.addHandler(handler)
+    self.log("# {}".format(datetime.now()))
     
   def log(self, message=None):
     
@@ -33,7 +34,6 @@ class Log:
     
     if isinstance(message, str):
       if re.search('[a-zA-Z]', message): 
-        message = f"{datetime} {message}"
         self.logger.debug(message)
         self.logs.append(message)
         
