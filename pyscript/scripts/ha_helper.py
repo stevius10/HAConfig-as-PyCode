@@ -26,7 +26,7 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
       log_content = log_file_object.readlines()
 
     if ((size_log_entries > 0) and (len(log_content) > (1.5 * size_log_entries))): 
-      log_to_archive = log[:-size_log_entries]
+      log_to_archive = log_content[:-size_log_entries]
       async with aopen(f"{log_file}.archive", 'a') as archive_file_object:
         await archive_file_object.writelines(log_to_archive)
       async with aopen(f"{log_file}.archive", 'r') as archive_file_object:
@@ -35,7 +35,7 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
       async with aopen(f"{log_file}.archive", 'w') as archive_file_object:
         await archive_file_object.writelines(archive_trunc)
     
-    log_trunc [-size_log_entries:]
+    log_trunc = log_content[-size_log_entries:]
     if size_log_entries == 0:
       log_trunc = ""
       
