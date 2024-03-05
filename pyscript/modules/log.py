@@ -3,8 +3,9 @@ from constants import PATH_LOGS
 import logging
 import re
 import os
-
 import subprocess
+
+from datetime import datetime
 
 class Log:
   
@@ -20,7 +21,8 @@ class Log:
     self.logger = logging.getLogger(self.name)
     self.logger.propagate = False
     self.logger.setLevel(logging.DEBUG)
-    self.logger.addHandler(logging.FileHandler(log_file, mode='w'))
+    self.logger.addHandler(logging.FileHandler(log_file, mode='w+'))
+    self.log(f"# {datetime}")
     
   def log(self, message=None):
     
