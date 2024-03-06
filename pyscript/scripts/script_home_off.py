@@ -60,20 +60,14 @@ def script_off_away():
 @service
 def script_off_air(entity=None, reset=True):
   if entity == None:
-    script_off_air(entity=ENTITIES_AIR, reset=reset)
+    script_off_air(entity=ENTITIES_AIR)
   if isinstance(entity, str):
-    if reset:
-      script_off_reset_air()
-      asyncio.wait(3)
     fan.turn_off(entity)
     humidifier.turn_off(entity)
     switch.turn_off(entity)
   if isinstance(entity, list):
     for item in entity:
-      script_off_air(entity=item, reset=reset)
-
-def script_off_reset_air(entity=None):
-  pass
+      script_off_air(entity=item)
 
 @service
 def script_off_heating(entity=None, away=False):
@@ -143,3 +137,11 @@ def script_off_tv(entity=None):
   if isinstance(entity, list):
     for item in entity:
       script_off_tv(entity=item)
+      
+# Helper
+
+@service
+def turn_off(entity="light.wz_lampe_1"):
+  light.turn_on(entity)
+  log.info(state.get(entity, domain))
+  light.turn_off(entity)

@@ -12,8 +12,8 @@ def expr(entity, expression="", defined=True, log=True):
   
   expr = f"{entity} {expression} {statement_condition_defined}"
   
-  if log: 
-    pyscript.log_state(expr=expr)
+  #if log: 
+    #pyscript.log_state(expr=expr)
     
   return expr
 
