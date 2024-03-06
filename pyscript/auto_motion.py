@@ -25,7 +25,7 @@ def off_motion_factory(entity):
   
   @state_trigger(expr(entity, "off"), state_hold=AUTO_CONFIG_MOTION_TIMEOUT, state_check_now=True)
   def off_motion(var_name=None):
-    if 'var_name' in entities and "off" in entities.get(var_name):
+    if var_name in entities and "off" in entities.get(var_name):
       scene.turn_on(entity_id=entities.get(var_name)["off"], transition=entities.get(var_name)["transition"])
 
   motion_trigger.append(off_motion)
