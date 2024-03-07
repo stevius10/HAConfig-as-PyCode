@@ -20,17 +20,22 @@ template_weather:
         'windy-variant': 'windy-variant',
         'exceptional': 'cloudy'
       } %}
-      
       {% set state = states('sensor.openweathermap_condition') %}
       {% set weather = weather_icon_mapper[state] if state in weather_icon_mapper else 'weather-cloudy' %}
+
+      <table cellspacing="0"><tbody>
+      <tr>
+        <td rowspan="2"><font color="#e3e3e3"><ha-icon icon='mdi:weather-{{ weather }}' style="margin: 15px;"> &nbsp; &nbsp; &nbsp; &nbsp; </ha-icon></font>
+        <td><font size="6.85em">{{ states('sensor.openweathermap_temperature') | float(0) | round(1) | replace ('.', ',') }}</font> <sup>°C</sup></td>
+       </td>
+      </tr>
+      <tr>
+        <td><font size="3.6em">{{ states('sensor.openweathermap_humidity') }}</font> % &nbsp;</td>
+       </tr>
+      </tbody></table>
       
-      <font size="6.9em">{{ states('sensor.openweathermap_temperature') | float(0) | round(1) | replace ('.', ',') }}</font> <sup>°C</sup>&nbsp; &nbsp;<font size="3em">{{ states('sensor.openweathermap_humidity') }}</font> <ha-icon icon='mdi:weather-{{ weather }}'></ha-icon> %
     card_mod:
-      style: |
-        ha-card {
-          text-align: right;
-          --ha-card-background: none;
-        }
+      style: 'ha-card { text-align: right; --ha-card-background: none; --mdc-icon-size: 40px; }'
 
 template_forecast:
   card:

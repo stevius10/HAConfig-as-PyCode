@@ -23,8 +23,7 @@ def log_truncate(trigger_type=None, log_file=PATH_LOG_HA, size_log_entries=SIZE_
     if trigger_type == "time": 
       system_log.clear()
       size_log_entries = 0
-      log.error(trigger_type)
-  
+
     async with aopen(log_file, 'r') as log_file_object:
       log_content = log_file_object.readlines()
 

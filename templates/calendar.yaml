@@ -5,9 +5,10 @@ template_calendar:
     card_mod: 
       style: |
         ha-card {
-        bottom: 2px;
-            border-radius: 0px;
-            background-image: linear-gradient(to right, rgba(67, 67, 67, 1.0) 45%, rgba(55, 55, 55, 1.0)) !important;
+          bottom: 22px;
+          background-image: linear-gradient(to right, rgba(67, 67, 67, 1.0) 45%, rgba(55, 55, 55, 1.0)) !important;
+          overflow: hidden;
+          padding-top: 4px;
         }
     cards:
     - type: custom:atomic-calendar-revive
@@ -24,7 +25,7 @@ template_calendar:
       showHiddenText: false
       showRelativeTime: false
       showWeekDay: true
-      titleLength: 26
+      titleLength: 23 # one line on mobile
       noEventText: ""
       maxEventCount: 4
       maxDaysToShow: 1
@@ -36,7 +37,7 @@ template_calendar:
           ha-card {  
             border-radius: 0px;  
             bottom: 2px;
-            margin: 4px 2px !important;
+            margin: 5px 5px !important;
             padding: 0px !important;
             box-shadow: rgba(255, 255, 255, 0.2) 0px 10px 15px -3px inset, rgba(255, 255, 255, 0.2) 0px 4px 6px -4px;
           }
@@ -59,6 +60,7 @@ template_calendar:
             padding: 1px 1px 0px 0px !important; 
             text-align: left !important; 
             justify-content: bottom !important;
+            width: 17px;
           }  
           .event-date-week-day { 
             color: rgba(255, 255, 255, 0.4) !important;

@@ -62,9 +62,9 @@ def script_off_air(entity=None, reset=True):
   if entity == None:
     script_off_air(entity=ENTITIES_AIR)
   if isinstance(entity, str):
-    fan.turn_off(entity)
-    humidifier.turn_off(entity)
-    switch.turn_off(entity)
+    turn_off(entity_id=entity)
+    turn_off(entity_id=entity)
+    turn_off(entity_id=entity)
   if isinstance(entity, list):
     for item in entity:
       script_off_air(entity=item)
@@ -75,7 +75,7 @@ def script_off_heating(entity=None, away=False):
     script_off_heating(entity=ENTITIES_HEATING, away=away)
   if isinstance(entity, str):
     if not away: 
-      clima.turn_off(entity)
+      turn_off(entity_id=entity)
     else:
       clima.set_present_mode(str, preset_mode="AWAY")
   if isinstance(entity, list):
@@ -87,7 +87,7 @@ def script_off_media(entity=None):
   if entity == None:
     script_off_media(entity=ENTITIES_MEDIA)
   if isinstance(entity, str):
-    media_player.turn_off(entity)
+    turn_off(entity_id=entity)
   if isinstance(entity, list):
     for item in entity:
       script_off_media(entity=item)
@@ -98,9 +98,9 @@ def script_off_scenes(entity=None, away=False):
     script_off_scenes(entity=ENTITIES_SCENES)
   if isinstance(entity, str):
     if not away: 
-      script.turn_on(entity)
+      turn_off(entity_id=entity)
     else:
-      scene.turn_on(entity, transition=CONFIG_AWAY_TRANSITION)
+      turn_off(entity, transition=CONFIG_AWAY_TRANSITION)
   if isinstance(entity, list):
     for item in entity:
       script_off_scenes(entity=item)
@@ -110,7 +110,7 @@ def script_off_scripts(entity=None):
   if entity == None:
     script_off_scripts(entity=ENTITIES_SCRIPTS)
   if isinstance(entity, str):
-    script.turn_off(entity)
+    turn_off(entity_id=entity)
   if isinstance(entity, list):
     for item in entity:
       script_off_scripts(entity=item)
@@ -120,7 +120,7 @@ def script_off_switches(entity=None):
   if entity == None:
     script_off_switches(entity=ENTITIES_SWITCHES)
   if isinstance(entity, str):
-    switch.turn_off(entity)
+    turn_off(entity_id=entity)
   if isinstance(entity, list):
     for item in entity:
       script_off_switches(entity=item)
@@ -131,7 +131,7 @@ def script_off_tv(entity=None):
     script_off_tv(entity=ENTITIES_TV)
   if isinstance(entity, str):
     try: 
-      androidtv.adb_command(entity_id=entity)
+      turn_off(entity_id=entity)
     except Exception: 
       webostv.command(entity_id=entity)
   if isinstance(entity, list):
@@ -142,6 +142,4 @@ def script_off_tv(entity=None):
 
 @service
 def turn_off(entity="light.wz_lampe_1"):
-  light.turn_on(entity)
-  log.info(state.get(entity, domain))
-  light.turn_off(entity)
+  homeassistant.turn_off(state.get(entity, domain))

@@ -21,14 +21,14 @@ PATH_LOGS = "/config/logs/"
 SIZE_LOG_ENTRIES = 30
 SIZE_LOG_ARCHIVE_ENTRIES = 500
 
-SERVICE_CRON_GOOGLE_DRIVE = "cron(0 3 * * *)"
+SERVICE_GOOGLE_DRIVE_CRON = "cron(0 3 * * *)"
 SERVICE_GOOGLE_DRIVE_LOCAL_FOLDER ="/share/Extern"
 SERVICE_GOOGLE_DRIVE_REMOTE_FOLDER ="1-vl3qWDz5Fm8QtiQFBx-4uuwRO7dHls1"
 SERVICE_GOOGLE_DRIVE_TRASH_FOLDER ="19q7mSrN0iFBhicZ6PESPgshyRFeuAQpe"
 SERVICE_GOOGLE_DRIVE_IGNORE_FOLDERS = '[".Spotlight-V100", "Downloads", "Sicherungen"]'
 SERVICE_GOOGLE_DRIVE_CREDENTIALS_FILE = "/config/.storage/google/google_auth.json"
 
-SERVICE_CRON_GIT = "cron(0 2 * * *)"
+SERVICE_GIT_CRON = "cron(0 2 * * *)"
 SERVICE_GIT_REPO_URL="git@github.com/stevius10/home-assistant-config.git"
 SERVICE_GIT_REPO_BRANCH="feature/ha-config-changes"
 SERVICE_GIT_REPO_TARGET="develop"

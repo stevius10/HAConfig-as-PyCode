@@ -5,7 +5,7 @@ template_bar:
       style: |
         ha-card { --ha-card-background: rgba(61, 61, 61, 0.6); }
         ha-card div { 
-        --ha-card-background: none;
+          --ha-card-background: none;
           margin: 5px;
           letter-spacing: 1.1px;
           font-weight: 300;

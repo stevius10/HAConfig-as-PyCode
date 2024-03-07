@@ -27,27 +27,20 @@ template_card_art:
           width: 100%
           height: 100%
       
-      # Weather
-      - type: custom:decluttering-card
-        template: template_weather
-        style:
-          top: 42%
-          right: 2%
-          transform: translate(0%, -50%)
-
       # Badges
       - type: custom:decluttering-card
         template: template_badges
         style:
-          top: 70%
+          top: 55%
           right: -1%
           left: -1%
           transform: translate(0%, -50%)
+          'margin': '50px !important'
+          'padding': '50px !important'
           '--label-badge-text-color': rgb(80, 80, 80)
           '--label-badge-red': rgb(80, 80, 80)
           '--label-badge-background-color': rgb(227, 227, 227)
-          'margin': '50px !important'
-          'padding': '50px !important'
+          
       # Forecast
       - type: custom:decluttering-card
         template: template_forecast

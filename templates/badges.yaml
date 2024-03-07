@@ -120,7 +120,7 @@ template_badges:
           }
         tap_action:
           action: call-service
-          service: script.s_aus
+          service: pyscript.script_off
 
       # Luftreiniger
       - entity: sensor.luftreiniger_geschwindigkeit

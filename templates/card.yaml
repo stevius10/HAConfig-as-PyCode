@@ -23,7 +23,17 @@ template_card:
         top: 50%
         width: 100%
         height: 100%
-
+    
+    # Inject
+    - type: custom:decluttering-card
+      template: 'template_[[inject]]'
+      style:
+        top: '[[inject_top]]'
+        right: '[[inject_right]]'
+        left: '[[inject_left]]'
+        bottom: '[[inject_bottom]]'
+        transform: '[[inject_transform]]'
+        
     # Thermostat
     - type: custom:decluttering-card
       template: template_clima
@@ -34,7 +44,7 @@ template_card:
         right: -1%
         left: -1%
         transform: translate(0%, -50%)
-
+        
     # Header
     - type: custom:hui-element
       card_type: custom:decluttering-card
@@ -60,6 +70,25 @@ template_card:
         left: -3%
         right: -3%
         transform: translate(0%, -0%)
-
+        
+  default: 
+    - inject: 'empty'
+    - inject_top: none
+    - inject_right: none
+    - inject_left: none
+    - inject_bottom: none
+    - inject_transform: translate(0%, -50%)
+    
   variables: 
     - room: '[[room]]'
+    - inject: '[[empty]]'
+    - inject_top: '[[inject_top]]'
+    - inject_right: '[[inject_right]]'
+    - inject_left: '[[inject_left]]'
+    - inject_bottom: '[[inject_bottom]]'
+    - inject_transform: '[[inject_transform]]'
+
+template_empty:
+  card: 
+    type: markdown
+    content: ' '

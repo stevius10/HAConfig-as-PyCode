@@ -1,11 +1,11 @@
-from constants import SERVICE_CRON_GIT, SERVICE_GIT_REPO_URL, \
+from constants import SERVICE_GIT_CRON, SERVICE_GIT_REPO_URL, \
 SERVICE_GIT_REPO_BRANCH, SERVICE_GIT_REPO_TARGET, SERVICE_GIT_REPO_MESSAGE, \
 SERVICE_GIT_SETTINGS_CREDENTIALS, SERVICE_GIT_SETTINGS_CONFIG
 from log import Log
 import subprocess
 
 @service
-@time_trigger(SERVICE_CRON_GIT)
+@time_trigger(SERVICE_GIT_CRON)
 def service_git_sync(repo_url=SERVICE_GIT_REPO_URL, branch_name=SERVICE_GIT_REPO_BRANCH, branch_target=SERVICE_GIT_REPO_TARGET, key_path=SERVICE_GIT_SETTINGS_CREDENTIALS, config_path=SERVICE_GIT_SETTINGS_CONFIG, commit_message=SERVICE_GIT_REPO_MESSAGE):
   
   util = Log(pyscript.get_global_ctx())

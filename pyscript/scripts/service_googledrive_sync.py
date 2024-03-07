@@ -1,8 +1,6 @@
-from constants import GIT_REPO_URL, GIT_BRANCH_NAME, GIT_BRANCH_TARGET, \
- GIT_COMMIT_MESSAGE, GIT_CREDENTIALS_KEY, GIT_CREDENTIALS_CONFIG, \
- GOOGLE_DRIVE_LOCAL_FOLDER, GOOGLE_DRIVE_IGNORE_FOLDERS, \
- GOOGLE_DRIVE_REMOTE_FOLDER, GOOGLE_DRIVE_TRASH_FOLDER, \
- GOOGLE_DRIVE_CREDENTIALS_FILE, SERVICE_CRON_GOOGLE_DRIVE
+from constants import SERVICE_GOOGLE_DRIVE_LOCAL_FOLDER, SERVICE_GOOGLE_DRIVE_IGNORE_FOLDERS, \
+ SERVICE_GOOGLE_DRIVE_REMOTE_FOLDER, SERVICE_GOOGLE_DRIVE_TRASH_FOLDER, \
+ SERVICE_GOOGLE_DRIVE_CREDENTIALS_FILE, SERVICE_GOOGLE_DRIVE_CRON
 from log import Log
 
 import os
@@ -23,11 +21,11 @@ util = None
 
 class Drive():
   
-  def __init__(self, google_drive_credentials_file):
+  def __init__(self, service_google_drive_credentials_file):
     creds = None
     credentials = Credentials.from_service_account_file(google_drive_credentials_file, scopes=["https://www.googleapis.com/auth/drive"])
     self.__service = build('drive', 'v3', credentials=credentials)
-    self.google_drive_ignore_folders = GOOGLE_DRIVE_IGNORE_FOLDERS
+    self.google_drive_ignore_folders = SERVICE_GOOGLE_DRIVE_IGNORE_FOLDERS
   def list_files(self, folder_id):
     response = self.__service.files().list(
       q=f"'{folder_id}' in parents", fields='files(id,name,modifiedTime,mimeType,size)'
@@ -111,7 +109,7 @@ class Drive():
     return modified
 
   def upload_folder(self, foldername, folder_id):
-    if foldername in google_drive_ignore_folders:
+    if foldername in SERVICE_GOOGLE_drive_ignore_folders:
       util.log("[skipped] Ignored folder: {}", foldername)
       return False
     
@@ -245,12 +243,12 @@ class Utils():
     return datetime_object.isoformat("T") + "Z"
 
 @service
-@time_trigger(SERVICE_CRON_GOOGLE_DRIVE)
+@time_trigger(SERVICE_GOOGLE_DRIVE_CRON)
 def service_googledrive_sync():
   util = Log(pyscript.get_global_ctx())
   try:
     drive = Drive(google_drive_credentials_file=GOOGLE_DRIVE_CREDENTIALS_FILE)
-    drive.synchronize(GOOGLE_DRIVE_LOCAL_FOLDER, GOOGLE_DRIVE_REMOTE_FOLDER)
+    drive.synchronize(GOOGLE_DRIVE_LOCAL_FOLDER, SERVICE_GOOGLE_DRIVE_REMOTE_FOLDER)
   except Exception as e:
     log.error(e)
   finally:
