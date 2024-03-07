@@ -9,12 +9,48 @@ template_badges:
       - type: entity-filter
         entities:
           - entity: media_player.wohnzimmer
-          - entity: media_player.schlafzimmer
           - entity: media_player.bad
           - entity: media_player.kueche
+          # - entity: media_player.schlafzimmer
         state_filter:
           - playing
-      
+          
+      # Timer
+      - entity: media_player.schlafzimmer
+        tap_action:
+          action: call-service
+          service: timer.finish
+          target:
+            entity_id: timer.h_timer_schlafzimmer
+        card_mod:
+          style: | 
+            :host { {% if states('timer.h_timer_schlafzimmer') != 'idle' %}
+              display: inline-block; {% else %}display: none;{% endif %} }
+              
+      - entity: timer.h_timer_luftreiniger
+        name: Reiniger
+        tap_action:
+          action: call-service
+          service: timer.finish
+          target:
+            entity_id: timer.h_timer_luftreiniger
+        card_mod:
+          style: | 
+            :host { {% if states('timer.h_timer_luftreiniger') != 'idle' %}
+              display: inline-block; {% else %}display: none;{% endif %} }
+
+      - entity: timer.h_timer_sz_ventilator
+        name: Ventilator
+        tap_action:
+          action: call-service
+          service: timer.finish
+          target:
+            entity_id: timer.h_timer_sz_ventilator
+        card_mod:
+          style: | 
+            :host { {% if states('timer.h_timer_sz_ventilator') != 'idle' %}
+              display: inline-block; {% else %}display: none;{% endif %} }
+              
       # AdGuard
       - entity: sensor.adguard_home_dns_abfragen_blockiert
         name: DNS-Filter
@@ -51,7 +87,7 @@ template_badges:
           action: navigate
           navigation_path: /cebe7a76_hassio_google_drive_backup/ingress
   
-      - entity: script.s_aus
+      - entity: sensor.none
         name: Aus
         style: |
           :host { 
@@ -70,7 +106,7 @@ template_badges:
               states('switch.g_tischlampe') == "on" or
               states('fan.sz_ventilator') == "on" or         
               states('switch.sofa') == "on" or
-              states('switch.couch') == "on" or
+              states('switch.heizdecke') == "on" or
               states('switch.bett') == "on" or
   
               states('media_player.kueche') == "playing" or
@@ -86,41 +122,6 @@ template_badges:
           action: call-service
           service: script.s_aus
 
-      # Timer
-      - entity: timer.h_timer_sz_ventilator
-        name: Ventilator
-        tap_action:
-          action: call-service
-          service: timer.finish
-          target:
-            entity_id: timer.h_timer_sz_ventilator
-        card_mod:
-          style: | 
-            :host { 
-              {% if states('timer.h_timer_sz_ventilator') != 'idle' %}
-                display: inline-block;
-              {% else %}
-                display: none;
-              {% endif %} 
-            }
-
-      - entity: timer.h_timer_luftreiniger
-        name: Reiniger
-        tap_action:
-          action: call-service
-          service: timer.finish
-          target:
-            entity_id: timer.h_timer_luftreiniger
-        card_mod:
-          style: | 
-            :host { 
-              {% if states('timer.h_timer_luftreiniger') != 'idle' %}
-                display: inline-block;
-              {% else %}
-                display: none;
-              {% endif %} 
-            }
-      
       # Luftreiniger
       - entity: sensor.luftreiniger_geschwindigkeit
         name: Reinigen

@@ -127,7 +127,8 @@ template:
                 ( states('sensor.openweathermap_temperature') | float | round(1)) %}
               {% if diff > 0 %}+{% else %}-{% endif %}{{ diff | round(0) | replace("-", "") }}°
             {% endif %}
-
+            
+  - sensor:
     - name: "SZ-Temperatur-Veränderung"
       unique_id: sz_temperature_change
       state: >
@@ -186,8 +187,7 @@ template:
             ) / 5) + 1 | float | round(1) %}
           {{ avg_temp | float }}
         {% endif %}
-      # unit_of_measurement: "°C"
-      
+
   - sensor:
     - name: "Temperature-Fix-Down"
       unique_id: temperature_fix_down
@@ -206,4 +206,7 @@ template:
             ) / 5) - 1 | float | round(1) %}
           {{ avg_temp | float }}
         {% endif %}
-      # unit_of_measurement: "°C"
+  - sensor:
+    - name: "None"
+      unique_id: "none"
+      state: ""

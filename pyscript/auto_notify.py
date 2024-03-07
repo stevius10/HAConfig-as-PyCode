@@ -17,17 +17,16 @@ entities = {
 @state_trigger(expr(list(entities.keys())))
 def notify_immo(**kwargs):
   if(kwargs.get("old_value") not in HA_STATES_UNDEFINED):
-    data = {
+    notify.mobile_app_iphone(data={
       "message": kwargs.get("var_name").replace("sensor.", ""), 
       "data": {
         "shortcut": {
-          name: "Notification-Monitor",
-          input: entities[kwargs.get("var_name")],
-          ignore_result: "ignore"
+          "name": "Notification-Monitor",
+          "input": entities[kwargs.get("var_name")],
+          "ignore_result": "ignore"
         }
       }
-    }
-    notify.mobile_app_iphone(data)
+    })
 
 # @time_trigger("cron(30 16 * * 1-5)")
 def update_sensors(): 

@@ -39,7 +39,7 @@ template_card_art:
       - type: custom:decluttering-card
         template: template_badges
         style:
-          top: 63%
+          top: 70%
           right: -1%
           left: -1%
           transform: translate(0%, -50%)

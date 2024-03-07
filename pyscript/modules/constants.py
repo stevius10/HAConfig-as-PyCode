@@ -1,36 +1,37 @@
 AUTO_CONFIG_DEFAULT_RESET_DELAY = 600
+
 AUTO_CONFIG_MOTION_SUNSET_DIFF = 30
 AUTO_CONFIG_MOTION_TRANSITION = 20
 AUTO_CONFIG_MOTION_TIMEOUT = 60
 
+AUTO_CONFIG_TIMER_DURATION_LUFTREINIGER = 5400
+AUTO_CONFIG_TIMER_DURATION_SZ_VENTILATOR = 5400
+AUTO_CONFIG_TIMER_DURATION_SCHLAFZIMMER = 5400
+
 EVENT_FOLDER_WATCHER = "folder_watcher"
-
-GOOGLE_DRIVE_LOCAL_FOLDER ="/share/Extern"
-GOOGLE_DRIVE_REMOTE_FOLDER ="1-vl3qWDz5Fm8QtiQFBx-4uuwRO7dHls1"
-GOOGLE_DRIVE_TRASH_FOLDER ="19q7mSrN0iFBhicZ6PESPgshyRFeuAQpe"
-GOOGLE_DRIVE_IGNORE_FOLDERS = '[".Spotlight-V100", "Downloads", "Sicherungen"]'
-GOOGLE_DRIVE_CREDENTIALS_FILE = "/config/.storage/google/google_auth.json"
-
-GIT_CREDENTIALS_KEY = "/config/.storage/git/id_rsa"
-GIT_CREDENTIALS_CONFIG="/config/.storage/git/.gitconfig"
-
-GIT_REPO_URL="git@github.com/stevius10/home-assistant-config.git"
-GIT_BRANCH_NAME="feature/ha-config-changes"
-GIT_BRANCH_TARGET="develop"
-GIT_COMMIT_MESSAGE="auto/sync"
 
 HA_STATE_NONE = "None"
 HA_STATE_UNAVAILABLE = "unavailable"
 HA_STATE_UNKNOWN = "unknown"
-
 HA_STATES_UNDEFINED = [HA_STATE_NONE, HA_STATE_UNAVAILABLE, HA_STATE_UNKNOWN]
 
 PATH_CONSTANTS = "/config/pyscript/modules/constants.py"
-PATH_LOGS = "/config/logs/"
 PATH_LOG_HA = "/config/home-assistant.log"
+PATH_LOGS = "/config/logs/"
+SIZE_LOG_ENTRIES = 30
+SIZE_LOG_ARCHIVE_ENTRIES = 500
+
+SERVICE_CRON_GOOGLE_DRIVE = "cron(0 3 * * *)"
+SERVICE_GOOGLE_DRIVE_LOCAL_FOLDER ="/share/Extern"
+SERVICE_GOOGLE_DRIVE_REMOTE_FOLDER ="1-vl3qWDz5Fm8QtiQFBx-4uuwRO7dHls1"
+SERVICE_GOOGLE_DRIVE_TRASH_FOLDER ="19q7mSrN0iFBhicZ6PESPgshyRFeuAQpe"
+SERVICE_GOOGLE_DRIVE_IGNORE_FOLDERS = '[".Spotlight-V100", "Downloads", "Sicherungen"]'
+SERVICE_GOOGLE_DRIVE_CREDENTIALS_FILE = "/config/.storage/google/google_auth.json"
 
 SERVICE_CRON_GIT = "cron(0 2 * * *)"
-SERVICE_CRON_GOOGLE_DRIVE = "cron(0 3 * * *)"
-
-SIZE_LOG_ENTRIES = 50
-SIZE_LOG_ARCHIVE_ENTRIES = 500
+SERVICE_GIT_REPO_URL="git@github.com/stevius10/home-assistant-config.git"
+SERVICE_GIT_REPO_BRANCH="feature/ha-config-changes"
+SERVICE_GIT_REPO_TARGET="develop"
+SERVICE_GIT_REPO_MESSAGE="auto/sync"
+SERVICE_GIT_SETTINGS_CREDENTIALS = "/config/.storage/git/id_rsa"
+SERVICE_GIT_SETTINGS_CONFIG="/config/.storage/git/.gitconfig"

@@ -24,8 +24,7 @@ template_weather:
       {% set state = states('sensor.openweathermap_condition') %}
       {% set weather = weather_icon_mapper[state] if state in weather_icon_mapper else 'weather-cloudy' %}
       
-      <font size="6.9em">{{ states('sensor.openweathermap_temperature') | float(0) | round(1) | replace ('.', ',') }}</font> <sup>°C</sup>
-      <ha-icon icon='mdi:weather-{{ weather }}'></ha-icon>&nbsp;&nbsp;<font size="3em">{{ states('sensor.openweathermap_humidity') }}</font> %
+      <font size="6.9em">{{ states('sensor.openweathermap_temperature') | float(0) | round(1) | replace ('.', ',') }}</font> <sup>°C</sup>&nbsp; &nbsp;<font size="3em">{{ states('sensor.openweathermap_humidity') }}</font> <ha-icon icon='mdi:weather-{{ weather }}'></ha-icon> %
     card_mod:
       style: |
         ha-card {
