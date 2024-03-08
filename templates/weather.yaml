@@ -47,25 +47,29 @@ template_forecast:
     card_mod:
       style: |
         ha-card {
-          --ha-card-background: rgba(61, 61, 61, 0.7);
-          padding: 0px !important; 
+          bottom: 2px;
+          margin-bottom: -11px;
+          padding: 3px !important;
           font-size: 8px;
+          background-image: linear-gradient(to right, rgba(44, 44, 44, 1.0) 45%, rgba(51, 51, 51, 1.0)) !important;
         }
         ha-card div {
           padding: 0px !important; 
         }
         ha-card .forecast .temp {
-          font-size: 11px;
+          font-size: 13px;
+          font-weight: bold;
           margin: 0px !important; 
-          padding-left: 3px !important;
+          padding-left: 16px !important; #3
           padding-bottom: 2px !important;
         }
         ha-card .forecast-image-icon {
           padding: 0px !important;
-          padding-right: 1px !important;
+          padding-right: 10px !important;
         }
         ha-card .forecast-image-icon > * {
           width: 20px;
           height: 20px;
-          margin: 0px !important;
+          margin: -7px 0 -11px 0; !important;
+          overflow: hidden;
         }

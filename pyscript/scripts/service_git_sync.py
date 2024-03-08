@@ -15,7 +15,7 @@ def service_git_sync(repo_url=SERVICE_GIT_REPO_URL, branch_name=SERVICE_GIT_REPO
     f"eval $(ssh-agent); ssh-add {key_path}", 
     f"git add .",
     f"git commit -m '{commit_message}'", 
-    f"git push origin {branch_name}", 
+    # f"git push origin {branch_name}", 
     f"git push -o merge_request.create -o merge_request.target={branch_target}"
   ]
   

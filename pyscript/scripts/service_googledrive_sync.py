@@ -23,7 +23,7 @@ class Drive():
   
   def __init__(self, service_google_drive_credentials_file):
     creds = None
-    credentials = Credentials.from_service_account_file(google_drive_credentials_file, scopes=["https://www.googleapis.com/auth/drive"])
+    credentials = Credentials.from_service_account_file(service_google_drive_credentials_file, scopes=["https://www.googleapis.com/auth/drive"])
     self.__service = build('drive', 'v3', credentials=credentials)
     self.google_drive_ignore_folders = SERVICE_GOOGLE_DRIVE_IGNORE_FOLDERS
   def list_files(self, folder_id):

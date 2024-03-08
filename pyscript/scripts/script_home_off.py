@@ -1,4 +1,4 @@
-CONFIG_AWAY_TRANSITION = 90
+from constants import AUTO_CONFIG_OFF_AWAY_TRANSITION
 
 ENTITIES_AIR = [
   "humidifier.luftbefeuchter", 
@@ -14,18 +14,18 @@ ENTITIES_HEATING = [
 ]
 
 ENTITIES_MEDIA= [
-  "media_player.bad"
-  "media_player.kueche"
-  "media_player.schlafzimmer"
-  "media_player.wohnzimmer"
+  "media_player.bad",
+  "media_player.kueche",
+  "media_player.schlafzimmer",
+  "media_player.wohnzimmer",
   "media_player.uberall"
 ]
 
-ENTITIES_SCENES = [
-  "scene.wz_aus",
-  "scene.sz_aus",
-  "scene.g_aus",
-  "scene.k_aus"
+ENTITIES_LIGHT = [
+  "light.wz_beleuchtung",
+  "light.sz_beleuchtung",
+  "light.k_beleuchtung",
+  "light.g_beleuchtung"
 ]
 
 ENTITIES_SCRIPTS = [
@@ -61,13 +61,9 @@ def script_off_away():
 def script_off_air(entity=None, reset=True):
   if entity == None:
     script_off_air(entity=ENTITIES_AIR)
-  if isinstance(entity, str):
-    turn_off(entity_id=entity)
-    turn_off(entity_id=entity)
-    turn_off(entity_id=entity)
   if isinstance(entity, list):
     for item in entity:
-      script_off_air(entity=item)
+      turn_off(entity_id=entity)
 
 @service
 def script_off_heating(entity=None, away=False):
@@ -86,31 +82,30 @@ def script_off_heating(entity=None, away=False):
 def script_off_media(entity=None):
   if entity == None:
     script_off_media(entity=ENTITIES_MEDIA)
-  if isinstance(entity, str):
-    turn_off(entity_id=entity)
   if isinstance(entity, list):
     for item in entity:
       script_off_media(entity=item)
 
 @service
-def script_off_scenes(entity=None, away=False):
+def script_off_lights(entity=None, away=False):
   if entity == None:
     script_off_scenes(entity=ENTITIES_SCENES)
   if isinstance(entity, str):
     if not away: 
-      turn_off(entity_id=entity)
+      scene.turn_off(entity_id=entity)
     else:
-      turn_off(entity, transition=CONFIG_AWAY_TRANSITION)
+      scene.turn_off(entity, transition=CONFIG_AWAY_TRANSITION)
   if isinstance(entity, list):
-    for item in entity:
-      script_off_scenes(entity=item)
+    for item in entity[:-1]:
+      turn_off(entity=item)
+    if away:
+      task.sleep(AUTO_CONFIG_OFF_AWAY_TRANSITION)
+    turn_off(entity[-1])
 
 @service
 def script_off_scripts(entity=None):
   if entity == None:
     script_off_scripts(entity=ENTITIES_SCRIPTS)
-  if isinstance(entity, str):
-    turn_off(entity_id=entity)
   if isinstance(entity, list):
     for item in entity:
       script_off_scripts(entity=item)
@@ -119,8 +114,6 @@ def script_off_scripts(entity=None):
 def script_off_switches(entity=None):
   if entity == None:
     script_off_switches(entity=ENTITIES_SWITCHES)
-  if isinstance(entity, str):
-    turn_off(entity_id=entity)
   if isinstance(entity, list):
     for item in entity:
       script_off_switches(entity=item)
@@ -141,5 +134,5 @@ def script_off_tv(entity=None):
 # Helper
 
 @service
-def turn_off(entity_id="light.wz_lampe_1"):
-  homeassistant.turn_off(entity_id)
+def turn_off(entity_id):
+  homeassistant.turn_off(entity_id=entity_id)
