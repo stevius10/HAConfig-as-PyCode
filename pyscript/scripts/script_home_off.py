@@ -141,5 +141,5 @@ def script_off_tv(entity=None):
 # Helper
 
 @service
-def turn_off(entity="light.wz_lampe_1"):
-  homeassistant.turn_off(state.get(entity, domain))
+def turn_off(entity_id="light.wz_lampe_1"):
+  homeassistant.turn_off(entity_id)
