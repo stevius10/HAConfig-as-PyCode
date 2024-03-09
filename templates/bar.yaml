@@ -155,11 +155,11 @@ template_data_footer_sz:
       template: template_bar_footer_button
       variables: 
         - entity: light.sz_stehlampe
-    - type: custom:decluttering-card
-      template: template_bar_footer_button
-      variables: 
-        - entity: switch.sz_luftung
-        # - icon_height: 22
+    # - type: custom:decluttering-card
+    #   template: template_bar_footer_button
+    #   variables: 
+    #     - entity: switch.sz_luftung
+    #     # - icon_height: 22
     - type: custom:decluttering-card
       template: template_bar_footer_button
       variables: 
@@ -189,7 +189,7 @@ template_data_header_k:
     - type: custom:decluttering-card
       template: template_bar_header_button
       variables: 
-        - name: gang
+        - name: Gang
         - entity: scene.g_indirekt
     - type: custom:decluttering-card
       template: template_bar_header_button
@@ -225,12 +225,17 @@ template_data_footer_k:
         - entity: fan.luftreiniger
         - icon_height: 22
 
-template_data_header_art: 
-  card: 
-    type: custom:decluttering-card
-    template: template_forecast
+# Art
 
 template_data_footer_art: 
   card: 
-    type: custom:decluttering-card
-    template: template_calendar
+    type: custom:stack-in-card
+    mode: horizontal
+    cards: 
+    - type: button
+      entity: 'script.gh_gehen'
+      icon: mdi:logout
+      icon_height: 25px
+      show_name: false
+      tap_action:
+        action: toggle

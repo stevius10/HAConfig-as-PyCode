@@ -1,3 +1,41 @@
+template_forecast:
+  card:
+    type: custom:hui-element
+    card_type: weather-forecast
+    show_current: false
+    show_forecast: true
+    entity: weather.openweathermap
+    card_mod:
+      style: |
+        ha-card {
+          bottom: 1px;
+          margin-bottom: -12px;
+          padding: 3px 0 6px 0 !important;
+          font-size: 8px;
+          background-image: linear-gradient(to right, rgba(44, 44, 44, 1.0) 45%, rgba(51, 51, 51, 1.0)) !important;
+        }
+        ha-card div {
+          padding: 0px !important; 
+        }
+        ha-card .forecast .temp {
+          font-size: 13px;
+          text-shadow: -1px -1px 1px black;
+          font-weight: bold;
+          margin: 0px !important; 
+          padding-left: 10px !important; #3
+          text-align: left;
+        }
+        ha-card .forecast-image-icon {
+          padding: 0px !important;
+          padding-right: 8px !important;
+        }
+        ha-card .forecast-image-icon > * {
+          width: 20px;
+          height: 20px;
+          margin: -6px 0 -11px 0; !important;
+          overflow: hidden;
+        }
+
 template_weather:
   card:
     type: custom:hui-element
@@ -25,51 +63,21 @@ template_weather:
 
       <table cellspacing="0"><tbody>
       <tr>
-        <td rowspan="2"><font color="#e3e3e3"><ha-icon icon='mdi:weather-{{ weather }}' style="margin: 15px;"> &nbsp; &nbsp; &nbsp; &nbsp; </ha-icon></font>
-        <td><font size="6.85em">{{ states('sensor.openweathermap_temperature') | float(0) | round(1) | replace ('.', ',') }}</font> <sup>°C</sup></td>
+        <td rowspan="2"><ha-icon icon='mdi:weather-{{ weather }}' style="margin: 25px;"></ha-icon> &nbsp; 
+        <td><font size="6.85em">{{ states('sensor.openweathermap_temperature') | float(0) | round(1) | replace ('.', ',') }}</font> <sup>°C</sup>&nbsp;&nbsp;</td>
        </td>
       </tr>
       <tr>
-        <td><font size="3.6em">{{ states('sensor.openweathermap_humidity') }}</font> % &nbsp;</td>
+        <td><font size="3.6em">{{ states('sensor.openweathermap_humidity') }}</font> %</td>
        </tr>
       </tbody></table>
       
     card_mod:
-      style: 'ha-card { text-align: right; --ha-card-background: none; --mdc-icon-size: 40px; }'
-
-template_forecast:
-  card:
-    type: custom:hui-element
-    card_type: weather-forecast
-    show_current: false
-    show_forecast: true
-    entity: weather.openweathermap
-    card_mod:
       style: |
         ha-card {
-          bottom: 2px;
-          margin-bottom: -11px;
-          padding: 3px !important;
-          font-size: 8px;
-          background-image: linear-gradient(to right, rgba(44, 44, 44, 1.0) 45%, rgba(51, 51, 51, 1.0)) !important;
-        }
-        ha-card div {
-          padding: 0px !important; 
-        }
-        ha-card .forecast .temp {
-          font-size: 13px;
-          font-weight: bold;
-          margin: 0px !important; 
-          padding-left: 16px !important; #3
-          padding-bottom: 2px !important;
-        }
-        ha-card .forecast-image-icon {
-          padding: 0px !important;
-          padding-right: 10px !important;
-        }
-        ha-card .forecast-image-icon > * {
-          width: 20px;
-          height: 20px;
-          margin: -7px 0 -11px 0; !important;
-          overflow: hidden;
+          -webkit-backdrop-filter: blur(0.5px);
+          text-align: right; 
+          text-shadow: 2px 2px 8px rgb(52, 52, 52); 
+          box-shadow: rgba(0, 0, 0, 0.25) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+          --mdc-icon-size: 40px; 
         }
