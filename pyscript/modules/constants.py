@@ -12,7 +12,6 @@ PATH_LOGS = "/config/logs/"
 # Log
 LOG_HA_SIZE = 75
 LOG_HA_ARCHIVE_SIZE = 10 * LOG_HA_SIZE
-
 LOG_ARCHIVE_SUFFIX = "1"
 LOG_DEBUG_DEVICES = ["switch.sz_luftung", "fan.luftreiniger"]
 
