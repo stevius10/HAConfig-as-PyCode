@@ -25,4 +25,4 @@ def service_git_sync(repo_url=SERVICE_GIT_REPO_URL, branch_name=SERVICE_GIT_REPO
     except subprocess.CalledProcessError as e:
       logfile.log([e, command, result.stdout, result.stderr])
 
-  return util.finished()
+  return logfile.finished()

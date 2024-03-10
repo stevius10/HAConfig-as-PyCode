@@ -252,4 +252,4 @@ def service_googledrive_sync():
   except Exception as e:
     log.error(e)
   finally:
-    log.error(util.finished())
+    log.error(logfile.finished())
