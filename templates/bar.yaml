@@ -37,7 +37,7 @@ template_bar_footer_button:
       - icon_height: '[[icon_height]]'
       
 template_bar_button: 
-  card: 
+  card: &button
     type: button
     entity: '[[entity]]'
     name: '[[name]]'
@@ -53,6 +53,27 @@ template_bar_button:
   default:
     - icon_height: 23
 
+template_bar_button_art: 
+  card: 
+    <<: *button
+    icon: '[[icon]]'
+    icon_height: 25px
+    tap_action:
+      action: toggle
+    hold_action:
+      action: more-info
+    double_tap_action:
+      action: more-info
+  variables: 
+  - show_name: false
+  - show_icon: true
+  - name: ''
+  - entity: '[[entity]]'
+  - icon: '[[icon]]'
+  - icon_height: '[[icon_height]]'
+  default:
+    - icon_height: 23
+    
 # Model: Entities 
 
 # Wohnzimmer
@@ -232,10 +253,8 @@ template_data_footer_art:
     type: custom:stack-in-card
     mode: horizontal
     cards: 
-    - type: button
-      entity: 'script.gh_gehen'
-      icon: mdi:logout
-      icon_height: 25px
-      show_name: false
-      tap_action:
-        action: toggle
+    - type: custom:decluttering-card
+      template: template_bar_button_art
+      variables: 
+        - entity: pyscript.turn_off
+        - icon: mdi:logout

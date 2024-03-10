@@ -47,11 +47,6 @@ command_line:
   #   url: "http://192.168.178.100:8081"
   #   username: steven
   #   password: !secret ha_addon_password
-  
-  # - sensor: 
-  #     name: V-BWV
-  #     command: "python3 /scripts/sensors/v-bwv.py"
-  #    scan_interval: 86400
 
 ### Binary ###
 

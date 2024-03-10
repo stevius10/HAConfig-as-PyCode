@@ -1,7 +1,7 @@
-import random
-
 from helper import expr
-from constants import HA_STATES_UNDEFINED
+from constants import STATES_HA_UNDEFINED
+
+import random
 
 # Monitor
 
@@ -16,7 +16,7 @@ entities = {
 
 @state_trigger(expr(list(entities.keys())))
 def notify_immo(**kwargs):
-  if(kwargs.get("old_value") not in HA_STATES_UNDEFINED):
+  if(kwargs.get("old_value") not in STATES_HA_UNDEFINED):
     notify.mobile_app_iphone(data={
       "message": kwargs.get("var_name").replace("sensor.", ""), 
       "data": {

@@ -1,4 +1,4 @@
-from constants import HA_STATES_UNDEFINED
+from constants import STATES_HA_UNDEFINED
 
 def expr(entity, expression="", defined=True, log=True): 
   
@@ -7,14 +7,14 @@ def expr(entity, expression="", defined=True, log=True):
   
   if expression.isalnum():
     expression = f"== '{expression}'"
-    
-  statement_condition_defined = f"and {entity} not in {HA_STATES_UNDEFINED}" if defined else ""
-  
+
+  if log: 
+    pyscript.log_state(entity=entity, expr=expression)
+
+  statement_condition_defined = f"and {entity} not in {STATES_HA_UNDEFINED}" if defined else ""
+
   expr = f"{entity} {expression} {statement_condition_defined}"
   
-  if log: 
-    pyscript.log_state(expr=expr)
-    
   return expr
 
   

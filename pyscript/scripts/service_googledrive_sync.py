@@ -1,7 +1,7 @@
 from constants import SERVICE_GOOGLE_DRIVE_LOCAL_FOLDER, SERVICE_GOOGLE_DRIVE_IGNORE_FOLDERS, \
  SERVICE_GOOGLE_DRIVE_REMOTE_FOLDER, SERVICE_GOOGLE_DRIVE_TRASH_FOLDER, \
  SERVICE_GOOGLE_DRIVE_CREDENTIALS_FILE, SERVICE_GOOGLE_DRIVE_CRON
-from log import Log
+from logfile import Logfile
 
 import os
 import io
@@ -17,7 +17,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.service_account import Credentials
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
-util = None
+logfile = None
 
 class Drive():
   
@@ -245,7 +245,7 @@ class Utils():
 @service
 @time_trigger(SERVICE_GOOGLE_DRIVE_CRON)
 def service_googledrive_sync():
-  util = Log(pyscript.get_global_ctx())
+  logfile = Logfile(pyscript.get_global_ctx())
   try:
     drive = Drive(service_google_drive_credentials_file=SERVICE_GOOGLE_DRIVE_CREDENTIALS_FILE)
     drive.synchronize(GOOGLE_DRIVE_LOCAL_FOLDER, SERVICE_GOOGLE_DRIVE_REMOTE_FOLDER)

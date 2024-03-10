@@ -139,11 +139,11 @@ template_badges:
                 --label-badge-background-color': rgb(255, 255, 255);
               {% endif %} 
               
-              {% if states('sensor.luftreiniger_pm2_5') | int > 5 %}
+              {% if states('sensor.luftreiniger_pm2_5') | int(0) | int > 5 %}
                 --label-badge-text-color: #556B2F;
-              {% elif  states('sensor.luftreiniger_pm2_5') | int > 15 %}
+              {% elif  states('sensor.luftreiniger_pm2_5') | int(0) | int > 15 %}
                 --label-badge-text-color: orange;
-              {% elif  states('sensor.luftreiniger_pm2_5') | int > 25 %}
+              {% elif  states('sensor.luftreiniger_pm2_5') | int(0) | int > 25 %}
                 --label-badge-text-color: maroon;
               {% endif %}
             }

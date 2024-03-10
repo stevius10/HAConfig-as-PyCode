@@ -7,7 +7,7 @@ entities = {
   "binary_sensor.k_sensor_occupancy": { "on": "scene.k_normal", "off": "scene.k_aus", "transition": AUTO_CONFIG_MOTION_TRANSITION, "sunset_diff": AUTO_CONFIG_MOTION_SUNSET_DIFF }, 
   "binary_sensor.g_sensor_occupancy": { "on": "scene.g_tisch", "off": "scene.g_aus", "transition": 0 }
 }
-  
+
 # motion: motion detected
 def on_motion_factory(entity):
   @time_active((f"range(sunset - {entities.get(entity)['sunset_diff']}min, sunrise + {entities.get(entity)['sunset_diff']}min)" if 'sunset_diff' in entities.get(entity) else "range(00:00, 24:00)"))

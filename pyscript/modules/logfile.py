@@ -1,4 +1,4 @@
-from constants import PATH_LOGS
+from constants import EVENT_SYSTEM_LOG_TRUNCATED, PATH_LOGS
 
 import logging
 import re
@@ -7,36 +7,38 @@ import subprocess
 
 from datetime import datetime
 
-class Log:
+class Logfile:
     
   def __init__(self, name):
-    # pyscript.log_truncate(log_file=log_file, size_log_entries=0)
-    
     self.name = name.replace("scripts.", "")
-    log_file = os.path.join(PATH_LOGS, self.name) + ".log"
-    
-    self.logs = []
     self.logger = logging.getLogger(self.name)
-    self.logger.propagate = False
-    self.logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler(log_file, mode='w+')
-    format = logging.Formatter('%(asctime)s: %(message)s')
-    handler.setFormatter(format)
+    self.logs = []
+    self.logfile = os.path.join(PATH_LOGS, self.name) + ".log"
+    
+    pyscript.ha_log_truncate(logfile=self.logfile)
+    task.wait_until(event_trigger=EVENT_SYSTEM_LOG_TRUNCATED, timeout=3)
+    
+    handler = logging.FileHandler(self.logfile, mode='w+')
+    handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
+
     self.logger.addHandler(handler)
+    self.logger.setLevel(logging.DEBUG)
+    self.logger.propagate = False
+    
     self.log("# {}".format(datetime.now()))
     
   def log(self, message=None):
     
-    if isinstance(message, list): 
-      for msg in message:
-        self.log(msg.replace("\n", ""))
-      self.log(" ")
-    
-    elif isinstance(message, str):
+    if isinstance(message, str):
       if re.search('[a-zA-Z]', message): 
         self.logger.debug(message)
         self.logs.append(message)
         
+    elif isinstance(message, list): 
+      for msg in message:
+        self.log(msg.replace("\n", ""))
+      self.log(" ")
+    
     elif message == " ":
         self.logger.debug('\n')
         
