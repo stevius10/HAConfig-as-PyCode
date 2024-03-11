@@ -55,6 +55,9 @@ def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_archive
         await archive_file_object.write(archive_content[-size_archive_entries:])
     
     # TODO: remove reapeted read operation
+    log_content = []
+    archive_content = []
+    
     async with aopen(logfile, 'r') as logfile_object:
       log_content = await logfile_object.read()
       log_content = '\n'.join(log_content[::-1][:10]) if log_content is not None else []
