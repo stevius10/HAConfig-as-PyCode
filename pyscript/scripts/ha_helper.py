@@ -36,7 +36,7 @@ def ha_log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_arch
 @service(supports_response="optional")
 def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_archive_entries=0):
     log_content = ""
-    log_trunc = ""
+    log_trunc = []
 
     # logfile_object == NoneType
     async with aopen(logfile, 'w+') as logfile_object:
