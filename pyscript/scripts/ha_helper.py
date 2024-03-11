@@ -41,7 +41,7 @@ def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_archive
     async with aopen(logfile, 'w+') as logfile_object:
       log_content = await logfile_object.read()
       if log_content is not None: 
-        log_trunc = log_content[-size_log_entries:] if log_content is not None and len(log_content) >  size_log_entries else []
+        log_trunc = log_content[-size_log_entries:] if log_content is not None and len(log_content) > size_log_entries else []
         log_trunc.append(f"# {len(log_content)} / {size_log_entries} at {datetime.now()}\n")
         await logfile_object.write(log_trunc)
       
@@ -49,6 +49,8 @@ def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_archive
       log_to_archive = log_content[:-size_log_entries]
       async with aopen(f"{logfile}.{LOG_ARCHIVE_SUFFIX}", 'w+') as archive_file_object:
         archive_content = await archive_file_object.read()
+        if archive_content is None:
+          archive_content = [] 
         archive_content.append(log_to_archive) 
         await archive_file_object.write(archive_content[-size_archive_entries:])
     
