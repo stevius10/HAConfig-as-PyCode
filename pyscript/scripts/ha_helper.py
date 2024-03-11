@@ -41,7 +41,7 @@ def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_archive
     # logfile_object == NoneType
     async with aopen(logfile, 'w+') as logfile_object:
       log_content = await logfile_object.read()
-      log_trunc = log_content[-size_log_entries:] if size_log_entries is not 0 else ""
+      log_trunc = log_content[-size_log_entries:] if log_content is not None and len(log_content) <  size_log_entries else ""
       log_trunc.append(f"# {len(log_content)} / {size_log_entries} at {datetime.now()}\n")
       await logfile_object.writelines(log_trunc)
       
