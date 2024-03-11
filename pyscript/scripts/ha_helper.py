@@ -48,8 +48,8 @@ def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_archive
     if ((size_log_entries > 0) and (len(log_content) > (1.25 * size_log_entries))): 
       log_to_archive = log_content[:-size_log_entries]
       async with aopen(f"{logfile}.{LOG_ARCHIVE_SUFFIX}", 'w+') as archive_file_object:
-        archive_content = archive_file_object.read() + log_to_archive
-        await archive_file_object.writelines(archive_content[-size_archive_entries:])
+        archive_content = (await archive_file_object.read()) + log_to_archive
+        await archive_file_object.write(archive_content[-size_archive_entries:])
     
     # Return
     async with aopen(logfile, 'r') as logfile_object:
