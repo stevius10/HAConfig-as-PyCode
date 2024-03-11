@@ -38,17 +38,18 @@ def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_archive
     log_content = ""
     log_trunc = []
 
-    # logfile_object == NoneType
     async with aopen(logfile, 'w+') as logfile_object:
       log_content = await logfile_object.read()
-      log_trunc = log_content[-size_log_entries:] if log_content is not None and len(log_content) <  size_log_entries else ""
-      log_trunc.append(f"# {len(log_content)} / {size_log_entries} at {datetime.now()}\n")
-      await logfile_object.write(log_trunc)
+      if log_content is not None: 
+        log_trunc = log_content[-size_log_entries:] if log_content is not None and len(log_content) >  size_log_entries else []
+        log_trunc.append(f"# {len(log_content)} / {size_log_entries} at {datetime.now()}\n")
+        await logfile_object.write(log_trunc)
       
     if ((size_log_entries > 0) and (len(log_content) > (1.25 * size_log_entries))): 
       log_to_archive = log_content[:-size_log_entries]
       async with aopen(f"{logfile}.{LOG_ARCHIVE_SUFFIX}", 'w+') as archive_file_object:
-        archive_content = (await archive_file_object.read()) + log_to_archive
+        archive_content = await archive_file_object.read()
+        archive_content.append(log_to_archive) 
         await archive_file_object.write(archive_content[-size_archive_entries:])
     
     # TODO: remove reapeted read operation
