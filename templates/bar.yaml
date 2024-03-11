@@ -161,7 +161,7 @@ template_data_header_sz:
       template: template_bar_header_button
       variables: 
         - name: Aus
-        - entity: scene.wz_aus
+        - entity: scene.sz_aus
 
 template_data_footer_sz: 
   card: 
