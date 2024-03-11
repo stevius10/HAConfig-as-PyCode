@@ -7,7 +7,7 @@ from constants import (
 from logfile import Logfile
 import subprocess
 
-@service
+@service(supports_response="optional")
 # @time_trigger(SERVICE_GIT_CRON)
 def service_git_sync(
     repo_url=SERVICE_GIT_REPO_URL,

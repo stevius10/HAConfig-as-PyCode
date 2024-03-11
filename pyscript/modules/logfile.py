@@ -43,6 +43,5 @@ class Logfile:
         self.logger.debug('\n')
         
   def finished(self):
-    logs = self.logs.replace("\n", "")
-    log.info(f"[executed] {self.name}: {logs}")
-    return { "logs":  logs }
+    log.info(f"[executed] {self.name}: {self.logs}")
+    return { "logs":  self.logs }
