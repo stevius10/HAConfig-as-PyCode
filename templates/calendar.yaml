@@ -1,0 +1,80 @@
+template_calendar:
+  card:
+    type: custom:stack-in-card
+    mode: horizontal
+    cards:
+    - &calendar 
+      type: custom:atomic-calendar-revive
+      entities:
+      - entity: calendar.privat
+      - entity: calendar.daten_und_zeitraume
+      - entity: calendar.aktenzeichen
+      - entity: calendar.pokemon
+      compactMode: true
+      showLoader: false
+      showLocation: false
+      showHiddenText: false
+      showRelativeTime: false
+      showWeekDay: true
+      titleLength: 23
+      hideDuplicates: true
+      maxEventCount: 4
+      noEventText: ""
+      maxDaysToShow: 1
+      card_mod:
+        style: | 
+          ha-card {  
+            border-radius: 0px;  
+            bottom: 2px;
+            font-size: 12px;
+            margin: 5px 5px !important;
+            padding: 0px !important;
+            box-shadow: rgba(255, 255, 255, 0.2) 0px 10px 15px -3px inset, rgba(255, 255, 255, 0.2) 0px 4px 6px -4px;
+          }
+          .hours {
+            font-size: 7px !important;   
+          }  
+          .event-left { 
+            color: rgba(255, 255, 255, 0.6) !important;
+            font-size: 12px;
+            margin: 0px;   
+          } 
+          .event-right {  
+            padding: 0px !important;
+            margin: 0px !important;
+          }  
+          .event-date-day,  
+          .event-date-week-day {  
+            margin: 0px !important; 
+            padding: 1px 1px 0px 0px !important; 
+            text-align: left !important; 
+            justify-content: bottom !important;
+            width: 17px;
+          }
+          .event-date-week-day { 
+            color: rgba(255, 255, 255, 0.4) !important;
+            font-size: 10px;
+            width: 13px;
+          } 
+          .single-event-container {   
+            gap: 1px !important;  
+            grid-gap: 1px !important;
+          } 
+          .daywrap {  
+            border: none !important;   
+            padding-top: 0px !important; 
+          }
+
+    - <<: *calendar
+      noEventsForNextDaysText: ""
+      startDaysAhead: 1
+      maxDaysToShow: 7
+      
+    card_mod: 
+      style: |
+        ha-card {
+          bottom: 22px;
+          background-image: linear-gradient(to right, rgba(63, 63, 63, 1.0) 45%, rgba(55, 55, 55, 1.0)) !important;
+          overflow: hidden;
+          padding-top: 4px;
+        }

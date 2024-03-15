@@ -1,0 +1,257 @@
+template_bar:
+  card: 
+    type: custom:stack-in-card
+    card_mod:
+      style: |
+        ha-card { --ha-card-background: rgba(61, 61, 61, 0.6); }
+        ha-card div { 
+          --ha-card-background: none;
+          margin: 5px;
+          letter-spacing: 1.1px;
+          font-weight: 300;
+          font-variant: small-caps;
+        }
+    cards:
+      - type: custom:decluttering-card
+        template: template_data_[[type]]_[[room]]
+
+template_bar_header_button: 
+  card:
+    type: custom:decluttering-card
+    template: template_bar_button
+    variables: 
+      - show_name: true
+      - show_icon: false
+      - name: '[[name]]'
+      - entity: '[[entity]]'
+
+template_bar_footer_button: 
+  card:
+    type: custom:decluttering-card
+    template: template_bar_button
+    variables: 
+      - show_name: false
+      - show_icon: true
+      - name: ''
+      - entity: '[[entity]]'
+      - icon_height: '[[icon_height]]'
+      
+template_bar_button: 
+  card: 
+    type: button
+    entity: '[[entity]]'
+    name: '[[name]]'
+    show_name: '[[show_name]]'
+    show_icon: '[[show_icon]]'
+    icon_height: '[[icon_height]]px'
+    tap_action:
+      action: toggle
+    hold_action:
+      action: more-info
+    double_tap_action:
+      action: more-info
+  default:
+    - icon_height: 23
+
+template_bar_button_art: 
+  card: 
+    type: button
+    entity: 'sensor.overview_state_art'
+    name: '[[name]]'
+    icon: '[[icon]]'
+    show_name: false
+    show_icon: true
+    icon_height: '[[icon_height]]px'
+    tap_action:
+      action: toggle # Todo
+    hold_action:
+      action: more-info
+    double_tap_action:
+      action: more-info
+  default:
+    - icon_height: 23
+    
+# Model: Entities 
+
+# Wohnzimmer
+
+template_data_header_wz: 
+  card: 
+    type: custom:stack-in-card
+    mode: horizontal
+    cards: 
+    - type: custom:decluttering-card
+      template: template_bar_header_button
+      variables: 
+        - name: Hell
+        - entity: scene.wz_hell
+    - type: custom:decluttering-card
+      template: template_bar_header_button
+      variables: 
+        - name: Normal
+        - entity: scene.wz_normal
+    - type: custom:decluttering-card
+      template: template_bar_header_button
+      variables: 
+        - name: Indirekt
+        - entity: scene.wz_indirekt
+    - type: custom:decluttering-card
+      template: template_bar_header_button
+      variables: 
+        - name: Gering
+        - entity: scene.wz_schwach
+    - type: custom:decluttering-card
+      template: template_bar_header_button
+      variables: 
+        - name: Aus
+        - entity: scene.wz_aus
+
+template_data_footer_wz: 
+  card: 
+    type: custom:stack-in-card
+    mode: horizontal
+    cards: 
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: light.wz_lampen_1_2
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: light.wz_lampe_3_7
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: switch.heizdecke
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: switch.wz_ventilator
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: switch.sofa
+
+# Schlafzimmer
+
+template_data_header_sz: 
+  card: 
+    type: custom:stack-in-card
+    mode: horizontal
+    cards: 
+    - type: custom:decluttering-card
+      template: template_bar_header_button
+      variables: 
+        - name: Hell
+        - entity: scene.sz_hell
+    - type: custom:decluttering-card
+      template: template_bar_header_button
+      variables: 
+        - name: Normal
+        - entity: scene.sz_normal
+    - type: custom:decluttering-card
+      template: template_bar_header_button
+      variables: 
+        - name: Indirekt
+        - entity: scene.sz_indirekt
+    - type: custom:decluttering-card
+      template: template_bar_header_button
+      variables: 
+        - name: Aus
+        - entity: scene.sz_aus
+
+template_data_footer_sz: 
+  card: 
+    type: custom:stack-in-card
+    mode: horizontal
+    cards: 
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: light.sz_lampe
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: light.sz_stehlampe
+    # - type: custom:decluttering-card
+    #   template: template_bar_footer_button
+    #   variables: 
+    #     - entity: switch.sz_luftung
+    #     # - icon_height: 22
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: fan.sz_ventilator
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: switch.bett
+
+# Küche
+
+template_data_header_k: 
+  card: 
+    type: custom:stack-in-card
+    mode: horizontal
+    cards: 
+    - type: custom:decluttering-card
+      template: template_bar_header_button
+      variables: 
+        - name: Küche
+        - entity: scene.k_normal
+    - type: custom:decluttering-card
+      template: template_bar_header_button
+      variables: 
+        - name: Aus
+        - entity: scene.k_aus
+    - type: custom:decluttering-card
+      template: template_bar_header_button
+      variables: 
+        - name: Gang
+        - entity: scene.g_indirekt
+    - type: custom:decluttering-card
+      template: template_bar_header_button
+      variables: 
+        - name: Aus
+        - entity: scene.g_aus
+
+template_data_footer_k: 
+  card: 
+    type: custom:stack-in-card
+    mode: horizontal
+    cards: 
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: light.k_lampe
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: light.g_lampe
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: switch.g_tischlampe
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: humidifier.luftbefeuchter
+        - icon_height: 25
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: fan.luftreiniger
+        - icon_height: 22
+
+# Art
+
+template_data_footer_art: 
+  card: 
+    type: custom:stack-in-card
+    mode: horizontal
+    cards: 
+    - type: custom:decluttering-card
+      template: template_bar_button_art
+      variables: 
+        # - entity: pyscript.turn_off
+        - icon: mdi:logout

@@ -1,0 +1,11 @@
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.178.0/24
+    - 172.30.32.0/24
+    - 172.30.33.0/24
+    - ::1
+    - ::1/128
+    - "fe80::/10"
+    - !secret ha_http_external
+  login_attempts_threshold: 10

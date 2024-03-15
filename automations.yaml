@@ -1,0 +1,783 @@
+- id: '1655585138746'
+  alias: Config-Sensor
+  description: ''
+  trigger:
+  - type: motion
+    platform: device
+    device_id: 49428cdaae97c176cbe91d0726b5a005
+    entity_id: binary_sensor.k_sensor_occupancy
+    domain: binary_sensor
+    id: '1000'
+    variables:
+      scene: scene.k_normal
+  - type: motion
+    platform: device
+    device_id: 347de7c6508e68b25e8341a80697f3a1
+    entity_id: binary_sensor.g_sensor_occupancy
+    domain: binary_sensor
+    variables:
+      scene: scene.g_tisch
+  condition:
+  - condition: or
+    conditions:
+    - condition: sun
+      after: sunset
+      after_offset: -00:30:00
+    - condition: sun
+      before: sunrise
+      before_offset: 00:30:00
+    - condition: not
+      conditions:
+      - condition: trigger
+        id: '1000'
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: '{{ scene }}'
+    metadata: {}
+  mode: single
+- id: '1655714129517'
+  alias: Config-G-Schalter
+  description: ''
+  use_blueprint:
+    path: Stringer/zigbee2mqtt-sonoff-wireless-switch-snzb-01.yaml
+    input:
+      switch: sensor.g_schalter_action
+      single_press:
+      - if:
+        - condition: state
+          entity_id: light.g_lampe
+          state: 'off'
+        - condition: device
+          type: is_off
+          device_id: 203c596c57e490537440e06c29d674ba
+          entity_id: switch.g_tischlampe
+          domain: switch
+        then:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.g_indirekt
+          metadata: {}
+        else:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.g_aus
+          metadata: {}
+      double_press:
+      - service: script.sf_aus_licht_delay_gang
+        data: {}
+      long_press:
+      - service: script.sf_aus_licht_delay_gang
+        data: {}
+- id: '1655915008692'
+  alias: Config-WZ-Schalter
+  description: ''
+  use_blueprint:
+    path: harbri/z2m-philips-hue-dimmer-switch-individual-buttons.yaml
+    input:
+      dimmer: sensor.wz_schalter_action
+      button_1:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.wz_indirekt
+        metadata: {}
+      button_2:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.wz_hell
+        metadata: {}
+      button_3:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.wz_schwach
+        metadata: {}
+      button_4:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.wz_aus
+        metadata: {}
+      - type: turn_off
+        device_id: c58a7db8bd1f51bd244f81086d3b803e
+        entity_id: light.k_lampe
+        domain: light
+      button_7:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.wz_aus
+        metadata: {}
+      - service: scene.turn_on
+        target:
+          entity_id: scene.k_aus
+        metadata: {}
+      - service: scene.turn_on
+        target:
+          entity_id: scene.wz_schwach
+        metadata: {}
+      - delay:
+          hours: 0
+          minutes: 5
+          seconds: 0
+          milliseconds: 0
+      - service: scene.turn_on
+        target:
+          entity_id: scene.wz_aus
+        metadata: {}
+      button_8:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.g_wz_k_g
+        metadata: {}
+      button_5:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.wz_aus
+        metadata: {}
+        enabled: false
+      - service: scene.turn_on
+        target:
+          entity_id: scene.k_aus
+        metadata: {}
+        enabled: false
+      - service: scene.turn_on
+        target:
+          entity_id: scene.wz_schwach
+        metadata: {}
+        enabled: false
+      - delay:
+          hours: 0
+          minutes: 5
+          seconds: 0
+          milliseconds: 0
+        enabled: false
+      - service: scene.turn_on
+        target:
+          entity_id: scene.wz_aus
+        metadata: {}
+        enabled: false
+- id: '1655915183866'
+  alias: Config-SZ-Schalter
+  description: ''
+  use_blueprint:
+    path: harbri/z2m-philips-hue-dimmer-switch-individual-buttons.yaml
+    input:
+      dimmer: sensor.sz_schalter_action
+      button_1:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.sz_normal
+        metadata: {}
+      button_2:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.sz_hell
+        metadata: {}
+      button_3:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.sz_indirekt
+        metadata: {}
+      button_4:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.sz_aus
+        metadata: {}
+      button_5:
+      - service: scene.turn_on
+        target:
+          entity_id: scene.sz_hell
+        metadata: {}
+      - delay:
+          hours: 0
+          minutes: 1
+          seconds: 0
+          milliseconds: 0
+      - service: scene.turn_on
+        target:
+          entity_id: scene.sz_aus
+        metadata: {}
+- id: '1655932315432'
+  alias: Timeout-Default
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: f6169e9ee063146ff549c203ebe55580
+    entity_id: switch.wz_ventilator
+    domain: switch
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+    id: switch
+  - platform: device
+    type: turned_on
+    device_id: c58a7db8bd1f51bd244f81086d3b803e
+    entity_id: light.k_lampe
+    domain: light
+    for:
+      hours: 1
+      minutes: 0
+      seconds: 0
+    id: light
+  - platform: device
+    type: turned_on
+    device_id: cd803de4ee40a74e2b30b733bad036bb
+    entity_id: cf013df05f8ba5a2ae576c34d165fe92
+    domain: switch
+    for:
+      hours: 2
+      minutes: 0
+      seconds: 0
+    id: switch
+  - platform: device
+    type: turned_on
+    device_id: 61e62799e50e2ea5f5c2845d10748af9
+    entity_id: switch.bett
+    domain: switch
+    for:
+      hours: 0
+      minutes: 40
+      seconds: 0
+    id: switch
+  - platform: device
+    type: turned_on
+    device_id: 6abc8a40fef086bb5db5adad4c302171
+    entity_id: fan.luftreiniger
+    domain: fan
+    for:
+      hours: 6
+      minutes: 0
+      seconds: 0
+    id: fan
+  - platform: device
+    type: turned_on
+    device_id: 7fd8ca11075a350b91f756ad64fd3a89
+    entity_id: 184da21964e73e568fefd5b9bc56eda1
+    domain: switch
+    for:
+      hours: 2
+      minutes: 0
+      seconds: 0
+    id: switch
+  - platform: state
+    entity_id:
+    - media_player.schlafzimmer
+    to: playing
+    for:
+      hours: 1
+      minutes: 20
+      seconds: 0
+    id: media
+  - platform: device
+    type: turned_on
+    device_id: a31055e6d8e65b40524baecc9f240a80
+    entity_id: 45573817a5a38c541ac6d6035a8b8666
+    domain: switch
+    id: switch
+    for:
+      hours: 1
+      minutes: 30
+      seconds: 0
+  condition: []
+  action:
+  - if:
+    - condition: not
+      conditions:
+      - condition: trigger
+        id:
+        - media
+    then:
+    - service: '{{ trigger.id }}.turn_off'
+      data: {}
+      target:
+        entity_id: '{{ trigger.entity_id }}'
+    else:
+    - service: media_player.media_stop
+      data: {}
+      target:
+        entity_id: '{{ trigger.entity_id }}'
+  mode: single
+- id: '1656347893288'
+  alias: Scheduler-Backup
+  description: ''
+  trigger:
+  - platform: time
+    at: 04:00:00
+  condition: []
+  action:
+  - service: script.s_backup_dateien
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - service: homeassistant.update_entity
+    data: {}
+    target:
+      entity_id: sensor.v_last_backup
+  mode: single
+- id: '1657086266016'
+  alias: Notify-Backup-Failed
+  description: ''
+  use_blueprint:
+    path: jcwillox/notify_auto_backup.yaml
+    input:
+      devices:
+      - 46f02537a7f3b41b865cccc89892d777
+      - a75a87663e2fc1580d08c074877a1380
+      notify_hass: true
+      only_after: 09:00:00
+- id: '1663995681715'
+  alias: Timeout-Bittorrent
+  description: ''
+  trigger:
+  - platform: homeassistant
+    event: shutdown
+  - platform: state
+    entity_id:
+    - sensor.qbittorrent_status
+    to: seeding
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - platform: state
+    entity_id:
+    - sensor.qbittorrent_down_speed
+    to: '0'
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+  - platform: event
+    event_type: transmission_downloaded_torrent
+  - platform: template
+    value_template: '{{ states(''sensor.qbittorrent_status'') not in [''up_down'',
+      ''downloading''] }}'
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+  - platform: state
+    entity_id:
+    - sensor.qbittorrent_status
+    to: seeding
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  condition: []
+  action:
+  - service: hassio.addon_stop
+    data:
+      addon: db21ed7f_qbittorrent
+  mode: single
+- id: '1666878809940'
+  alias: Scheduler-Update
+  description: ''
+  use_blueprint:
+    path: EdwardTFN/auto-update-home-assistant.yaml
+    input:
+      schedule_time: 06:00:00
+      schedule_monthday: 7
+      actions_pre_update: []
+      update_exclusions:
+      - false
+      backup_bool: false
+- id: '1675841126609'
+  alias: Notify-Immobilien
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.v_friedrichsheim
+    variables:
+      url: https://www.friedrichsheim-eg.de/category/freie-wohnungen/
+  - platform: state
+    entity_id:
+    - sensor.v_bwv
+    variables:
+      url: https://www.bwv-berlin.de/wohnungsangebote.html
+  - platform: state
+    entity_id:
+    - sensor.v_neukolln
+    variables:
+      url: https://www.gwneukoelln.de/wohnungen/wohnungsangebote/
+  - platform: state
+    entity_id:
+    - sensor.v_wbm
+    variables:
+      url: https://www.wbm.de/wohnungen-berlin/angebote-wbm/
+  - platform: state
+    entity_id:
+    - sensor.v_gewobag
+    variables:
+      url: https://www.gewobag.de/fuer-mieter-und-mietinteressenten/mietangebote/?bezirke%5B%5D=charlottenburg-wilmersdorf-charlottenburg&bezirke%5B%5D=friedrichshain-kreuzberg&bezirke%5B%5D=friedrichshain-kreuzberg-friedrichshain&bezirke%5B%5D=friedrichshain-kreuzberg-kreuzberg&bezirke%5B%5D=mitte&bezirke%5B%5D=mitte-gesundbrunnen&bezirke%5B%5D=mitte-wedding&bezirke%5B%5D=neukoelln&bezirke%5B%5D=neukoelln-buckow&bezirke%5B%5D=neukoelln-rudow&bezirke%5B%5D=pankow-prenzlauer-berg&bezirke%5B%5D=tempelhof-schoeneberg-schoeneberg&nutzungsarten%5B%5D=wohnung&gesamtmiete_von=&gesamtmiete_bis=700&gesamtflaeche_von=50&gesamtflaeche_bis=&zimmer_von=2&zimmer_bis=&sort-by=recent
+  - platform: state
+    entity_id:
+    - sensor.v_inberlinwohnen
+    variables:
+      url: https://inberlinwohnen.de/wohnungsfinder/
+  - platform: state
+    entity_id:
+    - sensor.v_random
+    enabled: false
+  condition:
+  - condition: not
+    conditions:
+    - condition: template
+      value_template: '{{ trigger.to_state.state == '''' }}'
+    - condition: template
+      value_template: '{{ trigger.to_state.state is not defined }}'
+    - condition: template
+      value_template: '{{ trigger.to_state.state == ''unknown'' }}'
+  action:
+  - service: notify.mobile_app_iphone
+    data:
+      message: '{{ trigger.to_state.name }}: {{ trigger.to_state.state }} '
+      data:
+        shortcut:
+          name: Notification-Immobilien
+          input: '{{ url }}'
+          ignore_result: ignore
+  mode: single
+- id: '1678995399526'
+  alias: Scheduler-Sensors
+  description: ''
+  trigger:
+  - platform: time_pattern
+    hours: /3
+    minutes: '30'
+  condition:
+  - condition: and
+    conditions:
+    - condition: time
+      after: 08:00:00
+      before: '21:00:00'
+    - condition: state
+      entity_id: binary_sensor.workday_sensor
+      state: 'on'
+  action:
+  - delay:
+      seconds: '{{ range(0, 300)|random|int }}'
+  - service: script.s_update_sensors
+    data: {}
+  mode: single
+- id: '1680777973428'
+  alias: Timer-Luft
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_number.h_timer_luftreiniger
+    not_to: '0'
+    from: '*'
+    variables:
+      entity: fan.luftreiniger
+  condition: []
+  action:
+  - service: fan.set_percentage
+    data:
+      percentage: 33
+    target:
+      device_id: 6abc8a40fef086bb5db5adad4c302171
+  - service: timer.start
+    data:
+      duration: '{{ trigger.to_state.state | int * 60 }}'
+    target:
+      entity_id: timer.h_timer_luftreiniger
+  - service: input_number.set_value
+    data:
+      value: 0
+    target:
+      entity_id: input_number.h_timer_luftreiniger
+  - wait_for_trigger:
+    - platform: state
+      entity_id:
+      - timer.h_timer_luftreiniger
+      to: idle
+    timeout:
+      hours: 4
+      minutes: 0
+      seconds: 0
+      milliseconds: 0
+  - service: fan.set_preset_mode
+    data:
+      preset_mode: sleep
+    target:
+      device_id: 6abc8a40fef086bb5db5adad4c302171
+  mode: restart
+- id: '1681819119472'
+  alias: Timeout-Motion
+  description: ''
+  trigger:
+  - type: no_motion
+    platform: device
+    device_id: 49428cdaae97c176cbe91d0726b5a005
+    entity_id: 1f30397ac000a732e64cfede430591de
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 20
+    variables:
+      scene: scene.k_aus
+  - type: no_motion
+    platform: device
+    device_id: 347de7c6508e68b25e8341a80697f3a1
+    entity_id: 6d5d57aa32490e22531dc2ff834ea973
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    variables:
+      scene: scene.g_aus
+  condition:
+  - condition: template
+    value_template: '{{ trigger.from_state.state != ''unavailable'' }}
+
+      '
+  - condition: template
+    value_template: '{{ trigger.from_state.state != ''unknown'' }}
+
+      '
+  action:
+  - service: scene.turn_on
+    target:
+      entity_id: '{{ scene }}'
+    metadata: {}
+  mode: single
+- id: '1686898359242'
+  alias: 'Timer-SZ-Ventilator '
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_number.h_timer_sz_ventilator
+    not_to: '0'
+    from: '*'
+    variables:
+      entity: fan.luftreiniger
+  condition: []
+  action:
+  - service: fan.turn_on
+    target:
+      device_id: e21aa15d584ddf0715c00d6023020982
+    data: {}
+  - service: fan.set_percentage
+    data:
+      percentage: 33
+    target:
+      entity_id: fan.sz_ventilator
+  - service: number.set_value
+    data:
+      value: '{{ trigger.to_state.state | int }}'
+    target:
+      entity_id: number.sz_ventilator_delay_off_countdown
+  - service: timer.cancel
+    data: {}
+    target:
+      entity_id: timer.h_timer_sz_ventilator
+  - service: timer.start
+    data:
+      duration: '{{ trigger.to_state.state | int * 60 }}'
+    target:
+      entity_id: timer.h_timer_sz_ventilator
+  - service: input_number.set_value
+    data:
+      value: 0
+    target:
+      entity_id: input_number.h_timer_sz_ventilator
+  - wait_for_trigger:
+    - platform: state
+      entity_id:
+      - timer.h_timer_sz_ventilator
+      to: idle
+    timeout:
+      hours: 8
+      minutes: 0
+      seconds: 0
+      milliseconds: 0
+  - service: script.as_reset_luft_sz_ventilator
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: fan.turn_off
+    data: {}
+    target:
+      device_id: e21aa15d584ddf0715c00d6023020982
+  mode: restart
+- id: '1687437854987'
+  alias: Reset-Mutual-Luft
+  description: ''
+  trigger:
+  - platform: event
+    event_type: automation_triggered
+    event_data:
+      entity_id: automation.timer_luftreiniger
+    id: Timer-Luftreiniger
+  - platform: event
+    event_type: automation_triggered
+    event_data:
+      entity_id: automation.timer_sz_ventilator
+    id: Timer-SZ-Ventilator
+  - platform: state
+    entity_id:
+    - script.s_luft_reinigen
+    to: 'on'
+    id: S-Luft-Reinigen
+  - platform: state
+    entity_id:
+    - script.s_reset_luft
+    to: 'on'
+    id: S-Reset-Luft
+  - platform: state
+    entity_id:
+    - script.s_reset_luft_aus
+    to: 'on'
+    id: S-Reset-Luft
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: Timer-Luftreiniger
+      sequence:
+      - if:
+        - condition: state
+          entity_id: automation.timer_sz_ventilator
+          state: 'off'
+          enabled: true
+        - condition: state
+          entity_id: timer.h_timer_sz_ventilator
+          state: idle
+          enabled: false
+        then:
+        - service: script.as_reset_luft_sz_ventilator
+          data: {}
+      - service: script.turn_off
+        data: {}
+        target:
+          entity_id: script.gh_luften
+      - type: turn_off
+        device_id: 61e62799e50e2ea5f5c2845d10748af9
+        entity_id: switch.bett
+        domain: switch
+      - service: fan.turn_off
+        data: {}
+        target:
+          entity_id: fan.wz_ventilator
+      - if:
+        - condition: state
+          entity_id: timer.h_timer_sz_ventilator
+          state: idle
+        then:
+        - service: fan.turn_off
+          data: {}
+          target:
+            entity_id: fan.sz_ventilator
+    - conditions:
+      - condition: trigger
+        id: Timer-SZ-Ventilator
+        enabled: true
+      sequence:
+      - if:
+        - condition: state
+          entity_id: automation.timer_luftreiniger
+          state: 'off'
+          enabled: true
+        - condition: state
+          entity_id: timer.h_timer_luftreiniger
+          state: idle
+        then:
+        - service: script.as_reset_luft_luftreiniger
+          data: {}
+      - service: script.turn_off
+        data: {}
+        target:
+          entity_id: script.gh_luften
+      - type: turn_off
+        device_id: 61e62799e50e2ea5f5c2845d10748af9
+        entity_id: switch.bett
+        domain: switch
+      - service: fan.turn_off
+        data: {}
+        target:
+          entity_id: fan.wz_ventilator
+      - if:
+        - condition: state
+          entity_id: timer.h_timer_luftreiniger
+          state: idle
+        then:
+        - service: fan.turn_off
+          data: {}
+          target:
+            entity_id: fan.luftreiniger
+    - conditions:
+      - condition: trigger
+        id: S-Luft-Reinigen
+      sequence:
+      - service: timer.cancel
+        data: {}
+        target:
+          entity_id:
+          - timer.h_timer_luftreiniger
+          - timer.h_timer_sz_ventilator
+    - conditions:
+      - condition: trigger
+        id: S-Reset-Luft
+      sequence:
+      - service: timer.cancel
+        data: {}
+        target:
+          entity_id:
+          - timer.h_timer_luftreiniger
+          - timer.h_timer_sz_ventilator
+      - service: script.turn_off
+        data: {}
+        target:
+          entity_id: script.gh_luften
+        enabled: false
+      - type: turn_off
+        device_id: 61e62799e50e2ea5f5c2845d10748af9
+        entity_id: switch.bett
+        domain: switch
+      - service: fan.turn_off
+        data: {}
+        target:
+          entity_id:
+          - fan.wz_ventilator
+          - fan.sz_ventilator
+  mode: single
+- id: '1699628075303'
+  alias: Timeout-Switch
+  description: ''
+  trigger:
+  - type: no_motion
+    platform: device
+    device_id: e60ccc53be087898edd34d533eeaea47
+    entity_id: e866aa9e921aaa4d8ebe4f398fb3f2cd
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+    variables:
+      entity: switch.heizdecke
+  - platform: state
+    entity_id:
+    - remote.sony_kd_55xf9005
+    to: 'off'
+    from: 'on'
+    variables:
+      entity: switch.heizdecke
+  condition: []
+  action:
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: '{{ entity }}'
+  mode: single

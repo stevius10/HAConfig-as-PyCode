@@ -1,0 +1,34 @@
+logger: 
+  default: error
+  logs:
+    custom_components.pyscript: info
+    custom_components.xiaomi_miot: critical
+    androidtv: critical
+    pychromecast.socket_client: critical
+    scripts: info
+  filters:
+    homeassistant:
+      - "Error doing job: Future exception was never retrieved" # Tado
+      - "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))" # Tado
+    custom_components.hacs:
+      - "https://api.github.com/rate_limit"
+    homeassistant.components.google_assistant.http:
+      - "404"
+      - "500"
+    homeassistant.components.websocket_api.http.connection: 
+      - "io.robbie.HomeAssistant"
+    aiohttp.server: 
+      - "Error handling request"
+    root:
+      - "VEVENT"
+      - "ical"
+      - "caldav"
+
+logbook: 
+  exclude:
+    entity_globs: 
+      - "*.*browser_mod*"
+
+system_log:
+  max_entries: 5
+  fire_event: true

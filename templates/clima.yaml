@@ -1,0 +1,148 @@
+template_clima:
+  card:
+    type: picture-elements
+    image: /local/images/transparent.png
+    elements:
+      - type: custom:hui-element
+        card_type:  custom:decluttering-card
+        template: template_clima_graph
+        variables:
+          - room: '[[room]]'
+        style:
+          top: 58%
+          right: -1%
+          left: 0%
+          transform: translate(0%, -50%)
+      - type: custom:decluttering-card
+        template: template_clima_thermostat
+        variables:
+          - room: '[[room]]'
+        style:
+          top: 50%
+          right: 45%
+          left: -1%
+          transform: translate(0%, -50%)
+
+template_clima_thermostat:
+  card:
+    type: 'custom:simple-thermostat'
+    entity: "climate.[[room]]"
+    version: 3
+    variables:
+      icons:
+        sinkend: 'mdi:arrow-down-bold'
+        steigend: 'mdi:arrow-up-bold'
+        gleichbleibend: 'mdi:arrow-right-bold'
+    sensors:
+      - label: State
+        id: state
+        show: false
+      - label: Temperature
+        id: temperature
+        show: false
+      - entity: "sensor.[[room]]_temperatur_veranderung"
+        template: '{{v.icons[state.raw]|icon}}'
+      - entity: "sensor.[[room]]_heizung_temperature"
+        template: '{{state.text| formatNumber({ decimals: 1 })| css({ "font-size": "1.7em", "font-weight": "550" })  }} {{unit_of_measurement}}'
+      - entity: "sensor.[[room]]_temperatur_veranderung"
+        template: '{{outside}}'
+      - entity: "sensor.[[room]]_heizung_humidity"
+        template: '{{state.text|formatNumber({ decimals: 0 })}} %'
+    header: false
+    control: false
+    layout:
+      sensors:
+        labels: false
+    card_mod:
+      style: |
+        ha-card {
+          --ha-card-background: rgba(255, 255, 255, 0.2);
+          --st-font-size-xl: 12px;
+          --st-font-size-m: 12px;
+          --st-font-size-sensors: 13px;
+          --st-spacing: 0px;
+          --st-default-spacing: 0px;
+          width: 180px;
+          box-shadow: rgba(0, 0, 0, 0.25) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+        }
+        ha-card ha-switch { padding: 0px !important; }
+        .body {
+          margin-right: 10px;
+          margin-left: 30px;
+        }
+        ha-card .current--value {
+          font-weight: 530;
+          font-size: 30px;
+          line-height: 0.5;
+          padding-top: 9px;
+          padding-left: 12px;
+          padding-right: 10px;
+          {% if states('climate.[[room]]') == "off" %}
+          {% elif states('climate.[[room]]') == "auto" %}
+            color: rgb(226, 223, 210);
+          {% elif states('climate.[[room]]') == "heat" %}
+            color: maroon;
+          {% endif %}
+        }
+        ha-card .sensors-value {
+          text-align: center; 
+          white-space: nowrap;
+        }
+        ha-card .sensor-value:nth-child(2) {
+          text-align: left;
+          {% if state_attr('climate.[[room]]', 'temperature') | is_number %}
+            {% set diff = ( state_attr('climate.[[room]]', 'temperature') | float | round(1) ) - 
+              ( state_attr('climate.[[room]]', 'current_temperature') | float | round(1) ) %}
+            {% if ( diff | float | abs) < 1.0  %}
+              display: none;
+            {% endif %}
+          {% endif %}
+        }
+        ha-card .thermostat-trigger {
+          z-index: 10 !important;
+          overflow: visible !important;
+        }  
+
+template_clima_graph: 
+  card: 
+    type: 'custom:mini-graph-card'
+    name: Wohnzimmer
+    icon: 'mdi:abjad-hebrew'
+    entities:
+      - entity: "sensor.[[room]]_heizung_temperature"
+        color: white 
+        show_fill: true
+      - entity: sensor.temperature_fix_top
+        show_line: false
+        show_fill: false
+      - entity: sensor.temperature_fix_down
+        show_line: false
+        show_fill: false
+    line_width: 7
+    line_color: white
+    height: 190
+    hours_to_show: 3
+    points_per_hour: 6
+    hour24: true
+    show:
+      name: false
+      icon: false
+      state: false
+      legend: false
+      points: false
+    card_mod:
+      style: | 
+        ha-card {
+          border-radius: 0px;
+          left: 195px; 
+          width: calc(100% - 195px); 
+          -webkit-mask-image: linear-gradient(to left, rgba(255, 255, 255, 0.95) 30%, rgba(255, 255, 255, 0));
+        }
+        .graph__labels {
+          color: black;
+          align-items: end;
+          font-weight: 450;
+          padding: 1.6em;
+          right: 3%;
+          opacity: 1.0;
+        }
