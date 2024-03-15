@@ -1,21 +1,21 @@
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP, EVENT_CALL_SERVICE
 
-from constants import LOG_HA_SIZE, LOG_HA_ARCHIVE_SIZE, LOG_ARCHIVE_SUFFIX, PATH_LOG_HA, EVENT_FOLDER_WATCHER, EVENT_SYSTEM_LOG_TRUNCATED
+from constants import LOG_HA_SIZE, LOG_HA_ARCHIVE_SIZE, LOG_ARCHIVE_SUFFIX, PATH_LOG_HA, \
+  EVENT_FOLDER_WATCHER #, EVENT_SYSTEM_LOG_TRUNCATED
 
-import asyncio
+import  aiofiles
 
-from aiofiles import open as aopen
 from datetime import datetime
 from pathlib import Path
 
 ha_log_truncate_block = 60
-log_truncate_tail = 10
+ha_log_truncate_tail = 10
 
 @service(supports_response="optional")
-@task_unique("ha_log_truncate", kill_me=True)
+@task_unique("ha_log_content_truncate", kill_me=True)
 @event_trigger(EVENT_FOLDER_WATCHER) 
-@event_trigger(EVENT_HOMEASSISTANT_STOP) # @time_trigger('shutdown')
-def ha_log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_archive_entries=LOG_HA_ARCHIVE_SIZE, trigger_type=None, event_type=None, file="", folder="", path="", **kwargs):
+@event_trigger(EVENT_HOMEASSISTANT_STOP)
+def ha_log_truncate(trigger_type=None, event_type=None, file="", folder="", path="", **kwargs):
 
   if trigger_type == "event" and event_type == EVENT_FOLDER_WATCHER and kwargs.get('trigger_type') != "modified":
     return {}
@@ -25,68 +25,44 @@ def ha_log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_arch
       size_log_entries = 0
       
   try: 
-    return log_truncate(logfile=logfile, size_log_entries=size_log_entries, size_archive_entries=size_archive_entries)
+    return log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_archive_entries=LOG_HA_ARCHIVE_SIZE)
     
   except Exception as e:
     log.error(e)
   finally: 
-    event.fire(event_type=EVENT_SYSTEM_LOG_TRUNCATED, kwargs={logfile: logfile})
+    # event.fire(event_type=EVENT_SYSTEM_LOG_TRUNCATED, kwargs={logfile: PATH_LOG_HA})
     await task.sleep(ha_log_truncate_block)
 
-@service(supports_response="optional")
-def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_archive_entries=0):
-    log_content = ""
-    log_trunc = []
-
-    async with aopen(logfile, 'w+') as logfile_object:
-      log_content = await logfile_object.read()
-      if log_content is not None: 
-        log_trunc = log_content[-size_log_entries:] if log_content is not None and len(log_content) > size_log_entries else []
-        log_trunc.append(f"# {len(log_content)} / {size_log_entries} at {datetime.now()}\n")
-        await logfile_object.write(log_trunc)
-      
-    if ((size_log_entries > 0) and log_content is not None and (len(log_content) > (1.25 * size_log_entries))): 
-      log_to_archive = log_content[:-size_log_entries]
-      async with aopen(f"{logfile}.{LOG_ARCHIVE_SUFFIX}", 'w+') as archive_file_object:
-        archive_content = await archive_file_object.read()
-        if archive_content is None:
-          archive_content = [] 
-        archive_content.append(log_to_archive) 
-        await archive_file_object.write(archive_content[-size_archive_entries:])
+@service
+async def log_truncate(logfile="PATH_LOG_HA", size_log_entries=LOG_HA_SIZE, size_archive_entries=0, log_archive_suffix="LOG_ARCHIVE_SUFFIX"):
+    log_content_origin = []
+    log_content_truncated = []
+    archive_content_origin = []
     
-    # TODO: remove reapeted read operation
-    log_content = []
-    archive_content = []
+    async with aiofiles.open(logfile, 'r+') as logfile_object:
+        log_content_origin = logfile_object.read()
+        
+        if log_content_origin is not None and len(log_content_origin) > size_log_entries: 
+            log_content_truncated.append(f"# {len(log_content_origin)} / {size_log_entries} at {datetime.now()}\n")
+            logfile_object.seek(0)
+            logfile_object.write('\n'.join(log_content_truncated))
+            logfile_object.truncate()
+        
+            log_to_archive = log_content_origin[:-size_log_entries]
+            async with aiofiles.open(f"{logfile}.{log_archive_suffix}", 'a+') as archive_file_object:
+                archive_content_origin = await archive_file_object.read()
+                if archive_content_origin is None:
+                    archive_content_origin = [] 
+                archive_content_origin.append(log_to_archive) 
+                archive_file_object.seek(0)
+                archive_file_object.write('\n'.join(archive_content_origin[-size_archive_entries:]))
     
-    async with aopen(logfile, 'r') as logfile_object:
-      log_content = await logfile_object.read()
-      log_content = '\n'.join(log_content[::-1][:10]) if log_content is not None else []
-    async with aopen(f"{logfile}.{LOG_ARCHIVE_SUFFIX}", 'r') as archive_file_object:
-      archive_content = await archive_file_object.read() if archive_file_object is not None else []
-      archive_content = '\n'.join(archive_content[::-1][:10]) if archive_content is not None else ""
-    return {"log": log_content, "archive": archive_content}
-  
-
-# @service(supports_response="only")
-# def ha_run_script(script, **kwargs): 
-
-#   result = { "script": script }
-
-#   result['response'] = service.call("pyscript", script, blocking=True, return_response=True, kwargs=kwargs)
-
-#   async with aopen(PATH_LOG_HA, 'r') as log_ha:
-#     result['log'] = log_ha.readlines()
-
-#   log.info(result)
-#   return result
-
-# @event_trigger(EVENT_CALL_SERVICE, "domain == 'pyscript' and service == 'reload'")
-# def ha_pyscript_reload(**kwargs):
-#   debug = {}
-#   if "service_data" in kwargs and kwargs.get("service_data").get("global_ctx") != "*":
-#     async with aopen(PATH_LOG_HA, 'r') as logfile:
-#       debug = logfile.readlines()
-#     browser_mod.popup(browser_id="THIS", content=debug)
-
-# def ha_log_events(**kwargs):
-#   log_content.info(f"[Event] {kwargs}")
+    async with aiofiles.open(logfile, 'r') as logfile_object:
+        log_content_origin = logfile_object.readlines()
+        if log_content_origin is not None: 
+            log_content_origin = log_content_origin[::-1][:10]
+    async with aiofiles.open(f"{logfile}.{LOG_ARCHIVE_SUFFIX}", 'r') as archive_file_object:
+        archive_content_origin = archive_file_object.readlines()
+        if archive_content_origin is not None:
+            archive_content_origin = archive_content_origin[::-1][:10]
+    return {"log": log_content_origin, "archive": archive_content_origin}

@@ -18,20 +18,21 @@ def expr(entity, expression="", defined=True, log=True):
   return expr
 
   
-def expressions(entities, expression="", defined=True, log=True):
+def expressions(entities, expression="", defined=True, operator='or', log=True):
   exprs = []
+  
   if not expression:
-    
     if isinstance(entities, list):
       expr_concatenated = ['(' + expr(entity) + ')' for entity in entities]
-      return " or ".join(expr_concatenated)
+      return (" {} ".format(operator)).join(expr_concatenated)
     
     if isinstance(entities, dict):
       pass
 
   elif expression.isalnum():
       if isinstance(entities, list):
-        pass
+        expr_concatenated = ['(' + expr(entity, expression) + ')' for entity in entities]
+        return (" {} ".format(operator)).join(expr_concatenated)
       if isinstance(entities, dict):
         pass
   

@@ -37,7 +37,7 @@ template_bar_footer_button:
       - icon_height: '[[icon_height]]'
       
 template_bar_button: 
-  card: &button
+  card: 
     type: button
     entity: '[[entity]]'
     name: '[[name]]'
@@ -55,22 +55,19 @@ template_bar_button:
 
 template_bar_button_art: 
   card: 
-    <<: *button
+    type: button
+    entity: 'sensor.overview_state_art'
+    name: '[[name]]'
     icon: '[[icon]]'
-    icon_height: 25px
+    show_name: false
+    show_icon: true
+    icon_height: '[[icon_height]]px'
     tap_action:
-      action: toggle
+      action: toggle # Todo
     hold_action:
       action: more-info
     double_tap_action:
       action: more-info
-  variables: 
-  - show_name: false
-  - show_icon: true
-  - name: ''
-  - entity: '[[entity]]'
-  - icon: '[[icon]]'
-  - icon_height: '[[icon_height]]'
   default:
     - icon_height: 23
     
@@ -256,5 +253,5 @@ template_data_footer_art:
     - type: custom:decluttering-card
       template: template_bar_button_art
       variables: 
-        - entity: pyscript.turn_off
+        # - entity: pyscript.turn_off
         - icon: mdi:logout

@@ -7,7 +7,7 @@ import os
 
 @event_trigger(EVENT_HOMEASSISTANT_STARTED) # @time_trigger('startup')
 def ha_startup_files(): 
-  ha_startup_environment()
+  # ha_startup_environment()
   ha_startup_files()
   
 def ha_startup_environment(file=PATH_CONSTANTS):

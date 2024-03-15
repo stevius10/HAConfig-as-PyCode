@@ -8,7 +8,7 @@ from logfile import Logfile
 import subprocess
 
 @service(supports_response="optional")
-# @time_trigger(SERVICE_GIT_CRON)
+@time_trigger(SERVICE_GIT_CRON)
 def service_git_sync(
   repo_url=SERVICE_GIT_REPO_URL,
   branch_name=SERVICE_GIT_REPO_BRANCH,
@@ -30,10 +30,10 @@ def service_git_sync(
       f"git push origin {branch_name}",
       
       # write on copy
-      f"rm -rf /share/home-assistant-config; cd /share",
-      f"git clone {repo_url}; cd /share/home-assistant-config",
-      f"git pull origin {branch_target}; git checkout {branch_name}",
-      f"git merge {branch_target}; git push -u origin {SERVICE_GIT_REPO_BRANCH}"
+      #f"rm -rf /share/home-assistant-config; cd /share",
+      #f"git clone {repo_url}; cd /share/home-assistant-config",
+      #f"git pull origin {branch_target}; git checkout origin {branch_name}",
+      #f"git merge {branch_target}; git push -u origin {SERVICE_GIT_REPO_BRANCH}"
   ]
 
   for command in commands:

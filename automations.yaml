@@ -130,8 +130,30 @@
       button_5:
       - service: scene.turn_on
         target:
-          entity_id: scene.wz_normal
+          entity_id: scene.wz_aus
         metadata: {}
+        enabled: false
+      - service: scene.turn_on
+        target:
+          entity_id: scene.k_aus
+        metadata: {}
+        enabled: false
+      - service: scene.turn_on
+        target:
+          entity_id: scene.wz_schwach
+        metadata: {}
+        enabled: false
+      - delay:
+          hours: 0
+          minutes: 5
+          seconds: 0
+          milliseconds: 0
+        enabled: false
+      - service: scene.turn_on
+        target:
+          entity_id: scene.wz_aus
+        metadata: {}
+        enabled: false
 - id: '1655915183866'
   alias: Config-SZ-Schalter
   description: ''
@@ -357,9 +379,12 @@
   use_blueprint:
     path: EdwardTFN/auto-update-home-assistant.yaml
     input:
-      schedule_time: 04:30:00
+      schedule_time: 06:00:00
       schedule_monthday: 7
       actions_pre_update: []
+      update_exclusions:
+      - false
+      backup_bool: false
 - id: '1675841126609'
   alias: Notify-Immobilien
   description: ''

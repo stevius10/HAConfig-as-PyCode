@@ -1,4 +1,4 @@
-from constants import EVENT_SYSTEM_LOG_TRUNCATED, PATH_LOGS
+from constants import PATH_LOGS
 
 import logging
 import re
@@ -15,9 +15,8 @@ class Logfile:
     self.logs = []
     self.logfile = os.path.join(PATH_LOGS, self.name) + ".log"
     
-    pyscript.ha_log_truncate(logfile=self.logfile)
-    task.wait_until(event_trigger=EVENT_SYSTEM_LOG_TRUNCATED, timeout=3)
-    
+    service.call("pyscript", "log_truncate", logfile=self.logfile, blocking=True)
+
     handler = logging.FileHandler(self.logfile, mode='w+')
     handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
 

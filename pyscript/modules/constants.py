@@ -45,7 +45,7 @@ SERVICE_GIT_SETTINGS_CONFIG="/config/.storage/git/.gitconfig"
 # Events
 EVENT_FOLDER_WATCHER = "folder_watcher"
 EVENT_SYSTEM_PYSCRIPT_RELOADED = "event_system_pyscript_reloaded"
-EVENT_SYSTEM_LOG_TRUNCATED = "event_system_log_truncated"
+# EVENT_SYSTEM_LOG_TRUNCATED = "event_system_log_truncated"
 
 # States
 STATE_HA_NONE = "None"
