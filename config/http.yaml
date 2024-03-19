@@ -8,4 +8,4 @@ http:
     - ::1/128
     - "fe80::/10"
     - !secret ha_http_external
-  login_attempts_threshold: 10
+  # login_attempts_threshold: 10

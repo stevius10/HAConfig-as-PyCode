@@ -1,38 +1,34 @@
 from helper import expr
-from configuration import AUTO_DEFAULT_ENTITIES
+from timeout import AUTO_TIMEOUT_ENTITIES
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 
-reset_trigger = []
+timeout_trigger = []
 
-entities = AUTO_DEFAULT_ENTITIES
+entities = AUTO_TIMEOUT_ENTITIES
 
-# Defaults
+def timeout_factory(entity, default, delay=None):
 
-def reset_factory(entity, default, delay=None):
-
-  @event_trigger(EVENT_HOMEASSISTANT_STARTED) # @time_trigger('startup')
-  @state_trigger(expr(entity, f"!= '{entities.get(entity)['default']}'"))
-  def reset_default(trigger_type=None, var_name=None):
+  @event_trigger(EVENT_HOMEASSISTANT_STARTED) 
+  @state_trigger(expr(entity, expression=entities.get(entity)['default'], comparator="!="))
+  def timeout_default(trigger_type=None, var_name=None):
     if state.get(entity) != default:
       if trigger_type == "time" or delay == None: 
-        log.info("Default")
         reset(entity, default)
         
       if delay in entities.get(entity): 
-        log.info("Add timer" + entity)
         entity_timer = get_timer(entity, delay)
         timer.cancel(entity_id=entity_timer)
         timer.start(entity_id=entity_timer, duration=delay)
 
-  reset_trigger.append(reset_default)
+  timeout_trigger.append(timeout_default)
 
   @event_trigger("timer.finished")
   def timer_stop(**kwargs):
     log.info(f"kwargs: {kwargs}")
     # reset(entity_id=entity)
     
-  reset_trigger.append(timer_stop)
+  timeout_trigger.append(timer_stop)
   
 # Helper
 
@@ -50,4 +46,4 @@ def get_timer(entity, delay):
 
 # Initialization
 for entity in entities:
-  reset_factory(entity, entities[entity]["default"], entities[entity]["delay"])
+  timeout_factory(entity, entities[entity]["default"], entities[entity]["delay"])

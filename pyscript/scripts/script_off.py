@@ -32,6 +32,10 @@ ENTITIES_SCRIPTS = [
   "script.gh_luften"
 ]
 
+ENTITIES_SERVICES = [
+  "switch.fritz_box_7530_wi_fi_generation_lockdown_gast"
+]
+
 ENTITIES_SWITCHES = [
   "switch.bett",
   "switch.sofa",
@@ -50,9 +54,10 @@ def script_off(away=False):
   script_off_media()
   script_off_scenes(away=away)
   script_off_scripts()
+  script_off_services()
   script_off_switches()
   script_off_tv()
-  
+
 @service
 def script_off_away():
   script_off(away=True)
@@ -61,9 +66,9 @@ def script_off_away():
 def script_off_air(entity=None, reset=True):
   if entity == None:
     script_off_air(entity=ENTITIES_AIR)
-  if isinstance(entity, list):
+  elif isinstance(entity, list):
     for item in entity:
-      turn_off(entity_id=entity)
+      turn_off(entity=entity)
 
 @service
 def script_off_heating(entity=None, away=False):
@@ -84,7 +89,7 @@ def script_off_media(entity=None):
     script_off_media(entity=ENTITIES_MEDIA)
   if isinstance(entity, list):
     for item in entity:
-      script_off_media(entity=item)
+      turn_off(entity=item)
 
 @service
 def script_off_lights(entity=None, away=False):
@@ -108,15 +113,23 @@ def script_off_scripts(entity=None):
     script_off_scripts(entity=ENTITIES_SCRIPTS)
   if isinstance(entity, list):
     for item in entity:
-      script_off_scripts(entity=item)
+      turn_off(entity=item)
 
+@service
+def script_off_services(entity=None):
+  if entity == None:
+    script_off_switches(entity=ENTITIES_SWITCHES)
+  if isinstance(entity, list):
+    for item in entity:
+      turn_off(entity=item)
+      
 @service
 def script_off_switches(entity=None):
   if entity == None:
     script_off_switches(entity=ENTITIES_SWITCHES)
   if isinstance(entity, list):
     for item in entity:
-      script_off_switches(entity=item)
+      turn_off(entity=item)
       
 @service
 def script_off_tv(entity=None):
@@ -124,15 +137,17 @@ def script_off_tv(entity=None):
     script_off_tv(entity=ENTITIES_TV)
   if isinstance(entity, str):
     try: 
-      turn_off(entity_id=entity)
+      turn_off(entity)
+      # adb.send_command(entity_id=entity, command="WAKEUP")
     except Exception: 
-      webostv.command(entity_id=entity)
+      webostv.command(entity_id=entity, command="system/turnOn")
   if isinstance(entity, list):
     for item in entity:
-      script_off_tv(entity=item)
+      turn_off(entity=item)
       
 # Helper
 
 @service
-def turn_off(entity_id):
-  homeassistant.turn_off(entity_id=entity_id)
+def turn_off(entity):
+  log.info(f"{pyscript.get_global_ctx():}")
+  homeassistant.turn_off(entity_id=entity)

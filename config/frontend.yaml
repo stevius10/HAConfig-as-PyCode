@@ -11,6 +11,8 @@ lovelace:
       type: module
     - url: /hacsfiles/stack-in-card/stack-in-card.js
       type: module
+    - url: /hacsfiles/swipe-card/swipe-card.js
+      type: module
     - url: /hacsfiles/lovelace-badge-card/badge-card.js
       type: module
     - url: /hacsfiles/simple-thermostat/simple-thermostat.js

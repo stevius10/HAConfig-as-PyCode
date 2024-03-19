@@ -1,12 +1,12 @@
 from constants import STATES_HA_UNDEFINED
 
-def expr(entity, expression="", defined=True, log=True): 
+def expr(entity, expression="", comparator="==", defined=True, operator='or', log=True): 
   
   if isinstance(entity, list) or isinstance(entity, dict):
-    return expressions(entities=entity, expression="", defined=True, log=True)
+    return expressions(entities=entity, expression="", defined=True, operator=operator, log=True)
   
-  if expression.isalnum():
-    expression = f"== '{expression}'"
+  if expression != "":
+    expression = f"{comparator} '{expression}'"
 
   if log: 
     pyscript.log_state(entity=entity, expr=expression)

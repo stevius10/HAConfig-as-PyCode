@@ -25,6 +25,8 @@ def service_git_sync(
       
       # read on system
       f"cd /config",
+      f"git checkout {branch_name}",
+      f"git pull origin {branch_name}",
       f"git add .",
       f"git commit -m '{commit_message}'", 
       f"git push origin {branch_name}",

@@ -44,4 +44,4 @@ class Logfile:
   def finished(self):
     logs = "\n".join(self.logs)
     log.info(f"[executed] {self.name}: {logs}")
-    return { "logs":logs }
+    return { "logs": logs }

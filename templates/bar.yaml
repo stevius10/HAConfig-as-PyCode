@@ -45,31 +45,21 @@ template_bar_button:
     show_icon: '[[show_icon]]'
     icon_height: '[[icon_height]]px'
     tap_action:
-      action: toggle
+      action: '[[action]]'
+      data: '[[service]]'
     hold_action:
-      action: more-info
+      action: '[[hold_action]]'
+      data: '[[service]]'
     double_tap_action:
-      action: more-info
+      action: '[[double_tap_action]]'
+      data: '[[service]]'
   default:
+    - action: toggle
+    - hold_action: more-info
+    - double_tap_action: more-info
+    - service: ""
     - icon_height: 23
 
-template_bar_button_art: 
-  card: 
-    type: button
-    entity: 'sensor.overview_state_art'
-    name: '[[name]]'
-    icon: '[[icon]]'
-    show_name: false
-    show_icon: true
-    icon_height: '[[icon_height]]px'
-    tap_action:
-      action: toggle # Todo
-    hold_action:
-      action: more-info
-    double_tap_action:
-      action: more-info
-  default:
-    - icon_height: 23
     
 # Model: Entities 
 
@@ -173,11 +163,11 @@ template_data_footer_sz:
       template: template_bar_footer_button
       variables: 
         - entity: light.sz_stehlampe
-    # - type: custom:decluttering-card
-    #   template: template_bar_footer_button
-    #   variables: 
-    #     - entity: switch.sz_luftung
-    #     # - icon_height: 22
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: switch.sz_luftung
+        # - icon_height: 22
     - type: custom:decluttering-card
       template: template_bar_footer_button
       variables: 
@@ -242,16 +232,6 @@ template_data_footer_k:
       variables: 
         - entity: fan.luftreiniger
         - icon_height: 22
-
-# Art
-
-template_data_footer_art: 
-  card: 
-    type: custom:stack-in-card
-    mode: horizontal
-    cards: 
-    - type: custom:decluttering-card
-      template: template_bar_button_art
-      variables: 
-        # - entity: pyscript.turn_off
-        - icon: mdi:logout
+        - action: call-service
+        - double_tap_action: call-service
+        - service: call-service

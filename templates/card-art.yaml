@@ -41,31 +41,23 @@ template_card_art:
           transform: translate(0%, -50%)
       
       # Badges
-      - type: custom:decluttering-card
-        template: template_badges
+      - type: custom:hui-element
+        card_type: custom:swipe-card
         style:
           top: 50%
           right: -1%
           left: -1%
           transform: translate(0%, -50%)
-          'margin': '50px !important'
-          'padding': '50px !important'
           '--label-badge-text-color': rgb(80, 80, 80)
           '--label-badge-red': rgb(80, 80, 80)
           '--label-badge-background-color': rgb(227, 227, 227)
-  
-      # Footer
-      - type: custom:hui-element
-        card_type: custom:decluttering-card
-        template: template_bar
-        variables:
-          - type: footer
-          - room: 'art'
-        style:
-          bottom: 0%
-          left: -3%
-          right: -3%
-          transform: translate(0%, -0%)
+        cards: 
+        
+        - type: custom:decluttering-card
+          template: template_badges_info
+        - type: custom:decluttering-card
+          template: template_badges_services
+
     
     # Calendar
     - type: custom:decluttering-card

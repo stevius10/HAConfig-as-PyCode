@@ -16,21 +16,8 @@ def log_state_factory(entity, expr):
   info = f"[+] {entity}: {expr}"
   try: info += f"({state.get(entity)})" if state.get(entity) is not None else ""
   except: pass 
-  log.info(info)
+  log.debug(info)
   
 @service
 def log_state(entity, expr):
   log_state_factory(entity, expr)
-
-  # try: 
-  #   entity = re.search("^[\w]+\.[\w]\S+", expr).group()
-  #   trigger = re.sub("{}".format("and {entity} not in \[\'.*\'\]), "", expr)
-  # except Exception as e:
-  #   if not entity:
-  #     entity = e
-  #   if not trigger:
-  #     trigger = e
-  #   if not entity_state:
-  #     entity_state = e
-  # finally: 
-  #   log.info(" ".join(f"[{entity}]", trigger, state.get(entity)))
