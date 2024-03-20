@@ -1,10 +1,10 @@
 from helper import expr
-from constants import DAYTIME, TIME_DATE_RANGE_AIR_CLEANER, SCRIPT_AIR_CLEANER_THRESHOLD
-from mapping import SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL, SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP
-from naming import STATE_ON, SCRIPT_AIR_CLEANER_ENTITY, \
+from constants import DAYTIME, EXPR_TIME_SEASON_POLLEN, \
+  SCRIPT_AIR_CLEANER_THRESHOLD, SCRIPT_AIR_CLEANER_TIMEOUT_AUTOMATION
+from mapping import STATE_ON, SCRIPT_AIR_CLEANER_ENTITY, \
   SCRIPT_AIR_CLEANER_ENTITY_ATTRIBUTE, SCRIPT_AIR_CLEANER_ENTITY_MODE, \
-  SCRIPT_AIR_CLEANER_HELPER, SCRIPT_AIR_CLEANER_SENSOR
-from timeout import SCRIPT_AIR_CLEANER_TIMEOUT_AUTOMATION, SCRIPT_AIR_CLEANER_TIMEOUT_SLEEP
+  SCRIPT_AIR_CLEANER_HELPER, SCRIPT_AIR_CLEANER_SENSOR, \
+  SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL, SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP
 
 entity = SCRIPT_AIR_CLEANER_ENTITY
 entity_attribute = SCRIPT_AIR_CLEANER_ENTITY_ATTRIBUTE
@@ -16,10 +16,10 @@ def script_air_cleaner():
   if state.get(entity) == "on":
     mode = state.getattr(entity).get(SCRIPT_AIR_CLEANER_ENTITY_MODE)
     
-    if mode == "sleep":
+    if mode == SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP:
       script_air_cleaner_turn_off()
       
-    if mode == "manual": 
+    if mode == SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL: 
       fan.set_preset_mode(entity_id=entity, preset_mode=SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
 
   else:
@@ -30,13 +30,13 @@ def script_air_cleaner():
 def script_air_cleaner_turn_on():
   script_air_cleaner_mode_sleep()
 
-@time_active(DAYTIME and TIME_DATE_RANGE_AIR_CLEANER)
-@state_trigger(f"{state.get(SCRIPT_AIR_CLEANER_SENSOR)} > {SCRIPT_AIR_CLEANER_THRESHOLD}", watch=[SCRIPT_AIR_CLEANER_SENSOR])
+@state_active(DAYTIME and EXPR_TIME_SEASON_POLLEN)
+@state_trigger(f"int(sensor.luftreiniger_pm2_5) > {SCRIPT_AIR_CLEANER_THRESHOLD}", watch=[SCRIPT_AIR_CLEANER_SENSOR])
 def script_air_cleaner_threshold_on(entity=SCRIPT_AIR_CLEANER_ENTITY):
   script_air_cleaner_turn_on()
 
-@time_active(DAYTIME and TIME_DATE_RANGE_AIR_CLEANER)
-@state_trigger(f"{state.get(SCRIPT_AIR_CLEANER_SENSOR)} <= 5", watch=[SCRIPT_AIR_CLEANER_SENSOR]) 
+@state_active(DAYTIME and EXPR_TIME_SEASON_POLLEN)
+@state_trigger(f"int(sensor.luftreiniger_pm2_5) < 10", watch=[SCRIPT_AIR_CLEANER_SENSOR]) 
 def script_air_cleaner_threshold_off(entity=SCRIPT_AIR_CLEANER_ENTITY):
   script_air_cleaner_turn_off()
 
@@ -58,15 +58,10 @@ def script_air_cleaner_automation_clean():
 
 # Timeout
 
-@state_trigger(expr(entity, STATE_ON) and f"{entity}.{SCRIPT_AIR_CLEANER_ENTITY_ATTRIBUTE} == {SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL}", state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_AUTOMATION)
+@state_trigger(expr(entity, STATE_ON) and f"{entity}.{SCRIPT_AIR_CLEANER_ENTITY_ATTRIBUTE} == '{SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL}'", state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_AUTOMATION)
 def script_air_cleaner_timeout():
   script_air_cleaner_mode_sleep()
   script_air_cleaner_turn_off(SCRIPT_AIR_CLEANER_HELPER)
-
-# todo: remove after auto_timeout
-@state_trigger(expr(entity, STATE_ON) and f"{entity}.{SCRIPT_AIR_CLEANER_ENTITY_ATTRIBUTE} == {SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP}", state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_SLEEP)
-def script_air_cleaner_timeout():
-  script_air_cleaner_turn_off() 
 
 
 '''

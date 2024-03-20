@@ -3,7 +3,6 @@ from constants import STATES_HA_UNDEFINED
 
 ENTITIES_LOCATION = [ 
   "device_tracker.iphone", 
-  "device_tracker.iphone_icloud", 
   "device_tracker.iphone_privat",
   "device_tracker.watch_icloud"
 ]

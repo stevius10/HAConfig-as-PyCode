@@ -248,7 +248,7 @@ def service_googledrive_sync():
   logfile = Logfile(pyscript.get_global_ctx())
   try:
     drive = Drive(service_google_drive_credentials_file=SERVICE_GOOGLE_DRIVE_CREDENTIALS_FILE)
-    drive.synchronize(GOOGLE_DRIVE_LOCAL_FOLDER, SERVICE_GOOGLE_DRIVE_REMOTE_FOLDER)
+    drive.synchronize(SERVICE_GOOGLE_DRIVE_LOCAL_FOLDER, SERVICE_GOOGLE_DRIVE_REMOTE_FOLDER)
   except Exception as e:
     log.error(e)
   finally:
