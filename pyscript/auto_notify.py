@@ -1,5 +1,5 @@
+from config import EXPR_TIME_ACTIVE, EXPR_TIME_UPDATE_SENSORS, STATES_HA_UNDEFINED
 from helper import expr
-from constants import STATES_HA_UNDEFINED
 
 import random
 
@@ -28,7 +28,8 @@ def notify_immo(**kwargs):
       }
     })
 
-# @time_trigger("cron(30 16 * * 1-5)")
+@time_active(EXPR_TIME_ACTIVE)
+@time_trigger(EXPR_TIME_UPDATE_SENSORS)
 def update_sensors(): 
   task.sleep(random.randint(10, 600))
-  script.s_update_sensors
+  homeassistant.update_entity()

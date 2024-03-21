@@ -1,4 +1,4 @@
-from constants import AUTO_CONFIG_OFF_AWAY_TRANSITION
+from config import AUTO_OFF_AWAY_TRANSITION
 
 ENTITIES_AIR = [
   "humidifier.luftbefeuchter", 
@@ -99,7 +99,7 @@ def script_off_lights(entity=None, away=False):
     if not away: 
       scene.turn_off(entity_id=entity)
     else:
-      scene.turn_off(entity, transition=CONFIG_AWAY_TRANSITION)
+      scene.turn_off(entity, transition=AUTO_OFF_AWAY_TRANSITION)
   if isinstance(entity, list):
     for item in entity[:-1]:
       turn_off(entity=item)

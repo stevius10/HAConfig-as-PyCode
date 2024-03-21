@@ -9,8 +9,9 @@ log_file="/config/logs/ha-filebackup.log"
 
 ulimit -n 4096
 
-/usr/bin/find "$backup_path" -mindepth 1 -maxdepth 1 -type d -mtime +7 -delete >> "$log_file" 2>&1 || echo "Fehler beim Löschen alter Backup-Ordner" >> "$log_file"
+rm "$log_file" && touch "$log_file"
 /usr/bin/find "$backup_path" -type f -mtime +7 -delete >> "$log_file" 2>&1 || echo "Fehler beim Löschen alter Backup-Dateien" >> "$log_file"
+/usr/bin/find "$backup_path" -mindepth 1 -maxdepth 1 -mtime +7 -type d -exec rm -r "{}" \;  >> "$log_file" 2>&1 || echo "Fehler beim Löschen alter Backup-Ordner" >> "$log_file"
 
 if mkdir -p "$backup_folder"; then
     echo "Backup-Ordner erstellt: $backup_folder" >> "$log_file"

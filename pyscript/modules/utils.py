@@ -1,11 +1,30 @@
-from constants import PATH_LOGS
+from config import PATH_LOGS
 
 import logging
-import re
+import inspect
 import os
-import subprocess
+import datetime
+import regex as re
 
-from datetime import datetime
+class Logger:
+  def __init__(self):
+    pass
+  
+  def __call__(self, message):
+    try:
+      current_frame = inspect.currentframe()
+      caller_frame = inspect.getouterframes(current_frame)[1]
+      function_name = caller_frame.function
+      filename = os.path.basename(caller_frame.filename)
+      current_time = datetime.datetime.now().strftime("%H:%M")
+
+      logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+      log.info(f"{current_time} - {function_name} in {filename}: {message}")
+
+      print(f"{current_time} - {function_name} in {filename}: {message}")
+    except Exception as e:
+      print(f"{e}")
 
 class Logfile:
     
@@ -24,7 +43,7 @@ class Logfile:
     self.logger.setLevel(logging.DEBUG)
     self.logger.propagate = False
     
-    self.log("# {}".format(datetime.now()))
+    self.log("# {}".format(datetime.datetime.now()))
     
   def log(self, message=None):
     
@@ -40,7 +59,7 @@ class Logfile:
     
     elif message == " ":
         self.logger.debug('\n')
-        
+
   def finished(self):
     logs = "\n".join(self.logs)
     log.info(f"[executed] {self.name}: {logs}")

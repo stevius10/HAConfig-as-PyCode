@@ -136,7 +136,7 @@ template_badges_services:
     show_header_toggle: false
     badges:
     
-    - entity: sensor.luftreiniger_pm2_5
+    - entity: sensor.luftreiniger
       name: Luft reinigen
       tap_action:
         action: call-service

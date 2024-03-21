@@ -1,10 +1,10 @@
-from constants import (
+from config import (
     SERVICE_GIT_CRON, SERVICE_GIT_REPO_URL,
     SERVICE_GIT_REPO_BRANCH, SERVICE_GIT_REPO_TARGET,
     SERVICE_GIT_REPO_MESSAGE, SERVICE_GIT_SETTINGS_CREDENTIALS,
     SERVICE_GIT_SETTINGS_CONFIG
 )
-from logfile import Logfile
+from utils import Logfile
 import subprocess
 
 @service(supports_response="optional")

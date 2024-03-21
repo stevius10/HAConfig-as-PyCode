@@ -1,3 +1,5 @@
+asyncio
+aiofiles
 requests
 
 google-api-python-client

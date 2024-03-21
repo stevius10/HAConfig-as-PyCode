@@ -1,5 +1,5 @@
-from helper import expr
 from entities import AUTO_ENTITIES_DEFAULT, AUTO_TIMEOUT_ENTITIES
+from helper import expr
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 

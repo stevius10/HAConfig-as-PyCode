@@ -279,17 +279,6 @@
     target:
       entity_id: sensor.v_last_backup
   mode: single
-- id: '1657086266016'
-  alias: Notify-Backup-Failed
-  description: ''
-  use_blueprint:
-    path: jcwillox/notify_auto_backup.yaml
-    input:
-      devices:
-      - 46f02537a7f3b41b865cccc89892d777
-      - a75a87663e2fc1580d08c074877a1380
-      notify_hass: true
-      only_after: 09:00:00
 - id: '1663995681715'
   alias: Timeout-Bittorrent
   description: ''
