@@ -32,4 +32,5 @@ def notify_immo(**kwargs):
 @time_trigger(EXPR_TIME_UPDATE_SENSORS)
 def update_sensors(): 
   task.sleep(random.randint(10, 600))
-  homeassistant.update_entity()
+  for entity in entities:
+    homeassistant.update_entity(entity_id=entity)
