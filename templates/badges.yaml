@@ -151,19 +151,19 @@ template_badges_services:
         
     - entity: sensor.fritz_box_7530_gb_empfangen
       name: Erneut verbinden
-      tap_action:
+      double_tap_action:
         action: call-service
         service: button.press
         data:
           entity_id: button.fritz_box_7530_neu_verbinden
         confirmation:
           text: Internetverbindung trennen und neu herstellen? 
-      hold_action:
+      tap_action:
         action: more-info
       
     - entity: switch.fritz_box_7530_wi_fi_generation_lockdown_gast
       name: Gäste-WLAN
-      tap_action:
+      double_tap_action:
         action: call-service
         service: switch.toggle
         data:
@@ -171,7 +171,7 @@ template_badges_services:
         confirmation:
           text: "Gäste-WLAN umschalten"
 
-      hold_action:
+      tap_action:
         action: call-service
         service: browser_mod.more_info
         data:
@@ -219,45 +219,3 @@ template_badges_services:
         service: homeassistant.turn_off
         data:
           entity_id: pyscript.script_off
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
