@@ -6,7 +6,7 @@ import os
 import datetime
 import regex as re
 
-class Logger:
+class Logs:
   def __init__(self):
     pass
   
