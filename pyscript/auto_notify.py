@@ -18,8 +18,8 @@ entities = {
 def notify_immo(**kwargs):
   if(kwargs.get("old_value") not in STATES_HA_UNDEFINED):
     notify.mobile_app_iphone(
-      message: "" #kwargs.get("var_name"), 
-      data: {
+      message="", #kwargs.get("var_name"), 
+      data={
         "shortcut": {
           "name": "Notification-Monitor",
           "input": entities[kwargs.get("var_name")],

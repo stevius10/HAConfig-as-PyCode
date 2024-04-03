@@ -7,9 +7,7 @@ import datetime
 import regex as re
 
 class Logs:
-  def __init__(self):
-    pass
-  
+  @staticmethod
   def __call__(self, message):
     try:
       current_frame = inspect.currentframe()

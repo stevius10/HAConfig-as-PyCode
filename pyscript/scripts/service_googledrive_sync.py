@@ -1,7 +1,7 @@
 from config import SERVICE_GOOGLE_DRIVE_LOCAL_FOLDER, SERVICE_GOOGLE_DRIVE_IGNORE_FOLDERS, \
  SERVICE_GOOGLE_DRIVE_REMOTE_FOLDER, SERVICE_GOOGLE_DRIVE_TRASH_FOLDER, \
  SERVICE_GOOGLE_DRIVE_CREDENTIALS_FILE, SERVICE_GOOGLE_DRIVE_CRON
-from utils import Logfile
+from utils import Logfile, Logs
 
 import os
 import io
@@ -53,9 +53,9 @@ class Drive():
     os.utime(local_path, (modified_timestamp, modified_timestamp))
 
     if update is not False:
-      util.log("[local] updated {} ({})", filename, local_path)
+      Logs("[local] updated {} ({})", filename, local_path)
     else:
-      util.log("[local] {} ({})", filename, local_path)
+      Logs("[local] {} ({})", filename, local_path)
 
   def upload_file(self, filename, local_path, folder_id, update=False):
     local_path = f"{local_path}/{filename}"
