@@ -75,18 +75,18 @@ class Drive():
   
         if modified_timestamp > remote_modified_time:
           uploaded_file = self.__service.files().update(fileId=existing_file['id'], media_body=media).execute()
-          util.log("[updated] {} from {} ({})", filename, Utils.get_local_file_timestamp(local_path), local_path)
+          Logs("[updated] {} from {} ({})", filename, Utils.get_local_file_timestamp(local_path), local_path)
         else:
-          util.log("[skipped] {}", filename)
+          Logs("[skipped] {}", filename)
       else:
         uploaded_file = self.__service.files().create(
           body=file_metadata, media_body=media, fields='id'
         ).execute()
-        util.log("[uploaded] {} ({})", filename, local_path)
+        Logs("[uploaded] {} ({})", filename, local_path)
   
       return uploaded_file if 'uploaded_file' in locals() else None
     except Exception as e:
-      util.log("Error uploading file: {}. Error: {}", filename, str(e))
+      Logs("Error uploading file: {}. Error: {}", filename, str(e))
       return False
 
   def find_file_by_name(self, filename, folder_id):
@@ -110,16 +110,16 @@ class Drive():
 
   def upload_folder(self, foldername, folder_id):
     if foldername in SERVICE_GOOGLE_drive_ignore_folders:
-      util.log("[skipped] Ignored folder: {}", foldername)
+      Logs("[skipped] Ignored folder: {}", foldername)
       return False
     
     folder_metadata = {'name': foldername, 'parents': [folder_id], 'mimeType': 'application/vnd.google-apps.folder'}
     try:
       uploaded_folder = self.__service.files().create(body=folder_metadata).execute()
-      util.log("[created] folder '{}'", uploaded_folder['name'])
+      Logs("[created] folder '{}'", uploaded_folder['name'])
       return uploaded_folder['id']
     except Exception as e:
-      util.log("Error creating folder: '{}'. Error: {}", folder_metadata["name"], str(e))
+      Logs("Error creating folder: '{}'. Error: {}", folder_metadata["name"], str(e))
       return False
       
   def get_folder_size(self, folder_id):
@@ -138,7 +138,7 @@ class Drive():
     return total_size
 
   def synchronize(self, local_path, folder_id, recursive=False):
-    util.log("{} {}", "[sync] recursively" if recursive else "[sync]", local_path)
+    Logs("{} {}", "[sync] recursively" if recursive else "[sync]", local_path)
   
     if not os.path.exists(local_path):
       os.makedirs(local_path)
@@ -160,13 +160,13 @@ class Drive():
         drive_folder_size = self.get_folder_size(current_folder_id)
         local_folder_size = sum(os.path.getsize(os.path.join(current_local_path, f)) for f in local_files if os.path.isfile(os.path.join(current_local_path, f)))
         if drive_folder_size == local_folder_size:
-          util.log("[skipped] Folder size matches for {}", current_local_path)
+          Logs("[skipped] Folder size matches for {}", current_local_path)
           continue
   
       same_files = list(set(drive_files_filtered['names']) & set(local_files))
   
       if len(same_files) == 0 and not recursive:
-        util.log("[skipped] {}", current_local_path)
+        Logs("[skipped] {}", current_local_path)
   
       for sm_file in same_files:
         local_path = f"{current_local_path}/{sm_file}"
@@ -197,7 +197,7 @@ class Drive():
       different_files = list(set(drive_files_filtered['names']) ^ set(local_files))
   
       if len(different_files) == 0 and not recursive:
-        util.log("[skipped] {}", current_local_path)
+        Logs("[skipped] {}", current_local_path)
   
       for diff_file in different_files:
         if diff_file in drive_files_filtered['names']:
