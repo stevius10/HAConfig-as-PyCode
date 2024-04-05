@@ -8,7 +8,7 @@ entities = AUTO_MOTION_ENTITIES
 # motion: motion detected
 def on_motion_factory(entity):
   @time_active((f"range(sunset - {entities.get(entity)['sun_diff']}min, sunrise + {entities.get(entity)['sun_diff']}min)" if 'sun_diff' in entities.get(entity) else EXPR_TIME_RANGE_DAY))
-  @state_trigger(expr(entity, "on"), state_check_now=True)
+  @state_trigger(expr(entity, "on", log=False), state_check_now=True)
   def on_motion(var_name=None): 
     if var_name in entities and "on" in entities.get(var_name):
       scene.turn_on(entity_id=entities.get(var_name).get("on"))
@@ -16,7 +16,7 @@ def on_motion_factory(entity):
 
 # motion: no motion detected
 def off_motion_factory(entity):
-  @state_trigger(expr(entity, "off"), state_hold=AUTO_MOTION_TIMEOUT, state_check_now=True)
+  @state_trigger(expr(entity, "off", log=False), state_hold=AUTO_MOTION_TIMEOUT, state_check_now=True)
   def off_motion(var_name=None):
     if var_name in entities and "off" in entities.get(var_name):
       transition = float(entities.get(var_name).get("transition")) if entities.get(var_name).get("transition") else 0

@@ -1,5 +1,2 @@
-downloader: 
-  download_dir: /share/Extern/Downloads/
-
 tts:
   - platform: google_translate
