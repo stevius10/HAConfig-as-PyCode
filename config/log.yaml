@@ -5,11 +5,13 @@ logger:
     custom_components.xiaomi_miot: critical
     androidtv: critical
     pychromecast.socket_client: critical
-    scripts: info
   filters:
     homeassistant:
       - "Error doing job: Future exception was never retrieved" # Tado
       - "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))" # Tado
+    custom_components.pyscript.global_ctx:
+      - "Loaded"
+      - "Unloaded"
     custom_components.hacs:
       - "https://api.github.com/rate_limit"
     homeassistant.components.google_assistant.http:
@@ -31,4 +33,3 @@ logbook:
 
 system_log:
   max_entries: 5
-  fire_event: true

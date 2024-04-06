@@ -100,7 +100,7 @@ template:
         {% elif state_attr('fan.luftreiniger', 'mode') == 'sleep' %}
           Sleep
         {% else %}
-           {{ state_attr('fan.luftreiniger', 'percentage') }}%
+           {{ state_attr('fan.luftreiniger', 'percentage') }}
         {% endif %}
         
     - name: "Luftreiniger-PM 2,5"

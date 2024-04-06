@@ -3,15 +3,13 @@ recorder:
   auto_repack: true
   purge_keep_days: 3
   commit_interval: 30
-  # include:
-  #   domains:
-  #     - scripts
-  #     - pyscript
-  #   # entity_globs:
-  #   #   - binary_sensor.*_occupancy
-  #   entities:
-  #     - switch.bett
-  #     - switch.sofa
-  #     - switch.heizdecke
-  #     - switch.sz_luftung
-  #     - fan.luftreiniger
+  include:
+    domains:
+      - scripts
+      - pyscript
+    entities:
+      - switch.bett
+      - switch.sofa
+      - switch.heizdecke
+      - switch.sz_luftung
+      - fan.luftreiniger

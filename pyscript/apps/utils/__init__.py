@@ -1,4 +1,4 @@
-from config import LOG_DEBUG, LOG_DEBUG_DEVICES
+from config import LOG_DEBUG, LOG_DEBUG_DEVICES, STATES_HA_UNDEFINED
 
 log_state_trigger = []
 
@@ -10,11 +10,10 @@ def log_state_factory(entity, expr):
 
   if LOG_DEBUG or entity in LOG_DEBUG_DEVICES:
     log_state_trigger.append(log_state) 
-
-  info = f"[automation] {entity}: {expr}"
-  try: info += f"({state.get(entity)})" if state.get(entity) is not None else ""
-  except: pass 
-  log.info(info)
+  
+  info = f"[trigger] {entity} {expr}"
+  try: info += f" ({state.get(entity)})" if state.get(entity) not in STATES_HA_UNDEFINED else ""
+  except: pass   
   
 @service
 def log_state(entity, expr):

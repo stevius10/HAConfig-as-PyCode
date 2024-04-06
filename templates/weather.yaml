@@ -3,7 +3,8 @@ template_forecast:
     type: custom:hui-element
     card_type: weather-forecast
     show_current: false
-    show_forecast: false
+    show_forecast: true
+    forecast_type: hourly
     entity: weather.openweathermap
     card_mod:
       style: |

@@ -37,7 +37,7 @@ def timeout_factory(entity, default, delay=None):
   @event_trigger("timer.finished")
   def timer_stop(**kwargs):
     log.info(f"implement: kwargs: {kwargs}")
-    # reset(entity_id=entity)
+    reset(entity_id=entity)
   timeout_trigger.append(timer_stop)
 
 # Initialization

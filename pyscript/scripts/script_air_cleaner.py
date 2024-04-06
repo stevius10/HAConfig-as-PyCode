@@ -37,14 +37,14 @@ def script_air_cleaner_turn_on(mode=None):
     
 @time_active(EXPR_TIME_ACTIVE)
 @state_active(EXPR_TIME_SEASON_POLLEN)
-@state_trigger(f"int({state.get(SCRIPT_AIR_CLEANER_SENSOR)}) > {SCRIPT_AIR_CLEANER_THRESHOLD_START}", watch=[sensor.luftreiniger]) #, watch=[SCRIPT_AIR_CLEANER_SENSOR])
+@state_trigger(f"int({SCRIPT_AIR_CLEANER_SENSOR}) > {SCRIPT_AIR_CLEANER_THRESHOLD_START}")
 def script_air_cleaner_threshold_on():
   Logs("[script_air_cleaner] {state.get(SCRIPT_AIR_CLEANER_SENSOR} pm2.5: turn on")
   script_air_cleaner_turn_on()
 
 @time_active(EXPR_TIME_ACTIVE)
 @state_active(EXPR_TIME_SEASON_POLLEN)
-@state_trigger(f"int({state.get(SCRIPT_AIR_CLEANER_SENSOR)}) < {SCRIPT_AIR_CLEANER_THRESHOLD_STOP}", watch=[SCRIPT_AIR_CLEANER_SENSOR])
+@state_trigger(f"int({SCRIPT_AIR_CLEANER_SENSOR}) < {SCRIPT_AIR_CLEANER_THRESHOLD_STOP}")
 def script_air_cleaner_threshold_off():
   Logs("[script_air_cleaner] {state.get(SCRIPT_AIR_CLEANER_SENSOR} pm2.5: turn off")
   script_air_cleaner_turn_off()

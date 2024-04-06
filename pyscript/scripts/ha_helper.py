@@ -23,8 +23,11 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
   else:
     log_ha_size = LOG_HA_SIZE
   try: 
+    task.sleep(3)
     log_truncate(logfile=PATH_LOG_HA, size_log_entries=log_ha_size, size_archive_entries=LOG_HA_ARCHIVE_SIZE)
-    
+
+  except AttributeError:
+    pass
   except Exception as e:
     log.error(e)
   finally: 

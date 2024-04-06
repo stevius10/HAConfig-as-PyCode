@@ -52,11 +52,12 @@ template_card_art:
           '--label-badge-red': rgb(80, 80, 80)
           '--label-badge-background-color': rgb(227, 227, 227)
         cards: 
-        
         - type: custom:decluttering-card
-          template: template_badges_info
+          template: template_badges_general
         - type: custom:decluttering-card
           template: template_badges_services
+        - type: custom:decluttering-card
+          template: template_badges_system
 
     
     # Calendar

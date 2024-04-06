@@ -149,5 +149,4 @@ def script_off_tv(entity=None):
 
 @service
 def turn_off(entity):
-  log.info(f"{pyscript.get_global_ctx():}")
   homeassistant.turn_off(entity_id=entity)
