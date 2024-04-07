@@ -1,5 +1,6 @@
-from config import LOG_HA_SIZE, LOG_HA_TAIL, LOG_HA_TRUNCATE_BLOCK_DELAY, PATH_LOG_HA, \
-  LOG_HA_ARCHIVE_SIZE, LOG_ARCHIVE_SUFFIX, EVENT_FOLDER_WATCHER
+from config import LOG_HA_SIZE, LOG_HA_TAIL, PATH_LOG_HA, \
+   LOG_HA_TRUNCATE_BLOCK_DELAY, LOG_HA_TRUNCATE_IO_RETRY, \
+   LOG_HA_ARCHIVE_SIZE, LOG_ARCHIVE_SUFFIX, EVENT_FOLDER_WATCHER
   
 import aiofiles
 import asyncio
@@ -23,7 +24,6 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
   else:
     log_ha_size = LOG_HA_SIZE
   try: 
-    task.sleep(3)
     log_truncate(logfile=PATH_LOG_HA, size_log_entries=log_ha_size, size_archive_entries=LOG_HA_ARCHIVE_SIZE)
 
   except AttributeError:
@@ -34,14 +34,24 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
     task.sleep(LOG_HA_TRUNCATE_BLOCK_DELAY)
 
 async def log_read(logfile):
-  async with aiofiles.open(logfile, mode='r+') as l:
-    logs = l.readlines()
-  return logs
+  for _ in range(LOG_HA_TRUNCATE_IO_RETRY):
+    try:
+      async with aiofiles.open(logfile, mode='r+') as l:
+        logs = l.readlines()
+      return logs
+    except: 
+      pass
+  return []
 
 async def log_write(logfile, lines, mode='w+'):
-  async with aiofiles.open(logfile, mode=mode) as l:
-    l.writelines(lines)
-
+  for _ in range(LOG_HA_TRUNCATE_IO_RETRY):
+    try:
+      async with aiofiles.open(logfile, mode=mode) as l:
+        l.writelines(lines)
+    except: 
+      pass
+  return []
+  
 @service
 async def log_truncate(logfile, size_log_entries=LOG_HA_SIZE, size_log_tail=LOG_HA_TAIL, size_archive_entries=0, log_archive_suffix=LOG_ARCHIVE_SUFFIX):
   logs_trunc = []

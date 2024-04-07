@@ -10,6 +10,7 @@ template_calendar:
       - entity: calendar.daten_und_zeitraume
       - entity: calendar.aktenzeichen
       - entity: calendar.pokemon
+        color: white
       compactMode: true
       showLoader: false
       showLocation: false
@@ -21,6 +22,7 @@ template_calendar:
       maxEventCount: 4
       noEventText: ""
       maxDaysToShow: 1
+      showProgressBar: false
       card_mod:
         style: | 
           ha-card {  

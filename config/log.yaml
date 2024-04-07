@@ -2,7 +2,9 @@ logger:
   default: error
   logs:
     custom_components.pyscript: info
+    custom_components.tapo.coordinators: critical
     custom_components.xiaomi_miot: critical
+    miio.miioprotocol: critical
     androidtv: critical
     pychromecast.socket_client: critical
   filters:

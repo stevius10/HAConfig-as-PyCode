@@ -3,7 +3,7 @@ import time
 
 from config import STATES_HA_UNDEFINED
 
-def expr(entity, expression="", comparator="==", defined=True, operator='or', log=True): 
+def expr(entity, expression="", comparator="==", defined=True, operator='or', log=False): 
   
   if isinstance(entity, list) or isinstance(entity, dict):
     return expressions(entities=entity, expression="", defined=True, operator=operator, log=True)
@@ -21,7 +21,7 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or', lo
   return expr
 
   
-def expressions(entities, expression="", defined=True, operator='or', log=True):
+def expressions(entities, expression="", defined=True, operator='or', log=False):
   exprs = []
   
   if not expression:
