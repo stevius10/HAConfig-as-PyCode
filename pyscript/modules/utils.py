@@ -1,7 +1,6 @@
 from config import LOG_SYS_LOGGER, PATH_LOGS
 
 import datetime
-import inspect
 import logging
 import os
 import regex as re
@@ -9,11 +8,13 @@ import regex as re
 class Logfile:
     
   def __init__(self, name):
+    pyscript.log(msg="0")
     self.name = name.replace("scripts.", "")
     self.logger = logging.getLogger(self.name)
     self.logs = []
     self.logfile = os.path.join(PATH_LOGS, self.name) + ".log"
-    
+    pyscript.log(msg="1")
+
     await service.call("pyscript", "log_truncate", logfile=self.logfile, blocking=True)
 
     handler = logging.FileHandler(self.logfile, mode='w+')

@@ -5,6 +5,7 @@ from config import LOG_HA_SIZE, LOG_HA_TAIL, PATH_LOG_HA, \
 
 import aiofiles
 import asyncio
+import inspect
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP, EVENT_CALL_SERVICE
 
@@ -95,4 +96,6 @@ def log_trigger(entity, expr):
 
 @service
 def log(msg, level="info", logger=LOG_SYS_LOGGER):
-  system_log.write(message=msg, logger=logger, level=level)
+  line = inspect.currentframe().f_back.f_lineno
+  func = inspect.currentframe().f_back.f_code.co_name
+  system_log.write(message=f"[{func} ({line})] {msg}", logger=logger, level=level)
