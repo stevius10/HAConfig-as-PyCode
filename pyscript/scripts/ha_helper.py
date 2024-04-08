@@ -96,4 +96,4 @@ def log_trigger(entity, expr):
 
 @service
 def log(msg, level="info", logger=LOG_SYS_LOGGER):
-  system_log.write("{msg}", logger=logger, level=level)
+  system_log.write(message="{msg}", logger=logger, level=level)
