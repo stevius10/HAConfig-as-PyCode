@@ -1,8 +1,8 @@
 logger: 
-  default: info
+  default: error
   logs:
     custom_components.pyscript: info
-    custom_components.pyscript.log: info
+    custom_components.pyscript.file: info
     custom_components.tapo.coordinators: critical
     custom_components.xiaomi_miot: critical
     androidtv: critical
