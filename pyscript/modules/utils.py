@@ -27,16 +27,18 @@ class Logfile:
     self("# {}".format(datetime.datetime.now()))
     
   def __call__(self, message):
-    pyscript.log(msg="testiii")
 
     self.append(message=message)
     
   def append(self, message=None):
-    pyscript.log(msg="5,,mm")
+    pyscript.log(msg="")
     if isinstance(message, str):
+      pyscript.log(msg="1")
       if re.search('[a-zA-Z]', message): 
         self.logger.debug(message)
         self.logs.append(message)
+        pyscript.log(msg=logs)
+
         
     elif isinstance(message, list): 
       for msg in message:
