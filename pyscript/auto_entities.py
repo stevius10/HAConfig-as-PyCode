@@ -23,13 +23,16 @@ def default_factory(entity, func):
 
 def timeout_factory(entity, default, delay=None):
   @event_trigger(EVENT_HOMEASSISTANT_STARTED) 
-  @state_trigger(expr(entity, expression=entities_timeout.get(entity)['default'], comparator="!=", log=True))
+  @state_trigger(expr(entity, expression=entities_timeout.get(entity)['default'], comparator="!=", log=True, defined=True))
   def timeout_default(trigger_type=None, var_name=None):
     if state.get(entity) != default:
       if trigger_type == "time" or delay == None: 
         reset(entity, default)
       if delay in entities_timeout.get(entity): 
         entity_timer = get_timer(entity, delay)
+
+        try: pyscript.log(msg=f"implement: kwargs: {entity_timer}")
+        except: pass
         pyscript.log(msg=f"Timer: {entity_timer}")
         timer.cancel(entity_id=entity_timer)
         timer.start(entity_id=entity_timer, duration=delay)
@@ -63,6 +66,6 @@ def reset(entity, default):
   state.set(entity, default)
 
 def get_timer(entity, delay):
-  name = f"pyscript.timer_reset"
+  name = f"timer.timer_{entity}"
   state.set(name, str(delay), device_class='duration', state_class='measurement', unit_of_measurement='m')
   return name

@@ -11,8 +11,9 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or', lo
   if expression != "":
     expression = f"{comparator} '{expression}'"
 
-  if log and "pyscript" in globals(): 
-    pyscript.log_state(entity=entity, expr=expression)
+  if log:
+    try: pyscript.log_state(entity=entity, expr=expression)
+    except: pass
 
   statement_condition_defined = f"and {entity} not in {STATES_HA_UNDEFINED}" if defined else ""
 

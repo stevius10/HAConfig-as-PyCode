@@ -13,8 +13,6 @@ class Logfile:
     self.logs = []
     self.logfile = os.path.join(PATH_LOGS, self.name) + ".log"
 
-    # pyscript.log_truncate(logfile=self.logfile)
-
     handler = logging.FileHandler(self.logfile, mode='w+')
     handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
 
@@ -42,7 +40,6 @@ class Logfile:
   async def log_truncate(self):
     if "pyscript" in globals() is not None: 
       await service.call(domain="pyscript", name="log_truncate", logfile=self.logfile, blocking=True)
-    # service.call(domain=func.split(".")[0], name=func.split(".")[1], logfile=self.logfile, blocking=True)
 
   def finished(self):
     logs = "\n".join(self.logs)

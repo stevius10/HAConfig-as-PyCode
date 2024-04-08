@@ -78,10 +78,10 @@ def service_git_sync(
     except subprocess.CalledProcessError as e:
       logfile.log([e, command, result.stdout, result.stderr])
 
-  pr_response = pr(repo_owner, access_token, repo_name, base_branch, branch_name, pull_request_title, pull_request_body)
-  if pr_response:
-      logfile.log(f"Pull request created or updated: {pull_request_url}")
-  else:
-      pyscript.log(msg="Failed to create or update pull request.", level="error")
+  # pr_response = pr(repo_owner, access_token, repo_name, base_branch, branch_name, pull_request_title, pull_request_body)
+  # if pr_response:
+  #     logfile.log(f"Pull request created or updated: {pull_request_url}")
+  # else:
+  #     pyscript.log(msg="Failed to create or update pull request.", level="error")
 
   return logfile.finished()

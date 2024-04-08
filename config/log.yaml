@@ -17,11 +17,17 @@ logger:
       - "Un"
     custom_components.hacs:
       - "https://api.github.com/rate_limit"
+    homeassistant.components.openweathermap.weather_update_coordinator: 
+      - "timeouted"
+    homeassistant.components.hassio.handler:
+      - "stat"
     homeassistant.components.google_assistant.http:
       - "404"
       - "500"
     homeassistant.components.websocket_api.http.connection: 
       - "io.robbie.HomeAssistant"
+      
+      
     aiohttp.server: 
       - "Error handling request"
     root:
