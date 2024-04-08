@@ -13,9 +13,9 @@ class Logfile:
     self.logger = logging.getLogger(self.name)
     self.logs = []
     self.logfile = os.path.join(PATH_LOGS, self.name) + ".log"
-    pyscript.log(msg="1")
 
     await service.call("pyscript", "log_truncate", logfile=self.logfile, blocking=True)
+    pyscript.log(msg="gg")
 
     handler = logging.FileHandler(self.logfile, mode='w+')
     handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
@@ -31,14 +31,13 @@ class Logfile:
     self.append(message=message)
     
   def append(self, message=None):
-    pyscript.log(msg="")
+    pyscript.log(msg="h")
     if isinstance(message, str):
-      pyscript.log(msg="1")
+      pyscript.log(msg="2")
       if re.search('[a-zA-Z]', message): 
         self.logger.debug(message)
         self.logs.append(message)
         pyscript.log(msg=logs)
-
         
     elif isinstance(message, list): 
       for msg in message:
