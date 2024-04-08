@@ -6,22 +6,6 @@ import logging
 import os
 import regex as re
 
-class Logs:
-  @staticmethod
-  def __call__(self, message):
-    log.info("2")
-    
-    _LOGGER = logger.getLogger(LOG_SYS_LOGGER)
-    _LOGGER.info("1")
-    _LOGGER.setLevel(logging.DEBUG)
-    handler = logging.StreamHandler()
-    handler.setLevel(logging.DEBUG)
-    _LOGGER.addHandler(handler)
-    system_log.write(message=message, logger=LOG_SYS_LOGGER, level="error")
-    await system_log.write(message=message, level="error")
-    
-    service.call(domain="system_log", entity="write", message=message)
-
 class Logfile:
     
   def __init__(self, name):
@@ -60,5 +44,6 @@ class Logfile:
 
   def finished(self):
     logs = "\n".join(self.logs)
-    Logs(f"[executed] {self.name}: {logs}")
-    return { "logs": logs }
+    pyscript.log(msg=f"[executed] {self.name}: {logs}")
+    
+    return { "service": {self.name}, "logs": logs }

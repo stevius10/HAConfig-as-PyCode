@@ -10,7 +10,6 @@ from mapping import (
   SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL, SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP
 )
 from helper import expr
-from utils import Logs
 
 entity = SCRIPT_AIR_CLEANER_ENTITY
 
@@ -29,7 +28,7 @@ def script_air_cleaner():
 # Trigger
 @state_trigger(expr(entity, STATE_ON))
 def script_air_cleaner_turn_on(mode=None):
-  Logs("[script_air_cleaner] turned on: switch to automated cleaning")
+  pyscript.log(msg="[script_air_cleaner] turned on: switch to automated cleaning")
   script_air_cleaner_mode_sleep()
   if mode == SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL: 
     await task.sleep(3)
@@ -39,14 +38,14 @@ def script_air_cleaner_turn_on(mode=None):
 @state_active(EXPR_TIME_SEASON_POLLEN)
 @state_trigger(f"int({SCRIPT_AIR_CLEANER_SENSOR}) > {SCRIPT_AIR_CLEANER_THRESHOLD_START}")
 def script_air_cleaner_threshold_on():
-  Logs("[script_air_cleaner] {state.get(SCRIPT_AIR_CLEANER_SENSOR} pm2.5: turn on")
+  pyscript.log(msg="[script_air_cleaner] {state.get(SCRIPT_AIR_CLEANER_SENSOR} pm2.5: turn on")
   script_air_cleaner_turn_on()
 
 @time_active(EXPR_TIME_ACTIVE)
 @state_active(EXPR_TIME_SEASON_POLLEN)
 @state_trigger(f"int({SCRIPT_AIR_CLEANER_SENSOR}) < {SCRIPT_AIR_CLEANER_THRESHOLD_STOP}")
 def script_air_cleaner_threshold_off():
-  Logs("[script_air_cleaner] {state.get(SCRIPT_AIR_CLEANER_SENSOR} pm2.5: turn off")
+  pyscript.log(msg="[script_air_cleaner] {state.get(SCRIPT_AIR_CLEANER_SENSOR} pm2.5: turn off")
   script_air_cleaner_turn_off()
 
 # Helper
@@ -67,6 +66,6 @@ def script_air_cleaner_automation_clean():
 
 @state_trigger(expr(entity, STATE_ON) and f"{entity}.{SCRIPT_AIR_CLEANER_ENTITY_ATTRIBUTE} == '{SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL}'", state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN)
 def script_air_cleaner_timeout():
-  Logs("[script_air_cleaner] timeout: turn off")
+  pyscript.log(msg="[script_air_cleaner] timeout: turn off")
   script_air_cleaner_mode_sleep()
   script_air_cleaner_turn_off(SCRIPT_AIR_CLEANER_HELPER)

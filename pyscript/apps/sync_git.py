@@ -7,6 +7,8 @@ from config import (
 from utils import Logfile
 import subprocess
 
+logfile = Logfile(pyscript.get_global_ctx())
+
 @service(supports_response="optional")
 @time_trigger(SERVICE_GIT_CRON)
 def service_git_sync(
@@ -17,7 +19,6 @@ def service_git_sync(
   config_path=SERVICE_GIT_SETTINGS_CONFIG,
   commit_message=SERVICE_GIT_REPO_MESSAGE
 ):
-  logfile = Logfile(pyscript.get_global_ctx())
 
   commands = [
       f"git config --local include.path '{config_path}'",
@@ -44,8 +45,8 @@ def service_git_sync(
               command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
               shell=True, check=False, text=True
           )
-          logfile.log([command, result.stdout, result.stderr])
+          logfile([command, result.stdout, result.stderr])
       except subprocess.CalledProcessError as e:
-          logfile.log([e, command, result.stdout, result.stderr])
+          logfile([e, command, result.stdout, result.stderr])
 
   return logfile.finished()

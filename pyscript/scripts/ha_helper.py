@@ -1,7 +1,7 @@
 from config import LOG_HA_SIZE, LOG_HA_TAIL, PATH_LOG_HA, \
    LOG_HA_TRUNCATE_BLOCK_DELAY, LOG_HA_TRUNCATE_IO_RETRY, \
    LOG_HA_ARCHIVE_SIZE, LOG_ARCHIVE_SUFFIX, EVENT_FOLDER_WATCHER, \
-   LOG_DEBUG, LOG_DEBUG_DEVICES, STATES_HA_UNDEFINED
+   LOG_SYS_LOGGER, LOG_DEBUG, LOG_DEBUG_DEVICES, STATES_HA_UNDEFINED
 
 import aiofiles
 import asyncio
@@ -92,3 +92,7 @@ def log_trigger_factory(entity, expr):
 @service
 def log_trigger(entity, expr):
   log_trigger_factory(entity, expr)
+
+@service
+def log(msg, level="info", logger=LOG_SYS_LOGGER):
+  system_log.write(message=msg, logger=logger, level=level)

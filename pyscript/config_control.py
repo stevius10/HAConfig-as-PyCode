@@ -1,5 +1,4 @@
 from helper import expr
-from utils import Logs
 
 CONFIG_CONTROL = {
   'sensor.wz_schalter_action': {
@@ -27,13 +26,10 @@ def on_press_factory(entity):
   
   @state_trigger(expr(entity, defined=True))
   def on_press(var_name=None, value=None):
-    try:
-      action = CONFIG_CONTROL.get(entity).get(value.split("-")[0])
-      if action:
-        Logs(action)
-        scene.turn_on(entity_id=action)
-    except KeyError:
-      Logs()
+    action = CONFIG_CONTROL.get(entity).get(value.split("-")[0])
+    if action:
+      pyscript.log(msg=action)
+      scene.turn_on(entity_id=action)
 
   trigger_control.append(on_press)
 
