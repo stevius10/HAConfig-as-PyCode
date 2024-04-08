@@ -28,7 +28,6 @@ def on_press_factory(entity):
   def on_press(var_name=None, value=None):
     action = CONFIG_CONTROL.get(entity).get(value.split("-")[0])
     if action:
-      pyscript.log(msg=action)
       scene.turn_on(entity_id=action)
 
   trigger_control.append(on_press)

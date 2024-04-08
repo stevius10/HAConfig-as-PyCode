@@ -28,9 +28,9 @@ class Drive():
       credentials = Credentials.from_service_account_file(service_google_drive_credentials_file, scopes=["https://www.googleapis.com/auth/drive"])
       self.__service = build('drive', 'v3', credentials=credentials)
       self.google_drive_ignore_folders = SERVICE_GOOGLE_DRIVE_IGNORE_FOLDERS
-      logfile("Google Drive service initialized successfully.")
+      logfile.log("Google Drive service initialized successfully.")
     except Exception as e:
-      logfile(f"Error initializing Google Drive service: {e}")
+      logfile.log(f"Error initializing Google Drive service: {e}")
       raise e
     
   def list_files(self, folder_id):
@@ -46,7 +46,7 @@ class Drive():
   
       return files_dict
     except Exception as e:
-      logfile("Error listing files: {}", str(e))
+      logfile.log("Error listing files: {}", str(e))
       return {"all": [], "names": []}
   
   def download_file(self, filename, local_path, file_id, update=False):
@@ -65,11 +65,11 @@ class Drive():
       os.utime(local_path, (modified_timestamp, modified_timestamp))
   
       if update is not False:
-        logfile("[local] updated {} ({})", filename, local_path)
+        logfile.log("[local] updated {} ({})", filename, local_path)
       else:
-        logfile("[local] {} ({})", filename, local_path)
+        logfile.log("[local] {} ({})", filename, local_path)
     except Exception as e:
-      logfile("Error downloading file: {}", str(e))
+      logfile.log("Error downloading file: {}", str(e))
   
   def upload_file(self, filename, local_path, folder_id, update=False):
     local_path = f"{local_path}/{filename}"
@@ -89,18 +89,18 @@ class Drive():
     
         if modified_timestamp > remote_modified_time:
           uploaded_file = self.__service.files().update(fileId=existing_file['id'], media_body=media).execute()
-          logfile("[updated] {} from {} ({})", filename, Utils.get_local_file_timestamp(local_path), local_path)
+          logfile.log("[updated] {} from {} ({})", filename, Utils.get_local_file_timestamp(local_path), local_path)
         else:
-          logfile("[skipped] {}", filename)
+          logfile.log("[skipped] {}", filename)
       else:
         uploaded_file = self.__service.files().create(
           body=file_metadata, media_body=media, fields='id'
         ).execute()
-        logfile("[uploaded] {} ({})", filename, local_path)
+        logfile.log("[uploaded] {} ({})", filename, local_path)
     
       return uploaded_file if 'uploaded_file' in locals() else None
     except Exception as e:
-      logfile("Error uploading file: {}. Error: {}", filename, str(e))
+      logfile.log("Error uploading file: {}. Error: {}", filename, str(e))
       return False
   
   def find_file_by_name(self, filename, folder_id):
@@ -115,7 +115,7 @@ class Drive():
       else:
         return None
     except Exception as e:
-      logfile("Error finding file by name: {}", str(e))
+      logfile.log("Error finding file by name: {}", str(e))
       return None
   
   def compare_files(self, local_file_data, remote_file_data):
@@ -128,16 +128,16 @@ class Drive():
   
   def upload_folder(self, foldername, folder_id):
     if foldername in SERVICE_GOOGLE_drive_ignore_folders:
-      logfile("[skipped] Ignored folder: {}", foldername)
+      logfile.log("[skipped] Ignored folder: {}", foldername)
       return False
     
     folder_metadata = {'name': foldername, 'parents': [folder_id], 'mimeType': 'application/vnd.google-apps.folder'}
     try:
       uploaded_folder = self.__service.files().create(body=folder_metadata).execute()
-      logfile("[created] folder '{}'", uploaded_folder['name'])
+      logfile.log("[created] folder '{}'", uploaded_folder['name'])
       return uploaded_folder['id']
     except Exception as e:
-      logfile("Error creating folder: '{}'. Error: {}", folder_metadata["name"], str(e))
+      logfile.log("Error creating folder: '{}'. Error: {}", folder_metadata["name"], str(e))
       return False
       
   def get_folder_size(self, folder_id):
@@ -156,11 +156,11 @@ class Drive():
     
       return total_size
     except Exception as e:
-      logfile("Error getting folder size: {}", str(e))
+      logfile.log("Error getting folder size: {}", str(e))
       return 0
   
   def synchronize(self, local_path, folder_id, recursive=False):
-    logfile("{} {}", "[sync] recursively" if recursive else "[sync]", local_path)
+    logfile.log("{} {}", "[sync] recursively" if recursive else "[sync]", local_path)
   
     try:
       if not os.path.exists(local_path):
@@ -184,13 +184,13 @@ class Drive():
           drive_folder_size = self.get_folder_size(current_folder_id)
           local_folder_size = sum(os.path.getsize(os.path.join(current_local_path, f)) for f in local_files if os.path.isfile(os.path.join(current_local_path, f)))
           if drive_folder_size == local_folder_size:
-            logfile("[skipped] Folder size matches for {}", current_local_path)
+            logfile.log("[skipped] Folder size matches for {}", current_local_path)
             continue
     
         same_files = list(set(drive_files_filtered['names']) & set(local_files))
     
         if len(same_files) == 0 and not recursive:
-          logfile("[skipped] {}", current_local_path)
+          logfile.log("[skipped] {}", current_local_path)
     
         for sm_file in same_files:
           local_path = f"{current_local_path}/{sm_file}"
@@ -221,7 +221,7 @@ class Drive():
         different_files = list(set(drive_files_filtered['names']) ^ set(local_files))
     
         if len(different_files) == 0 and not recursive:
-          logfile("[skipped] {}", current_local_path)
+          logfile.log("[skipped] {}", current_local_path)
     
         for diff_file in different_files:
           if diff_file in drive_files_filtered['names']:
@@ -242,7 +242,7 @@ class Drive():
             else:
               self.upload_file(diff_file, current_local_path, current_folder_id)
     except Exception as e:
-      logfile("Error synchronizing folder: {}", str(e))
+      logfile.log("Error synchronizing folder: {}", str(e))
   def upload_file(self, filename, local_path, folder_id, update=False):
     try:
       local_path = f"{local_path}/{filename}"
@@ -261,18 +261,18 @@ class Drive():
         
         if modified_timestamp > remote_modified_time:
           uploaded_file = self.__service.files().update(fileId=existing_file['id'], media_body=media).execute()
-          logfile("[updated] {} from {} ({})", filename, Utils.get_local_file_timestamp(local_path), local_path)
+          logfile.log("[updated] {} from {} ({})", filename, Utils.get_local_file_timestamp(local_path), local_path)
         else:
-          logfile("[skipped] {}", filename)
+          logfile.log("[skipped] {}", filename)
       else:
         uploaded_file = self.__service.files().create(
           body=file_metadata, media_body=media, fields='id'
         ).execute()
-        logfile("[uploaded] {} ({})", filename, local_path)
+        logfile.log("[uploaded] {} ({})", filename, local_path)
       
       return uploaded_file if 'uploaded_file' in locals() else None
     except Exception as e:
-      logfile("Error uploading file: {}. Error: {}", filename, str(e))
+      logfile.log("Error uploading file: {}. Error: {}", filename, str(e))
       return False
 
   def find_file_by_name(self, filename, folder_id):
@@ -287,7 +287,7 @@ class Drive():
       else:
         return None
     except Exception as e:
-      logfile("Error finding file by name: {}. Error: {}", filename, str(e))
+      logfile.log("Error finding file by name: {}. Error: {}", filename, str(e))
       return None
 
   def compare_files(self, local_file_data, remote_file_data):
@@ -299,22 +299,22 @@ class Drive():
         modified = 'remote'
       return modified
     except Exception as e:
-      logfile("Error comparing files: {}", str(e))
+      logfile.log("Error comparing files: {}", str(e))
       return None
 
   def upload_folder(self, foldername, folder_id):
     try:
       if foldername in SERVICE_GOOGLE_drive_ignore_folders:
-        logfile("[skipped] Ignored folder: {}", foldername)
+        logfile.log("[skipped] Ignored folder: {}", foldername)
         return False
         
       folder_metadata = {'name': foldername, 'parents': [folder_id], 'mimeType': 'application/vnd.google-apps.folder'}
       
       uploaded_folder = self.__service.files().create(body=folder_metadata).execute()
-      logfile("[created] folder '{}'", uploaded_folder['name'])
+      logfile.log("[created] folder '{}'", uploaded_folder['name'])
       return uploaded_folder['id']
     except Exception as e:
-      logfile("Error creating folder: '{}'. Error: {}", folder_metadata["name"], str(e))
+      logfile.log("Error creating folder: '{}'. Error: {}", folder_metadata["name"], str(e))
       return False
   def get_folder_size(self, folder_id):
     try:
@@ -332,12 +332,12 @@ class Drive():
       
       return total_size
     except Exception as e:
-      logfile("Error getting folder size: {}. Error: {}", folder_id, str(e))
+      logfile.log("Error getting folder size: {}. Error: {}", folder_id, str(e))
       return 0
 
   async def synchronize(self, local_path, folder_id, recursive=False):
     try:
-      logfile("{} {}", "[sync] recursively" if recursive else "[sync]", local_path)
+      logfile.log("{} {}", "[sync] recursively" if recursive else "[sync]", local_path)
       
       if not os.path.exists(local_path):
         os.makedirs(local_path)
@@ -359,13 +359,13 @@ class Drive():
           drive_folder_size = self.get_folder_size(current_folder_id)
           local_folder_size = sum(os.path.getsize(os.path.join(current_local_path, f)) for f in local_files if os.path.isfile(os.path.join(current_local_path, f)))
           if drive_folder_size == local_folder_size:
-            logfile("[skipped] Folder size matches for {}", current_local_path)
+            logfile.log("[skipped] Folder size matches for {}", current_local_path)
             continue
         
         same_files = list(set(drive_files_filtered['names']) & set(local_files))
         
         if len(same_files) == 0 and not recursive:
-          logfile("[skipped] {}", current_local_path)
+          logfile.log("[skipped] {}", current_local_path)
         
         for sm_file in same_files:
           local_path = f"{current_local_path}/{sm_file}"
@@ -396,7 +396,7 @@ class Drive():
         different_files = list(set(drive_files_filtered['names']) ^ set(local_files))
         
         if len(different_files) == 0 and not recursive:
-          logfile("[skipped] {}", current_local_path)
+          logfile.log("[skipped] {}", current_local_path)
         
         for diff_file in different_files:
           if diff_file in drive_files_filtered['names']:
@@ -417,19 +417,19 @@ class Drive():
             else:
               self.upload_file(diff_file, current_local_path, current_folder_id)
     except Exception as e:
-      logfile("Error synchronizing folder: {}", str(e))
+      logfile.log("Error synchronizing folder: {}", str(e))
   def upload_folder(self, foldername, folder_id):
     try:
       if foldername in SERVICE_GOOGLE_drive_ignore_folders:
-        logfile("[skipped] Ignored folder: {}", foldername)
+        logfile.log("[skipped] Ignored folder: {}", foldername)
         return False
       
       folder_metadata = {'name': foldername, 'parents': [folder_id], 'mimeType': 'application/vnd.google-apps.folder'}
       uploaded_folder = self.__service.files().create(body=folder_metadata).execute()
-      logfile("[created] folder '{}'", uploaded_folder['name'])
+      logfile.log("[created] folder '{}'", uploaded_folder['name'])
       return uploaded_folder['id']
     except Exception as e:
-      logfile("Error creating folder: '{}'. Error: {}", folder_metadata["name"], str(e))
+      logfile.log("Error creating folder: '{}'. Error: {}", folder_metadata["name"], str(e))
       return False
 
 class Utils():
@@ -438,7 +438,7 @@ class Utils():
     try:
       return os.listdir(local_path)
     except Exception as e:
-      logfile("Error listing local files: {}", str(e))
+      logfile.log("Error listing local files: {}", str(e))
       return []
 
   @classmethod
@@ -449,7 +449,7 @@ class Utils():
       utc_timestamp = cls.convert_datetime_timestamp(utc_datetime)
       return int(unix_timestamp)
     except Exception as e:
-      logfile("Error getting local file timestamp: {}", str(e))
+      logfile.log("Error getting local file timestamp: {}", str(e))
       return 0
 
   @classmethod
@@ -460,7 +460,7 @@ class Utils():
       timestamp = calendar.timegm(time_object)
       return int(timestamp)
     except Exception as e:
-      logfile("Error converting datetime to timestamp: {}", str(e))
+      logfile.log("Error converting datetime to timestamp: {}", str(e))
       return 0
 
   @classmethod
@@ -469,7 +469,7 @@ class Utils():
       datetime_object = datetime.utcfromtimestamp(timestamp)
       return datetime_object.isoformat("T") + "Z"
     except Exception as e:
-      logfile("Error converting timestamp to datetime: {}", str(e))
+      logfile.log("Error converting timestamp to datetime: {}", str(e))
       return ""
 
 @service

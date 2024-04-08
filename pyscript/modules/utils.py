@@ -21,22 +21,14 @@ class Logfile:
     self.logger.addHandler(handler)
     self.logger.setLevel(logging.DEBUG)
     self.logger.propagate = False
-    pyscript.log(msg="gg2")
 
-    self.add("# {}".format(datetime.datetime.now()))
+    self.log("# {}".format(datetime.datetime.now()))
     
-  def __call__(self, message):
-    pyscript.log(msg="h1")
-
-    self.add(message=message)
-    
-  def add(self, message=None):
-    pyscript.log(msg="h2")
+  def log(self, message=None):
     if isinstance(message, str):
       if re.search('[a-zA-Z]', message): 
         self.logger.debug(message)
         self.logs.append(message)
-        pyscript.log(msg=logs)
         
     elif isinstance(message, list): 
       for msg in message:
