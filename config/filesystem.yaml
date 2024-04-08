@@ -1,0 +1,5 @@
+folder_watcher:
+  - folder: /config
+    patterns:
+      - "/config/home-assistant.log"
+      # - "/config/home-assistant.archive.log"

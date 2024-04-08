@@ -1,0 +1,123 @@
+command_line:
+
+  - sensor: 
+      name: V-Random
+      command: >-
+        python3 -c "import random; import string; print(''.join(random.choices(string.ascii_lowercase, k=5)))"
+      scan_interval: 31536000
+
+  - sensor: 
+      name: V-Last-Backup
+      command: "bash /config/scripts/sensors/v-lastbackup.sh"
+      scan_interval: 3600
+      
+  - sensor: 
+      name: V-Wetter-Pollenflug
+      command: "python3 /config/scripts/sensors/v-pollenflug.py"
+      scan_interval: 86400
+      
+  - sensor: 
+      name: V-Friedrichsheim
+      command: "python3 /config/scripts/sensors/v-friedrichsheim.py"
+      scan_interval: 86400
+  
+  - sensor: 
+      name: V-Neukölln
+      command: "python3 /config/scripts/sensors/v-neukolln.py"
+      scan_interval: 86400
+  
+  - sensor: 
+      name: V-InBerlinWohnen
+      command: "python3 /config/scripts/sensors/v-ibw.py"
+      scan_interval: 86400
+  
+  - sensor: 
+      name: V-WBM
+      command: "python3 /config/scripts/sensors/v-wbm.py"
+      scan_interval: 86400
+  
+  - sensor: 
+      name: V-Gewobag
+      command: "python3 /config/scripts/sensors/v-gewobag.py"
+      scan_interval: 86400
+  
+  # - platform: qbittorrent
+  #   url: "http://192.168.178.100:8081"
+  #   username: steven
+  #   password: !secret ha_addon_password
+
+### Binary ###
+
+binary_sensor:
+
+  - platform: trend
+    sensors:
+      wz_temperature_fall:
+        friendly_name: WZ-Temperatur-Sinkend
+        entity_id: sensor.wz_heizung_temperature
+        sample_duration: 1800
+        max_samples: 4
+        min_gradient: -0.00016
+        device_class: cold
+  
+      wz_temperature_rise: 
+        friendly_name: WZ-Temperatur-Steigend
+        entity_id: sensor.wz_heizung_temperature
+        sample_duration: 1800
+        max_samples: 4
+        min_gradient: 0.00016
+        device_class: heat
+  
+      sz_temperature_fall:
+        friendly_name: SZ-Temperatur-Sinkend
+        entity_id: sensor.sz_heizung_temperature
+        sample_duration: 1800
+        max_samples: 4
+        min_gradient: -0.00016
+        device_class: cold
+  
+      sz_temperature_rise: 
+        friendly_name: SZ-Temperatur-Steigend
+        entity_id: sensor.sz_heizung_temperature
+        sample_duration: 1800
+        max_samples: 4
+        min_gradient: 0.00016
+        device_class: heat
+
+      k_temperature_fall:
+        friendly_name: K-Temperatur-Sinkend
+        entity_id: sensor.k_heizung_temperature
+        sample_duration: 1800
+        max_samples: 4
+        min_gradient: -0.00016
+        device_class: cold
+  
+      k_temperature_rise: 
+        friendly_name: K-Temperatur-Steigend
+        entity_id: sensor.k_heizung_temperature
+        sample_duration: 1800
+        max_samples: 4
+        min_gradient: 0.00016
+        device_class: heat
+  
+        # min_gradient / sample_duration = diff_in_duration
+        # 0,2+ deg. per 30min: 
+        # sample_duration: 1800
+        # max_samples: 4
+        # min_gradient: -0.00011
+
+### General ###
+
+# sensor:
+#
+#  - platform: berlin_transport
+#    departures:
+#    - name: "S + U Warschauer Str. ." 
+#       stop_id: 900120004
+#       walking_time: 7
+#     - name: "Helsingforser Str." 
+#       stop_id: 900120020
+#       walking_time: 3
+#     - name: "Revaler Str." 
+#       stop_id: 900120021
+#       walking_time: 5
