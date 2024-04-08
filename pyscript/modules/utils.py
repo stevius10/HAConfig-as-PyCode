@@ -26,7 +26,7 @@ class Logfile:
     self.log("# {}".format(datetime.datetime.now()))
     
   def __call__(self, message):
-    log(message=message)
+    self.log(message=message)
     
   def log(self, message=None):
     if isinstance(message, str):
