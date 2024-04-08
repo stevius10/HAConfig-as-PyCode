@@ -8,3 +8,5 @@ pyscript:
       - name: sync_git
     sync_googledrive: 
       - name: sync_googledrive
+    utils:
+      - name: utils
