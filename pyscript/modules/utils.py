@@ -1,30 +1,15 @@
-from config import PATH_LOGS
+from config import LOG_SYS_LOGGER, PATH_LOGS
 
-import logging
-import inspect
-import os
 import datetime
+import inspect
+import logging
+import os
 import regex as re
 
 class Logs:
   @staticmethod
   def __call__(self, message):
-    try:
-      system_log.write(message=message)
-      logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-      current_frame = inspect.currentframe()
-      caller_frame = inspect.getouterframes(current_frame)[1]
-      function_name = caller_frame.function
-      filename = os.path.basename(caller_frame.filename)
-      current_time = datetime.datetime.now().strftime("%H:%M")
-
-      logging.info(message)
-      log.info(f"{current_time} - {function_name} in {filename}: {message}")
-
-      print(f"{current_time} - {function_name} in {filename}: {message}")
-    except Exception as e:
-      print(f"{e}")
+    system_log.write(message=message, logger=LOG_SYS_LOGGER)
 
 class Logfile:
     
@@ -45,8 +30,10 @@ class Logfile:
     
     self.log("# {}".format(datetime.datetime.now()))
     
-  def log(self, message=None):
+  def __call__(self, message):
+    log(message=message)
     
+  def log(self, message=None):
     if isinstance(message, str):
       if re.search('[a-zA-Z]', message): 
         self.logger.debug(message)
@@ -62,5 +49,5 @@ class Logfile:
 
   def finished(self):
     logs = "\n".join(self.logs)
-    log.info(f"[executed] {self.name}: {logs}")
+    Logs(f"[executed] {self.name}: {logs}")
     return { "logs": logs }

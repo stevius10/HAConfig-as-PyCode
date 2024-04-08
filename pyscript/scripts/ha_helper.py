@@ -1,7 +1,8 @@
 from config import LOG_HA_SIZE, LOG_HA_TAIL, PATH_LOG_HA, \
    LOG_HA_TRUNCATE_BLOCK_DELAY, LOG_HA_TRUNCATE_IO_RETRY, \
-   LOG_HA_ARCHIVE_SIZE, LOG_ARCHIVE_SUFFIX, EVENT_FOLDER_WATCHER
-  
+   LOG_HA_ARCHIVE_SIZE, LOG_ARCHIVE_SUFFIX, EVENT_FOLDER_WATCHER, \
+   LOG_DEBUG, LOG_DEBUG_DEVICES, STATES_HA_UNDEFINED
+
 import aiofiles
 import asyncio
 
@@ -9,6 +10,8 @@ from homeassistant.const import EVENT_HOMEASSISTANT_STOP, EVENT_CALL_SERVICE
 
 from datetime import datetime
 from pathlib import Path
+
+log_trigger = []
 
 @service(supports_response="optional")
 @task_unique("ha_log_content_truncate", kill_me=True)
@@ -70,3 +73,22 @@ async def log_truncate(logfile, size_log_entries=LOG_HA_SIZE, size_log_tail=LOG_
     if archive is not None and len(archive) > 0: 
       archive.extend(logs_trunc)
       log_write(f"{logfile}.{log_archive_suffix}", archive[-size_archive_entries:])
+
+# Log: Trigger
+
+def log_trigger_factory(entity, expr):
+  
+  @state_trigger(f"{entity} {expr}")
+  def log_trigger(trigger_type=None, var_name=None, value=None, old_value=None):  
+    log.info(f"[{var_name}] {trigger_type}: {value} ({old_value})")
+
+  if LOG_DEBUG or entity in LOG_DEBUG_DEVICES:
+    log_trigger.append(log_state) 
+  
+  info = f"[trigger] {entity} {expr}"
+  try: info += f" ({state.get(entity)})" if state.get(entity) not in STATES_HA_UNDEFINED else ""
+  except: pass   
+  
+@service
+def log_trigger(entity, expr):
+  log_trigger_factory(entity, expr)

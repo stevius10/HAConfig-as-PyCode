@@ -9,7 +9,7 @@ SYSTEM_FILES = secrets.SYSTEM_FILES.update({
 
 # Path
 PATH_LOG_HA = "/config/home-assistant.log"
-PATH_LOGS = "/config/logs/"
+PATH_LOGS = "/config/pyscript/logs/"
 
 # Log
 LOG_HA_SIZE = 20
@@ -18,6 +18,7 @@ LOG_HA_TRUNCATE_BLOCK_DELAY = 5
 LOG_HA_TRUNCATE_IO_RETRY = 3
 LOG_HA_ARCHIVE_SIZE = 10 * LOG_HA_SIZE
 LOG_ARCHIVE_SUFFIX = "1"
+LOG_SYS_LOGGER = "py.log"
 
 LOG_DEBUG = True
 LOG_DEBUG_DEVICES = []

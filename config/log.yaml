@@ -1,11 +1,12 @@
 logger: 
   default: error
   logs:
+    py.log: debug
     custom_components.pyscript: info
     custom_components.tapo.coordinators: critical
     custom_components.xiaomi_miot: critical
-    miio.miioprotocol: critical
     androidtv: critical
+    miio.miioprotocol: critical
     pychromecast.socket_client: critical
   filters:
     homeassistant:
@@ -13,7 +14,7 @@ logger:
       - "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))" # Tado
     custom_components.pyscript.global_ctx:
       - "Loaded"
-      - "Unloaded"
+      - "Un"
     custom_components.hacs:
       - "https://api.github.com/rate_limit"
     homeassistant.components.google_assistant.http:
