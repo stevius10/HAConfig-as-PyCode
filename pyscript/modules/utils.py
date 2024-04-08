@@ -9,7 +9,9 @@ import regex as re
 class Logs:
   @staticmethod
   def __call__(self, message):
-    system_log.write(message=message, logger=LOG_SYS_LOGGER)
+    log.error("test")
+    system_log.write(message=message, logger=LOG_SYS_LOGGER, level="error")
+    system_log.write(message=message, level="error")
 
 class Logfile:
     
