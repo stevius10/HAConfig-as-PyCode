@@ -7,8 +7,6 @@ from config import (
 from utils import Logfile
 import subprocess
 
-logfile = Logfile(pyscript.get_global_ctx())
-
 @service(supports_response="optional")
 @time_trigger(SERVICE_GIT_CRON)
 def service_git_sync(
@@ -19,7 +17,8 @@ def service_git_sync(
   config_path=SERVICE_GIT_SETTINGS_CONFIG,
   commit_message=SERVICE_GIT_REPO_MESSAGE
 ):
-
+  logfile = Logfile(pyscript.get_global_ctx())
+  
   commands = [
       f"git config --local include.path '{config_path}'",
       f"eval $(ssh-agent); ssh-add {key_path}", 
