@@ -26,6 +26,8 @@ class Logfile:
     self("# {}".format(datetime.datetime.now()))
     
   def __call__(self, message):
+    pyscript.log(msg=message)
+
     self.append(message=message)
     
   def append(self, message=None):

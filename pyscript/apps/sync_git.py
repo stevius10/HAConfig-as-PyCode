@@ -40,7 +40,6 @@ def service_git_sync(
 
   for command in commands:
     try:
-      pyscript.log(msg="test")
       result = subprocess.run(
           command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
           shell=True, check=False, text=True
