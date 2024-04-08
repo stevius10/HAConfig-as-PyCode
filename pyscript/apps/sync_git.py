@@ -52,15 +52,15 @@ def service_git_sync(
       f"git config --local include.path '{config_path}'",
       f"eval $(ssh-agent); ssh-add {key_path}", 
       
-      # # Pull from main branch
-      # "git checkout main",
-      # "git pull origin main",
+      # Pull from main branch
+      "git checkout main",
+      "git pull origin main",
       
-      # # Switch back to the working branch
-      # f"git checkout {branch_name}",
+      # Switch back to the working branch
+      f"git checkout {branch_name}",
       
-      # # Merge changes from main branch
-      # "git merge main",
+      # Merge changes from main branch
+      "git merge main",
       
       # Push changes to the working branch
       "git add .",
