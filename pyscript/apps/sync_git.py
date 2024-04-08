@@ -18,7 +18,7 @@ def service_git_sync(
   commit_message=SERVICE_GIT_REPO_MESSAGE
 ):
   logfile = Logfile(pyscript.get_global_ctx())
-  
+  pyscript.log(msg="test")
   commands = [
       f"git config --local include.path '{config_path}'",
       f"eval $(ssh-agent); ssh-add {key_path}", 
