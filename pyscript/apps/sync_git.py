@@ -18,7 +18,7 @@ def service_git_sync(
   commit_message=SERVICE_GIT_REPO_MESSAGE
 ):
   logfile = Logfile(pyscript.get_global_ctx())
-  pyscript.log(msg="test")
+  
   commands = [
       f"git config --local include.path '{config_path}'",
       f"eval $(ssh-agent); ssh-add {key_path}", 
@@ -39,13 +39,14 @@ def service_git_sync(
   ]
 
   for command in commands:
-      try:
-          result = subprocess.run(
-              command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-              shell=True, check=False, text=True
-          )
-          logfile([command, result.stdout, result.stderr])
-      except subprocess.CalledProcessError as e:
-          logfile([e, command, result.stdout, result.stderr])
+    try:
+      pyscript.log(msg="test")
+      result = subprocess.run(
+          command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+          shell=True, check=False, text=True
+      )
+      logfile([command, result.stdout, result.stderr])
+    except subprocess.CalledProcessError as e:
+      logfile([e, command, result.stdout, result.stderr])
 
   return logfile.finished()
