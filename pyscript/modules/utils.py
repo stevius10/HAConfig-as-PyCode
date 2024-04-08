@@ -8,7 +8,6 @@ import regex as re
 class Logfile:
     
   def __init__(self, name):
-    pyscript.log(msg="0")
     self.name = name.replace("scripts.", "")
     self.logger = logging.getLogger(self.name)
     self.logs = []
@@ -30,9 +29,9 @@ class Logfile:
   def __call__(self, message):
     pyscript.log(msg="h1")
 
-    self.append(message=message)
+    self.add(message=message)
     
-  def append(self, message=None):
+  def add(self, message=None):
     pyscript.log(msg="h2")
     if isinstance(message, str):
       if re.search('[a-zA-Z]', message): 
