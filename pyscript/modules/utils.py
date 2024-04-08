@@ -27,11 +27,12 @@ class Logfile:
     self("# {}".format(datetime.datetime.now()))
     
   def __call__(self, message):
-    pyscript.log(msg=message)
+    pyscript.log(msg="testiii")
 
     self.append(message=message)
     
   def append(self, message=None):
+    pyscript.log(msg="5,,mm")
     if isinstance(message, str):
       if re.search('[a-zA-Z]', message): 
         self.logger.debug(message)

@@ -96,6 +96,4 @@ def log_trigger(entity, expr):
 
 @service
 def log(msg, level="info", logger=LOG_SYS_LOGGER):
-  line = inspect.currentframe().f_back.f_lineno
-  func = inspect.currentframe().f_back.f_code.co_name
-  system_log.write(message=f"[{func} ({line})] {msg}", logger=logger, level=level)
+  system_log.write("{msg}", logger=logger, level=level)
