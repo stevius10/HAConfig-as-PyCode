@@ -13,18 +13,17 @@ class Logfile:
     self.logs = []
     self.logfile = os.path.join(PATH_LOGS, self.name) + ".log"
 
-    await service.call("pyscript", "log_truncate", logfile=self.logfile, blocking=True)
+    service.call("pyscript", "log_truncate", logfile=self.logfile, blocking=True)
 
     handler = logging.FileHandler(self.logfile, mode='w+')
     handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
-    pyscript.log(msg="gg1")
 
     self.logger.addHandler(handler)
     self.logger.setLevel(logging.DEBUG)
     self.logger.propagate = False
     pyscript.log(msg="gg2")
 
-    self("# {}".format(datetime.datetime.now()))
+    self.add("# {}".format(datetime.datetime.now()))
     
   def __call__(self, message):
     pyscript.log(msg="h1")
