@@ -40,7 +40,41 @@ template_badges_general:
           ha-card { 
             display: none; 
           }
-        
+          
+    - type: entity-filter
+      entities: 
+        - entity: timer.timer_adguard_home_schutz
+          tap_action:
+            action: call-service
+            service: timer.finish
+        - entity: timer.timer_heizdecke
+          tap_action:
+            action: call-service
+            service: timer.finish
+        - entity: timer.timer_sofa
+          tap_action:
+            action: call-service
+            service: timer.finish
+        - entity: timer.timer_bett
+          tap_action:
+            action: call-service
+            service: timer.finish
+        - entity: timer.timer_luftreiniger
+          tap_action:
+            action: call-service
+            service: timer.finish
+        - entity: timer.timer_sz_ventilator
+          tap_action:
+            action: call-service
+            service: timer.finish
+        - entity: timer.timer_schlafzimmer
+          tap_action:
+            action: call-service
+            service: timer.finish
+      conditions:
+      - condition: state
+        state_not: ["idle", "unavailable", "none", ""]
+
     - entity: sensor.fritz_box_7530_download_durchsatz
       name: "⇩"
     - entity: sensor.fritz_box_7530_upload_durchsatz

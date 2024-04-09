@@ -40,9 +40,9 @@ def timeout_factory(entity, default, delay=None):
 
   @event_trigger("timer.finished")
   def timer_stop(**kwargs):
-    if "pyscript" in globals():
-      pyscript.log(msg=f"implement: kwargs: {kwargs}")
-      reset(entity_id=entity)
+    try: pyscript.log(msg=f"implement: kwargs: {kwargs}")
+    except: pass
+    reset(entity_id=entity)
   timeout_trigger.append(timer_stop)
 
 # Initialization
@@ -66,6 +66,6 @@ def reset(entity, default):
   state.set(entity, default)
 
 def get_timer(entity, delay):
-  name = f"timer.timer_{entity}"
+  name = f"timer.timer_{entity.split(".")[1]}"
   state.set(name, str(delay), device_class='duration', state_class='measurement', unit_of_measurement='m')
   return name

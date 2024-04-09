@@ -23,11 +23,12 @@ def script_air_cleaner():
     else: 
       script_air_cleaner_mode_sleep()
   else:
-    script_air_cleaner_turn_on(mode=SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL)
+    script_air_cleaner_automation(mode=SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL)
 
 # Trigger
+    
 @state_trigger(expr(entity, STATE_ON))
-def script_air_cleaner_turn_on(mode=None):
+def script_air_cleaner_automation(mode=None):
   pyscript.log(msg="[script_air_cleaner] turned on: switch to automated cleaning")
   script_air_cleaner_mode_sleep()
   if mode == SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL: 
@@ -38,7 +39,6 @@ def script_air_cleaner_turn_on(mode=None):
 @state_active(EXPR_TIME_SEASON_POLLEN)
 @state_trigger(f"int({SCRIPT_AIR_CLEANER_SENSOR}) > {SCRIPT_AIR_CLEANER_THRESHOLD_START}")
 def script_air_cleaner_threshold_on():
-  pyscript.log(msg="[script_air_cleaner] {state.get(SCRIPT_AIR_CLEANER_SENSOR} pm2.5: turn on")
   script_air_cleaner_turn_on()
 
 @time_active(EXPR_TIME_ACTIVE)
@@ -49,6 +49,10 @@ def script_air_cleaner_threshold_off():
   script_air_cleaner_turn_off()
 
 # Helper
+
+def script_air_cleaner_turn_on():
+    if state.get(entity) != STATE_ON:
+      script_air_cleaner_mode_sleep()
 
 def script_air_cleaner_turn_off(entity=SCRIPT_AIR_CLEANER_ENTITY):
   pyscript.script_off_air(entity=[entity])

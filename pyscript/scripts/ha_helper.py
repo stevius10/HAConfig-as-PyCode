@@ -2,6 +2,7 @@ from config import LOG_HA_SIZE, LOG_HA_TAIL, PATH_LOG_HA, \
    LOG_HA_TRUNCATE_BLOCK_DELAY, LOG_HA_TRUNCATE_IO_RETRY, \
    LOG_HA_ARCHIVE_SIZE, LOG_ARCHIVE_SUFFIX, EVENT_FOLDER_WATCHER, \
    LOG_SYS_LOGGER, LOG_DEBUG, LOG_DEBUG_DEVICES, STATES_HA_UNDEFINED
+from utils import log
 
 import aiofiles
 import asyncio
@@ -13,6 +14,7 @@ from pathlib import Path
 
 log_trigger = []
 
+@log
 @service(supports_response="optional")
 @task_unique("ha_log_content_truncate", kill_me=True)
 @event_trigger(EVENT_FOLDER_WATCHER) 

@@ -1,6 +1,7 @@
 from config import LOG_SYS_LOGGER, PATH_LOGS
 
 import datetime
+import functools
 import logging
 import os
 import regex as re
@@ -38,7 +39,7 @@ class Logfile:
         self.logger.debug('\n')
 
   async def log_truncate(self):
-    if "pyscript" in globals() is not None: 
+    if "pyscript" in globals() is not None: # Error ?
       await service.call(domain="pyscript", name="log_truncate", logfile=self.logfile, blocking=True)
 
   def finished(self):
@@ -46,3 +47,11 @@ class Logfile:
     pyscript.log(msg=f"[executed] {self.name}: {logs}")
     
     return { "service": {self.name}, "logs": logs }
+
+
+def log(func):
+  def wrapper(*args, **kwargs):
+    try: pyscript.log(msg=f"Function '{func.__name__}' called with args: {args} and kwargs: {kwargs}")
+    except: pass
+    return func(*args, **kwargs)
+  return wrapper
