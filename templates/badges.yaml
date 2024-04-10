@@ -11,7 +11,7 @@ x-anchors:
           entity_id: switch.adguard_home_schutz
       card_mod:
         style: | 
-          :host { 
+          :host { display: none;
             {% if states('switch.adguard_home_schutz') == "on" %} 
               --label-badge-red: #556B2F;
             {% else %}
@@ -21,7 +21,26 @@ x-anchors:
           }
     conditions:
       - condition: state
-        state_not: "unavailable"
+        state_not: ["unavailable", "none", ""]
+        
+  badge_last_backup: &badge_last_backup
+    type: entity-filter
+    entities:
+    - entity: sensor.v_last_backup
+      name: Sicherung
+      tap_action:
+        action: navigate
+        navigation_path: /cebe7a76_hassio_google_drive_backup/ingress
+      card_mod:
+        style: | 
+          :host { # display: none;
+            {% if 'd' in states('sensor.v_last_backup') %} 
+              --label-badge-red: #556B2F;
+            {% else %}
+              --label-badge-text-color: rgba(128, 0, 0, 0.5); 
+              --label-badge-red: maroon;
+            {% endif %} 
+          }
 
 # Badges 
 
@@ -33,14 +52,19 @@ template_badges_general:
     badges: 
     
     - <<: *badge_webfilter
-      style:
-        display: none
       card_mod: 
         style: |
-          ha-card { 
-            display: none; 
+          :host {
+            {% if states('switch.adguard_home_schutz') != "on" %} 
+              display: none !important; 
+            {% endif %}
           }
-          
+
+    - <<: *badge_last_backup
+      state_filter: 
+        - operator: regex
+          value: "^(.*[d]{1}.*)"
+      
     - type: entity-filter
       entities: 
         - entity: timer.timer_adguard_home_schutz
@@ -116,11 +140,6 @@ template_badges_general:
       - condition: state
         state_not: ["idle", "unavailable", "none", ""]
 
-    - entity: sensor.v_last_backup
-      name: Sicherung
-      tap_action:
-        action: navigate
-        navigation_path: /cebe7a76_hassio_google_drive_backup/ingress
 
 template_badges_services: 
   card: 

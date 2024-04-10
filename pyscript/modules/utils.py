@@ -6,6 +6,16 @@ import logging
 import os
 import regex as re
 
+def log(msg, level="info", logger=LOG_SYS_LOGGER):
+  pyscript.log(msg=msg, logger=logger, level=level)
+  
+def log_func(func):
+  def wrapper(*args, **kwargs):
+    func_name = repr(func)
+    print(f"{func_name} called with args: {args} and kwargs: {kwargs}")
+    return func(*args, **kwargs)
+  return wrapper
+
 class Logfile:
     
   def __init__(self, name):
@@ -38,20 +48,12 @@ class Logfile:
     elif message == " ":
         self.logger.debug('\n')
 
-  async def log_truncate(self):
-    if "pyscript" in globals() is not None: # Error ?
-      await service.call(domain="pyscript", name="log_truncate", logfile=self.logfile, blocking=True)
+  def log_truncate(self):
+    try: service.call("pyscript", "log_truncate", logfile=self.logfile, blocking=True)
+    except: pass
 
   def finished(self):
     logs = "\n".join(self.logs)
-    pyscript.log(msg=f"[executed] {self.name}: {logs}")
+    log(f"[executed] {self.name}: {logs}")
     
     return { "service": {self.name}, "logs": logs }
-
-
-def log(func):
-  def wrapper(*args, **kwargs):
-    try: pyscript.log(msg=f"Function '{func.__name__}' called with args: {args} and kwargs: {kwargs}")
-    except: pass
-    return func(*args, **kwargs)
-  return wrapper

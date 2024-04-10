@@ -2,7 +2,7 @@ from config import LOG_HA_SIZE, LOG_HA_TAIL, PATH_LOG_HA, \
    LOG_HA_TRUNCATE_BLOCK_DELAY, LOG_HA_TRUNCATE_IO_RETRY, \
    LOG_HA_ARCHIVE_SIZE, LOG_ARCHIVE_SUFFIX, EVENT_FOLDER_WATCHER, \
    LOG_SYS_LOGGER, LOG_DEBUG, LOG_DEBUG_DEVICES, STATES_HA_UNDEFINED
-from utils import log
+from utils import log_func
 
 import aiofiles
 import asyncio
@@ -14,7 +14,7 @@ from pathlib import Path
 
 log_trigger = []
 
-@log
+@log_func
 @service(supports_response="optional")
 @task_unique("ha_log_content_truncate", kill_me=True)
 @event_trigger(EVENT_FOLDER_WATCHER) 
@@ -38,6 +38,27 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
   finally: 
     task.sleep(LOG_HA_TRUNCATE_BLOCK_DELAY)
 
+# @pyscript_executor
+# def log_read(logfile):
+#   for _ in range(LOG_HA_TRUNCATE_IO_RETRY):
+#     try:
+#       with open(logfile, mode='r+') as l:
+#         logs = l.readlines()
+#       return logs
+#     except: 
+#       pass
+#   return []
+
+# @pyscript_executor
+# def log_write(logfile, lines, mode='w+'):
+#   for _ in range(LOG_HA_TRUNCATE_IO_RETRY):
+#     try:
+#       with open(logfile, mode=mode) as l:
+#         l.writelines(lines)
+#     except: 
+#       pass
+#   return []
+  
 async def log_read(logfile):
   for _ in range(LOG_HA_TRUNCATE_IO_RETRY):
     try:

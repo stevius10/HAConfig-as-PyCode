@@ -1,4 +1,4 @@
-from config import PATH_LOGS, SYSTEM_FILES
+from config import PATH_LOGS, PYSCRIPT_DIR_NATIVE, SYSTEM_FILES
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 
@@ -19,5 +19,5 @@ def ha_setup_files(file=SYSTEM_FILES):
 
 @event_trigger(EVENT_HOMEASSISTANT_STARTED)
 def ha_setup_environment():
-  if "/config/pyscript/modules" not in sys.path:
-    sys.path.append("/config/pyscript/modules")
+  if PYSCRIPT_DIR_NATIVE not in sys.path:
+    sys.path.append(PYSCRIPT_DIR_NATIVE)
