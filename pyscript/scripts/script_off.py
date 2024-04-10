@@ -76,9 +76,9 @@ def script_off_heating(entity=None, away=False):
     script_off_heating(entity=ENTITIES_HEATING, away=away)
   if isinstance(entity, str):
     if not away: 
-      turn_off(entity_id=entity)
+      climate.turn_off(entity_id=entity)
     else:
-      clima.set_present_mode(str, preset_mode="AWAY")
+      climate.set_present_mode(str, preset_mode="AWAY")
   if isinstance(entity, list):
     for item in entity:
       script_off_heating(entity=item, away=away)

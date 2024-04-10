@@ -11,13 +11,16 @@ def log(msg, level="info", logger=LOG_SYS_LOGGER):
   
 def log_func(func):
   def wrapper(*args, **kwargs):
-    func_name = repr(func)
-    print(f"{func_name} called with args: {args} and kwargs: {kwargs}")
+    func_name = func if isinstance(func, str) else func.get_name()
+    if "context" in kwargs:
+      del kwargs["context"]
+    arguments = f"{args}[{kwargs}])"
+    log(f"{func_name}{arguments}")
     return func(*args, **kwargs)
   return wrapper
 
 class Logfile:
-    
+
   def __init__(self, name):
     self.name = name.replace("scripts.", "")
     self.logger = logging.getLogger(self.name)

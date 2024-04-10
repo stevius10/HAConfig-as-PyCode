@@ -32,7 +32,6 @@ def script_air_cleaner():
     
 @state_trigger(expr(entity, STATE_ON))
 def script_air_cleaner_automation(mode=None):
-  log("[script_air_cleaner] automation")
   script_air_cleaner_mode_sleep()
   if mode == SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL: 
     await task.sleep(3)
@@ -41,17 +40,17 @@ def script_air_cleaner_automation(mode=None):
 @time_active(EXPR_TIME_ACTIVE)
 @state_active(EXPR_TIME_SEASON_POLLEN)
 @state_trigger(f"int({SCRIPT_AIR_CLEANER_SENSOR}) > {SCRIPT_AIR_CLEANER_THRESHOLD_START}")
+@log_func
 def script_air_cleaner_threshold_on():
   if state.get(entity) != STATE_ON:
-    log("[script_air_cleaner] {state.get(SCRIPT_AIR_CLEANER_SENSOR} pm2.5: turn on")
     script_air_cleaner_turn_on()
 
 @time_active(EXPR_TIME_ACTIVE)
 @state_active(EXPR_TIME_SEASON_POLLEN)
 @state_trigger(f"int({SCRIPT_AIR_CLEANER_SENSOR}) < {SCRIPT_AIR_CLEANER_THRESHOLD_STOP}")
+@log_func
 def script_air_cleaner_threshold_off():
   if state.get(entity) == STATE_ON:
-    log("[script_air_cleaner] {state.get(SCRIPT_AIR_CLEANER_SENSOR} pm2.5: turn off")
     script_air_cleaner_turn_off()
 
 # Helper
@@ -61,7 +60,7 @@ def script_air_cleaner_turn_on():
       script_air_cleaner_mode_sleep()
 
 def script_air_cleaner_turn_off(entity=SCRIPT_AIR_CLEANER_ENTITY):
-  script_off_air(entity=[entity])
+  pyscript.script_off_air(entity=[entity])
 
 # Functionality
 
@@ -69,13 +68,14 @@ def script_air_cleaner_mode_sleep():
   fan.set_preset_mode(entity_id=entity, preset_mode=SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
 
 @service
+@log_func
 def script_air_cleaner_automation_clean():
   fan.set_percentage(entity_id=entity, percentage=SCRIPT_AIR_CLEANER_PERCENTAGE_CLEAN)
 
 # Timeout
 
 @state_trigger(expr(entity, STATE_ON) and f"{entity}.{SCRIPT_AIR_CLEANER_ENTITY_ATTRIBUTE} == '{SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL}'", state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN)
+@log_func
 def script_air_cleaner_timeout():
-  log("[script_air_cleaner] timeout: turn off")
   script_air_cleaner_mode_sleep()
   script_air_cleaner_turn_off(SCRIPT_AIR_CLEANER_HELPER)

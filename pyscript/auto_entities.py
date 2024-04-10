@@ -1,5 +1,6 @@
 from entities import AUTO_ENTITIES_DEFAULT, AUTO_TIMEOUT_ENTITIES
 from helper import expr
+from utils import log_func
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 
@@ -24,6 +25,7 @@ def default_factory(entity, func):
 def timeout_factory(entity, default, delay=None):
   @event_trigger(EVENT_HOMEASSISTANT_STARTED) 
   @state_trigger(expr(entity, expression=entities_timeout.get(entity)['default'], comparator="!=", log=True, defined=True))
+  @log_func
   def timeout_default(trigger_type=None, var_name=None):
     if state.get(entity) != default:
       if trigger_type == "time" or delay == None: 
@@ -39,6 +41,7 @@ def timeout_factory(entity, default, delay=None):
   timeout_trigger.append(timeout_default)
 
   @event_trigger("timer.finished")
+  @log_func
   def timer_stop(**kwargs):
     try: pyscript.log(msg=f"implement: kwargs: {kwargs}")
     except: pass

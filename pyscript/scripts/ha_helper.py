@@ -14,7 +14,6 @@ from pathlib import Path
 
 log_trigger = []
 
-@log_func
 @service(supports_response="optional")
 @task_unique("ha_log_content_truncate", kill_me=True)
 @event_trigger(EVENT_FOLDER_WATCHER) 
@@ -111,7 +110,8 @@ def log_trigger_factory(entity, expr):
   info = f"[trigger] {entity} {expr}"
   try: info += f" ({state.get(entity)})" if state.get(entity) not in STATES_HA_UNDEFINED else ""
   except: pass   
-  
+
+@log_func
 @service
 def log_trigger(entity, expr):
   log_trigger_factory(entity, expr)

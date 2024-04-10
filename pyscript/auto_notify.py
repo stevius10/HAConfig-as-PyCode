@@ -1,5 +1,6 @@
 from config import EXPR_TIME_ACTIVE, EXPR_TIME_UPDATE_SENSORS, STATES_HA_UNDEFINED
 from helper import expr
+from utils import log_func
 
 import random
 
@@ -15,6 +16,7 @@ entities = {
 }
 
 @state_trigger(expr(list(entities.keys())))
+@log_func
 def notify_immo(**kwargs):
   if(kwargs.get("old_value") not in STATES_HA_UNDEFINED):
     notify.mobile_app_iphone(

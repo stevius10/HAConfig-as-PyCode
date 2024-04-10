@@ -1,4 +1,5 @@
 from helper import expr
+from utils import log_func
 
 CONFIG_CONTROL = {
   'sensor.wz_schalter_action': {
@@ -25,6 +26,7 @@ trigger_control = []
 def on_press_factory(entity): 
   
   @state_trigger(expr(entity, defined=True))
+  @log_func
   def on_press(var_name=None, value=None):
     action = CONFIG_CONTROL.get(entity).get(value.split("-")[0])
     if action:
