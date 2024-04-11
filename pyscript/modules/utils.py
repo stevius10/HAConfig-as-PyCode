@@ -7,6 +7,8 @@ import os
 import regex as re
 
 def log(msg, level="info", logger=LOG_SYS_LOGGER):
+  if not isinstance(msg, str): 
+    msg = msg.get_name()
   pyscript.log(msg=msg, logger=logger, level=level)
   
 def log_func(func):

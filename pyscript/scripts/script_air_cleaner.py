@@ -12,6 +12,7 @@ from mapping import (
 from helper import expr
 from utils import log, log_func
 
+import sys 
 entity = SCRIPT_AIR_CLEANER_ENTITY
 
 @service
@@ -40,16 +41,16 @@ def script_air_cleaner_automation(mode=None):
 @time_active(EXPR_TIME_ACTIVE)
 @state_active(EXPR_TIME_SEASON_POLLEN)
 @state_trigger(f"int({SCRIPT_AIR_CLEANER_SENSOR}) > {SCRIPT_AIR_CLEANER_THRESHOLD_START}")
-@log_func
 def script_air_cleaner_threshold_on():
   if state.get(entity) != STATE_ON:
+    log(sys._getframe(1).f_code.co_name)
     script_air_cleaner_turn_on()
 
 @time_active(EXPR_TIME_ACTIVE)
 @state_active(EXPR_TIME_SEASON_POLLEN)
 @state_trigger(f"int({SCRIPT_AIR_CLEANER_SENSOR}) < {SCRIPT_AIR_CLEANER_THRESHOLD_STOP}")
-@log_func
 def script_air_cleaner_threshold_off():
+  log()
   if state.get(entity) == STATE_ON:
     script_air_cleaner_turn_off()
 

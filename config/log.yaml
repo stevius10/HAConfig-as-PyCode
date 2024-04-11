@@ -27,6 +27,8 @@ logger:
       - "500"
     homeassistant.components.websocket_api.http.connection: 
       - "io.robbie.HomeAssistant"
+    homeassistant.config_entries: 
+      - "tado"
     homeassistant.util.logging:
       - "HomeAssistant NOT_RUNNING"
     aiohttp.server: 
