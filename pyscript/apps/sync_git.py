@@ -27,8 +27,8 @@ def create_or_update_pull_request(repo_owner, repo_name, base_branch, head_branc
         "base": base_branch,
         "head": head_branch
     }
-    response  = task.executor(requests.get, url, json=payload, headers=headers)
-    logfile.log(f"{response['status_code']}: {response['json']}")
+    response  = await task.executor(requests.get, url, json=payload, headers=headers)
+    #logfile.log(f"{response['status_code']}: {response['json']}")
     if response.status_code == 201:
         return response.json()["html_url"]
     elif response.status_code == 422:
