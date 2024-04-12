@@ -1,5 +1,10 @@
 from config import (
-    SERVICE_GIT_CRON, secrets
+  SERVICE_GIT_CRON, SERVICE_GIT_REPO_URL, SERVICE_GIT_REPO_NAME, 
+  SERVICE_GIT_GITHUB_USER, SERVICE_GIT_GITHUB_TOKEN,
+  SERVICE_GIT_SETTINGS_CREDENTIALS,   SERVICE_GIT_REPO_BASE, 
+  SERVICE_GIT_REPO_BRANCH, SERVICE_GIT_REPO_TARGET, 
+  SERVICE_GIT_REPO_MESSAGE, SERVICE_GIT_GITHUB_PR_TITLE, 
+  SERVICE_GIT_GITHUB_PR_BODY, SERVICE_GIT_SETTINGS_CONFIG
 )
 from utils import Logfile
 import subprocess
@@ -8,7 +13,7 @@ import requests
 logfile = Logfile(pyscript.get_global_ctx())
 
 def create_or_update_pull_request(repo_owner, repo_name, base_branch, head_branch, title, body):
-    access_token = secrets.SERVICE_GIT_GITHUB_TOKEN
+    access_token =  SERVICE_GIT_GITHUB_TOKEN
     headers = {
         "Authorization": f"token {access_token}",
         "Accept": "application/vnd.github.v3+json"
@@ -33,17 +38,17 @@ def create_or_update_pull_request(repo_owner, repo_name, base_branch, head_branc
 @service(supports_response="optional")
 @time_trigger(SERVICE_GIT_CRON)
 def service_git_sync(
-  repo_url=secrets.SERVICE_GIT_REPO_URL,
-  repo_owner=secrets.SERVICE_GIT_GITHUB_USER,
-  repo_name=secrets.SERVICE_GIT_REPO_NAME,
-  base_branch=secrets.SERVICE_GIT_REPO_BASE,
-  branch_name=secrets.SERVICE_GIT_REPO_BRANCH,
-  branch_target=secrets.SERVICE_GIT_REPO_TARGET,
-  key_path=secrets.SERVICE_GIT_SETTINGS_CREDENTIALS,
-  config_path=secrets.SERVICE_GIT_SETTINGS_CONFIG,
-  commit_message=secrets.SERVICE_GIT_REPO_MESSAGE,
-  pull_request_title=secrets.SERVICE_GIT_GITHUB_PR_TITLE,
-  pull_request_body=secrets.SERVICE_GIT_GITHUB_PR_BODY
+  repo_url= SERVICE_GIT_REPO_URL,
+  repo_owner= SERVICE_GIT_GITHUB_USER,
+  repo_name= SERVICE_GIT_REPO_NAME,
+  base_branch= SERVICE_GIT_REPO_BASE,
+  branch_name= SERVICE_GIT_REPO_BRANCH,
+  branch_target= SERVICE_GIT_REPO_TARGET,
+  key_path= SERVICE_GIT_SETTINGS_CREDENTIALS,
+  config_path= SERVICE_GIT_SETTINGS_CONFIG,
+  commit_message= SERVICE_GIT_REPO_MESSAGE,
+  pull_request_title= SERVICE_GIT_GITHUB_PR_TITLE,
+  pull_request_body= SERVICE_GIT_GITHUB_PR_BODY
 ):
   
   commands = [
