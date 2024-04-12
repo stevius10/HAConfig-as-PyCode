@@ -50,7 +50,7 @@ def script_air_cleaner_threshold_on():
 @state_active(EXPR_TIME_SEASON_POLLEN)
 @state_trigger(f"int({SCRIPT_AIR_CLEANER_SENSOR}) < {SCRIPT_AIR_CLEANER_THRESHOLD_STOP}")
 def script_air_cleaner_threshold_off():
-  log()
+  log(mag=None)
   if state.get(entity) == STATE_ON:
     script_air_cleaner_turn_off()
 
