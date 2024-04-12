@@ -3,12 +3,11 @@ from config import (
 )
 from utils import Logfile
 import subprocess
-import aiohttp
-import asyncio
+import requests
 
 logfile = Logfile(pyscript.get_global_ctx())
 
-async def create_or_update_pull_request(repo_owner, repo_name, base_branch, head_branch, title, body):
+def create_or_update_pull_request(repo_owner, repo_name, base_branch, head_branch, title, body):
     access_token = secrets.SERVICE_GIT_GITHUB_TOKEN
     headers = {
         "Authorization": f"token {access_token}",
@@ -21,16 +20,15 @@ async def create_or_update_pull_request(repo_owner, repo_name, base_branch, head
         "base": base_branch,
         "head": head_branch
     }
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, json=payload, headers=headers) as response:
-            if response.status == 201:
-                return await response.json(), None
-            elif response.status == 422:
-                pull_request_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{head_branch}"
-                async with session.patch(pull_request_url, json=payload, headers=headers) as response:
-                    if response.status == 200:
-                        return await response.json(), None
-            return None, f"Failed to create or update pull request: {response.status}"
+    response = task.executor(requests.get, url, json=payload, headers=headers)
+    if response.status_code == 201:
+        return response.json()["html_url"]
+    elif response.status_code == 422:
+        pull_request_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{head_branch}"
+        response = requests.patch(pull_request_url, json=payload, headers=headers)
+        if response.status_code == 200:
+            return response.json()["html_url"]
+    return None
 
 @service(supports_response="optional")
 @time_trigger(SERVICE_GIT_CRON)
@@ -85,11 +83,10 @@ def service_git_sync(
       logfile.log([e, command, result.stdout, result.stderr])
 
   # Create or update pull request
-  loop = asyncio.get_event_loop()
-  response, error = loop.run_until_complete(create_or_update_pull_request(repo_owner, repo_name, base_branch, branch_name, pull_request_title, pull_request_body))
-  if response:
-      logfile.log(f"Pull request created or updated: {response['html_url']}")
+  pull_request_url = create_or_update_pull_request(repo_owner, repo_name, base_branch, branch_name, pull_request_title, pull_request_body)
+  if pull_request_url:
+      logfile.log(f"Pull request created or updated: {pull_request_url}")
   else:
-      logfile.log(f"Error: {error}")
+      logfile.log("Failed to create or update pull request.")
 
   return logfile.finished()
