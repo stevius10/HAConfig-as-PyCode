@@ -9,8 +9,8 @@ import regex as re
 def log(msg, level="info", logger=LOG_SYS_LOGGER):
   if not isinstance(msg, str): 
     msg = msg.get_name()
-    try: pyscript.log(msg=msg, logger=logger, level=level)
-    except: pass
+  try: pyscript.log(msg=msg, logger=logger, level=level)
+  except: pass
 
 def log_func(func):
   def wrapper(*args, **kwargs):
