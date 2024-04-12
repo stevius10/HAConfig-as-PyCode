@@ -1,7 +1,7 @@
 from config import (
   SERVICE_GIT_CRON, SERVICE_GIT_REPO_URL, SERVICE_GIT_REPO_NAME, 
   SERVICE_GIT_GITHUB_USER, SERVICE_GIT_GITHUB_TOKEN,
-  SERVICE_GIT_SETTINGS_CREDENTIALS,   SERVICE_GIT_REPO_BASE, 
+  SERVICE_GIT_SETTINGS_CREDENTIALS,   SERVICE_GIT_REPO_MAIN, 
   SERVICE_GIT_REPO_BRANCH, SERVICE_GIT_REPO_TARGET, 
   SERVICE_GIT_REPO_MESSAGE, SERVICE_GIT_GITHUB_PR_TITLE, 
   SERVICE_GIT_GITHUB_PR_BODY, SERVICE_GIT_SETTINGS_CONFIG
@@ -41,7 +41,7 @@ def service_git_sync(
   repo_url = SERVICE_GIT_REPO_URL,
   repo_owner = SERVICE_GIT_GITHUB_USER,
   repo_name = SERVICE_GIT_REPO_NAME,
-  base_branch = SERVICE_GIT_REPO_BASE,
+  base_branch = SERVICE_GIT_REPO_MAIN,
   branch_name = SERVICE_GIT_REPO_BRANCH,
   branch_target = SERVICE_GIT_REPO_TARGET,
   key_path = SERVICE_GIT_SETTINGS_CREDENTIALS,
@@ -54,24 +54,14 @@ def service_git_sync(
   commands  = [
       f"git config --local include.path '{config_path}'",
       f"eval $(ssh-agent); ssh-add {key_path}", 
-      
-      # Stash local changes
       "git stash",
       
-      # Pull from main branch
       "git checkout main",
       "git pull origin main",
-      
-      # Switch back to the working branch
       f"git checkout {branch_name}",
-      
-      # Merge changes from main branch
       "git merge main",
       
-      # Apply stashed changes
       "git stash pop",
-      
-      # Push changes to the working branch
       "git add .",
       f"git commit -m '{commit_message}'", 
       f"git push origin {branch_name}",
@@ -87,7 +77,6 @@ def service_git_sync(
     except subprocess.CalledProcessError as e:
       logfile.log([e, command, result.stdout, result.stderr])
 
-  # Create or update pull request
   pull_request_url  = create_or_update_pull_request(repo_owner, repo_name, base_branch, branch_name, pull_request_title, pull_request_body)
   if pull_request_url:
       logfile.log(f"Pull request created or updated: {pull_request_url}")
