@@ -48,35 +48,44 @@ template_badge:
     entities:
     - entity: '[[entity]]'
       name: '[[name]]'
-      tap_action: '[[tap_action]]'
+      # tap_action: '[[tap_action]]'
     conditions:
     - condition: state
       state_not: ["unavailable", "none", ""]
       
 template_badge_webfilter: 
   card: 
-    <<: *badge
-  default: 
-    - entity: sensor.adguard_home_dns_abfragen_blockiert
-    - name: Webfilter
-    - tap_action:
-        action: call-service
-        service: switch.toggle
-        data:
-          entity_id: switch.adguard_home_schutz
-# Badges 
-
-template_badges_general: 
-  card: 
     type: 'custom:badge-card'
     state_color: false
     show_header_toggle: false
     badges: 
+    - type: entity-filter
+      entities:
+      - entity: sensor.adguard_home_dns_abfragen_blockiert
+        name: test
+      conditions:
+      - condition: state
+        state_not: ["unavailable", "none", ""]
+
+  # default: 
+  # - entity: sensor.adguard_home_dns_abfragen_blockiert
+  # - name: Webfilter
+  # - tap_action:
+  #     action: call-service
+  #     service: switch.toggle
+  #     data:
+  #       entity_id: switch.adguard_home_schutz
+# Badges 
+
+template_badges_general: 
+  card: 
+    type: 'custom:badge-card' # vertical stack ?
+    state_color: false
+    show_header_toggle: false
+    badges: 
     
-    # - <<: *badge_webfilter
     - type: custom:decluttering-card
       template: template_badge_webfilter
-
 
     # - <<: *badge_last_backup
     #   state_filter: 

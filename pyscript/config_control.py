@@ -1,5 +1,4 @@
 from helper import expr
-from utils import log_func
 
 CONFIG_CONTROL = {
   'sensor.wz_schalter_action': {

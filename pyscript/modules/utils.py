@@ -46,8 +46,7 @@ def log_state_factory(entity, expression):
   info = expr(entity, expression)
   try: info += f" ({state.get(entity)})" if state.get(entity) not in STATES_HA_UNDEFINED else ""
   except: pass
-  try: log(f"[trigger] {info}")
-  except: pass
+  log(f"[trigger] {info}")
 @service
 def log_state(entity, expr):
   log_state_factory(entity, expression=expr)
@@ -69,7 +68,7 @@ class Logfile:
   def log(self, message=None):
     if isinstance(message, str):
       if re.search('[a-zA-Z]', message): 
-        self.logger.debug(message)
+        self.logger.info(message)
         self.logs.append(message)
     elif isinstance(message, list): 
       for msg in message:
@@ -79,12 +78,12 @@ class Logfile:
         self.logger.debug('\n')
         
   def truncate(self):
-    try: service.call("pyscript", "log_truncate", logfile=self.logfile, blocking=True)
-    except: pass
+    func = "pyscript.log_truncate"
+    if service.has_service(func.split(".")[0], func.split(".")[1]):
+      service.call(func.split(".")[0], func.split(".")[1], logfile=self.logfile, blocking=True, logger=self.logger)
   
   def finished(self):
     logs = "\n".join(self.logs)
     self.log(f"[executed] {self.name}: {logs}")
-    try: pyscript.log(msg=f"[executed] {self.name}: {logs}")
-    except: pass 
+    log(f"[executed] {self.name}: {logs}")
     return { "service": {self.name}, "logs": logs }
