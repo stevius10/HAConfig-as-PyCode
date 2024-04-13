@@ -1,47 +1,69 @@
-x-anchors:
-  badge_webfilter: &badge_webfilter
+# x-anchors:
+#   badge_webfilter: &badge_webfilter
+#     type: entity-filter
+#     entities:
+#     - entity: sensor.adguard_home_dns_abfragen_blockiert
+#       name: Web-Filter
+#       tap_action:
+#         action: call-service
+#         service: switch.toggle
+#         data:
+#           entity_id: switch.adguard_home_schutz
+#       card_mod:
+#         style: | 
+#           :host { 
+#             {% if states('switch.adguard_home_schutz') == "on" %} 
+#               --label-badge-red: #556B2F;
+#             {% else %}
+#               --label-badge-text-color: rgba(128, 0, 0, 0.5); 
+#               --label-badge-red: maroon;
+#             {% endif %} 
+#           }
+#     conditions:
+#       - condition: state
+#         state_not: ["unavailable", "none", ""]
+        
+#   badge_last_backup: &badge_last_backup
+#     type: entity-filter
+#     entities:
+#     - entity: sensor.v_last_backup
+#       name: Sicherung
+#       tap_action:
+#         action: navigate
+#         navigation_path: /cebe7a76_hassio_google_drive_backup/ingress
+#       card_mod:
+#         style: | 
+#           :host { 
+#             {% if 'd' in states('sensor.v_last_backup') %} 
+#               --label-badge-red: #556B2F;
+#             {% else %}
+#               --label-badge-text-color: rgba(128, 0, 0, 0.5); 
+#               --label-badge-red: maroon;
+#             {% endif %} 
+#           }
+          
+template_badge: 
+  card: &badge
     type: entity-filter
     entities:
+    - entity: '[[entity]]'
+      name: '[[name]]'
+      tap_action: '[[tap_action]]'
+    conditions:
+    - condition: state
+      state_not: ["unavailable", "none", ""]
+      
+template_badge_webfilter: 
+  card: 
+    <<: *badge
+  default: 
     - entity: sensor.adguard_home_dns_abfragen_blockiert
-      name: Web-Filter
-      tap_action:
+    - name: Webfilter
+    - tap_action:
         action: call-service
         service: switch.toggle
         data:
           entity_id: switch.adguard_home_schutz
-      card_mod:
-        style: | 
-          :host { display: none;
-            {% if states('switch.adguard_home_schutz') == "on" %} 
-              --label-badge-red: #556B2F;
-            {% else %}
-              --label-badge-text-color: rgba(128, 0, 0, 0.5); 
-              --label-badge-red: maroon;
-            {% endif %} 
-          }
-    conditions:
-      - condition: state
-        state_not: ["unavailable", "none", ""]
-        
-  badge_last_backup: &badge_last_backup
-    type: entity-filter
-    entities:
-    - entity: sensor.v_last_backup
-      name: Sicherung
-      tap_action:
-        action: navigate
-        navigation_path: /cebe7a76_hassio_google_drive_backup/ingress
-      card_mod:
-        style: | 
-          :host { # display: none;
-            {% if 'd' in states('sensor.v_last_backup') %} 
-              --label-badge-red: #556B2F;
-            {% else %}
-              --label-badge-text-color: rgba(128, 0, 0, 0.5); 
-              --label-badge-red: maroon;
-            {% endif %} 
-          }
-
 # Badges 
 
 template_badges_general: 
@@ -51,19 +73,15 @@ template_badges_general:
     show_header_toggle: false
     badges: 
     
-    - <<: *badge_webfilter
-      card_mod: 
-        style: |
-          :host {
-            {% if states('switch.adguard_home_schutz') != "on" %} 
-              display: none !important; 
-            {% endif %}
-          }
+    # - <<: *badge_webfilter
+    - type: custom:decluttering-card
+      template: template_badge_webfilter
 
-    - <<: *badge_last_backup
-      state_filter: 
-        - operator: regex
-          value: "^(.*[d]{1}.*)"
+
+    # - <<: *badge_last_backup
+    #   state_filter: 
+    #     - operator: regex
+    #       value: "^(.*[d]{1}.*)"
       
     - type: entity-filter
       entities: 
