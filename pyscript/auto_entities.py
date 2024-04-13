@@ -27,7 +27,7 @@ def timeout_factory(entity, default, delay=None):
   @state_trigger(expr(entity, expression=entities_timeout.get(entity)['default'], comparator="!=", logs=True, defined=True))
   @log_func
   def timeout_default(trigger_type=None, var_name=None):
-    log("h: " + expr(entity, expression=entities_timeout.get(entity)['default'], comparator="!=", logs=True, defined=True))
+    log("[timeout_default]" + expr(entity, expression=entities_timeout.get(entity)['default'], comparator="!=", logs=True, defined=True))
 
     if state.get(entity) != default:
       if trigger_type == "time" or delay == None: 
