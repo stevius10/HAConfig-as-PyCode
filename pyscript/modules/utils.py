@@ -53,7 +53,7 @@ def log_state(entity, expr):
 
 class Logfile:
   def __init__(self, name):
-    self.name = name.replace("scripts.", "")
+    self.name = name.split(".")[1]
     self.logger = logging.getLogger(self.name)
     self.logs = []
     self.logfile = os.path.join(PATH_LOGS, self.name) + ".log"
