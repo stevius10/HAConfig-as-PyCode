@@ -87,9 +87,9 @@ def script_air_cleaner_timeout():
   for helper in SCRIPT_AIR_CLEANER_HELPER:
     homeassistant.turn_off(entity_id=helper)
 
-@state_trigger(expr(SCRIPT_AIR_CLEANER_HELPER, STATE_ON), state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_HELPER)
-@log_func
-def script_air_cleaner_timeout():
-  script_air_cleaner_mode_sleep()
-  for helper in SCRIPT_AIR_CLEANER_HELPER:
-    homeassistant.turn_off(entity_id=helper)
+# @state_trigger(expr(SCRIPT_AIR_CLEANER_HELPER, STATE_ON), state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_HELPER)
+# @log_func
+# def script_air_cleaner_timeout_helper():
+#   script_air_cleaner_mode_sleep()
+#   for helper in SCRIPT_AIR_CLEANER_HELPER:
+#     homeassistant.turn_off(entity_id=helper)

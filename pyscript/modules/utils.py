@@ -13,7 +13,9 @@ log_state_trigger = []
 def log(msg, level="info", logger=LOG_SYS_LOGGER, ctx=pyscript.get_global_ctx()):
   log_func="pyscript.log"
   # if msg is None:
-  try: msg = sys._getframe(1).f_code.co_name
+  try: msg += sys._getframe(1).f_code.co_name
+  except: pass
+  try: msg += ctx
   except: pass
   if msg is not None and not isinstance(msg, str): 
     msg = msg.get_name()
@@ -85,6 +87,6 @@ class Logfile:
   def finished(self):
     logs = "\n".join(self.logs)
     self.log(f"[executed] {self.name}: {logs}")
-    if service.has("pyscript", "log"):
+    if service.has_service("pyscript", "log"):
       pyscript.log(msg=f"[executed] {self.name}: {logs}")
     return { "service": {self.name}, "logs": logs }
