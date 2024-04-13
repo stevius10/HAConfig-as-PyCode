@@ -85,5 +85,6 @@ class Logfile:
   def finished(self):
     logs = "\n".join(self.logs)
     self.log(f"[executed] {self.name}: {logs}")
-    log(f"[executed] {self.name}: {logs}")
+    if service.has("pyscript", "log"):
+      pyscript.log(msg=f"[executed] {self.name}: {logs}")
     return { "service": {self.name}, "logs": logs }
