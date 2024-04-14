@@ -32,7 +32,7 @@ def on_press_factory(entity):
         action = [action]
       for activate in action: 
         homeassistant.turn_on(entity_id=activate)
-
+        
   trigger_control.append(on_press)
 
 for entity in CONFIG_CONTROL:

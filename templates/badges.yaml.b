@@ -1,51 +1,46 @@
 x-anchors:
-  &alarm
-  entity: '[[entity]]'
-  name: '[[name]]'
-  card_mod:
-    style: | 
-      :host { 
-        {% if [[condition]] %}{% if [[conditional]] == true %}display: none;{% endif %}
-          --label-badge-red: #556B2F;
-        {% else %}
-          --label-badge-text-color: rgba(128, 0, 0, 0.5); 
-          --label-badge-red: maroon; 
-        {% endif %} 
-      }
-  tap_action: '[[tap_action]]'
+
+  &badge_alarm
+  type: entity-filter
+  conditions:
+    - condition: state
+      state_not: ["unavailable", "none", ""]
+  entities: 
+  - entity: '[[entity]]'
+    name: '[[name]]'
+    card_mod:
+      style: | 
+        :host { 
+          {% if [[condition]] %}{% if [[conditional]] == true %}display: none;{% endif %}
+            --label-badge-red: #556B2F;
+          {% else %}
+            --label-badge-text-color: rgba(128, 0, 0, 0.5); 
+            --label-badge-red: maroon; 
+          {% endif %} 
+        }
+    tap_action: '[[tap_action]]'
+  card:
+    type: custom:badge-card
     
 template_badge_webfilter: 
   card: 
-    type: entity-filter
-    conditions:
-    - condition: state
-      state_not: ["idle", "unavailable", "none", ""]
-    card:
-      type: custom:badge-card
-    entities: 
-      - <<: *alarm
+    <<: *badge_alarm
   default:
   - entity: sensor.adguard_home_dns_abfragen_blockiert
   - name: Web-filter
   - condition: "states('switch.adguard_home_schutz') == 'on'"
-  # - conditional: true
+  - conditional: true
   - style: ":host {}"
   - tap_action:
       action: call-service
       service: switch.toggle
       data:
         entity_id: switch.adguard_home_schutz
-
-template_badge_backup:
-  card: 
-    type: entity-filter
-    conditions:
-    - condition: state
-      state_not: ["idle", "unavailable", "none", ""]
-    card:
-      type: custom:badge-card
-    entities: 
-      - <<: *alarm
+    
+      
+template_badge_backup: 
+  card:
+    <<: *badge_alarm
   default:
     - entity: sensor.v_last_backup
     - name: Sicherung
@@ -58,17 +53,15 @@ template_badge_backup:
 
 template_badges_alarms: 
   card: 
-    type: entity-filter
-    conditions:
-    - condition: state
-      state_not: ["idle", "unavailable", "none", ""]
-    card:
-      type: custom:badge-card
-    entities:
-    - type: custom:decluttering-card
-      template: template_badge_webfilter
-    - type: custom:decluttering-card
-      template: template_badge_backup
+    type: 'custom:badge-card'
+    badges: 
+    - <<: *badge_alarm
+      entities:
+      - type: custom:decluttering-card
+        template: template_badge_webfilter
+  
+      - type: custom:decluttering-card
+        template: template_badge_backup
     
 # Badges 
 
@@ -76,12 +69,10 @@ template_badges_general:
   card:
     type: custom:layout-card
     layout: vertical
-    cards:
+    cards: 
+
     - type: 'custom:badge-card'
       badges: 
-      - type: custom:decluttering-card
-        template: template_badge_webfilter
-      
       - type: custom:decluttering-card
         template: template_badges_alarms
   
