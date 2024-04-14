@@ -12,7 +12,7 @@ from mapping import (
   SCRIPT_AIR_CLEANER_SENSOR_SPEED, SCRIPT_AIR_CLEANER_SPEED_THRESHOLD
 )
 from helper import expr
-from utils import log, log_func
+from utils import log
 
 import sys 
 entity = SCRIPT_AIR_CLEANER_ENTITY
@@ -42,7 +42,6 @@ def script_air_cleaner_automation(mode=None):
 @state_active(EXPR_TIME_SEASON_POLLEN)
 @state_trigger(expr(SCRIPT_AIR_CLEANER_SENSOR, SCRIPT_AIR_CLEANER_THRESHOLD_START, comparator=">"))
 @task_unique("script_air_cleaner_threshold_on", kill_me=True)
-@log_func
 def script_air_cleaner_threshold_on():
   if state.get(entity) != STATE_ON:
     script_air_cleaner_turn_on()
@@ -53,7 +52,6 @@ def script_air_cleaner_threshold_on():
 @state_trigger(expr(SCRIPT_AIR_CLEANER_SENSOR_SPEED, SCRIPT_AIR_CLEANER_SPEED_THRESHOLD, comparator=">"), state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN)
 @state_trigger(expr(SCRIPT_AIR_CLEANER_SENSOR, SCRIPT_AIR_CLEANER_THRESHOLD_STOP, comparator="<"))
 @task_unique("script_air_cleaner_threshold_off", kill_me=True)
-@log_func
 def script_air_cleaner_automation_off():
   if state.get(entity) == STATE_ON:
     script_air_cleaner_turn_off()
@@ -81,14 +79,12 @@ def script_air_cleaner_automation_clean():
 # Timeout
 
 @state_trigger(expr(entity, STATE_ON) and f"{entity}.{SCRIPT_AIR_CLEANER_ENTITY_ATTRIBUTE} == '{SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL}'", state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN)
-@log_func
 def script_air_cleaner_timeout():
   script_air_cleaner_mode_sleep()
   for helper in SCRIPT_AIR_CLEANER_HELPER:
     homeassistant.turn_off(entity_id=helper)
 
 # @state_trigger(expr(SCRIPT_AIR_CLEANER_HELPER, STATE_ON), state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_HELPER)
-# @log_func
 # def script_air_cleaner_timeout_helper():
 #   script_air_cleaner_mode_sleep()
 #   for helper in SCRIPT_AIR_CLEANER_HELPER:

@@ -7,12 +7,14 @@ from utils import log_func
 import aiofiles
 import asyncio
 
-from homeassistant.const import EVENT_HOMEASSISTANT_STOP, EVENT_CALL_SERVICE
+from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, EVENT_HOMEASSISTANT_STOP, EVENT_CALL_SERVICE
 
 from datetime import datetime
 from pathlib import Path
 
 log_trigger = []
+
+HA_LOG_FILTER = ["custom integration", "reload"]
 
 @service(supports_response="optional")
 @task_unique("ha_log_content_truncate", kill_me=True)
@@ -29,11 +31,10 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
     log_ha_size = LOG_HA_SIZE
   try: 
     log_truncate(logfile=PATH_LOG_HA, size_log_entries=log_ha_size, size_archive_entries=LOG_HA_ARCHIVE_SIZE)
-
   except AttributeError:
     pass
   except Exception as e:
-    log.error(e)
+    log(msg=e, level="error")
   finally: 
     task.sleep(LOG_HA_TRUNCATE_BLOCK_DELAY)
 
@@ -85,7 +86,7 @@ async def log_truncate(logfile, size_log_entries=LOG_HA_SIZE, size_log_tail=LOG_
 
   logs = log_read(logfile)
   archive = log_read(f"{logfile}.{log_archive_suffix}")
-
+  
   if logs is not None and len(logs) > size_log_entries: 
     logs_trunc = logs[:-size_log_tail]
     logs_truncated = logs[-size_log_tail:]
@@ -95,6 +96,14 @@ async def log_truncate(logfile, size_log_entries=LOG_HA_SIZE, size_log_tail=LOG_
     if archive is not None and len(archive) > 0: 
       archive.extend(logs_trunc)
       log_write(f"{logfile}.{log_archive_suffix}", archive[-size_archive_entries:])
+
+@event_trigger(EVENT_HOMEASSISTANT_STARTED)
+async def log_filter(logfile, filters=HA_LOG_FILTER):
+  logs = log_read(logfile)
+  lines = [line for line in logs if not any(filtering in line for filtering in filters)]
+  if logs != lines: 
+    lines.append(f"[removed] log_filter: {filters}")
+    log_write(logfile, lines)
 
 # Log: Trigger
 

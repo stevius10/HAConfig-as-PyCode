@@ -10,12 +10,11 @@ import sys
 
 log_state_trigger = []
 
-def log(msg, level="info", logger=LOG_SYS_LOGGER, ctx=pyscript.get_global_ctx()):
+default_log_level = "info"
+
+def log(msg, level=default_log_level, logger=LOG_SYS_LOGGER, ctx=pyscript.get_global_ctx()):
   log_func="pyscript.log"
-  # if msg is None:
-  try: msg += sys._getframe(1).f_code.co_name
-  except: pass
-  try: msg += ctx
+  try: msg += (ctx + sys._getframe(1).f_code.co_name)
   except: pass
   if msg is not None and not isinstance(msg, str): 
     msg = msg.get_name()
@@ -33,9 +32,13 @@ def log_func(func):
     except Exception as e:
       result = f"Error: {e}"
     finally:
-      log("{} ({}) {} {}[{}])".format(ctx, func_name, result, args, kwargs))
+      log_module("{} ({}) {} {}[{}])".format(ctx, func_name, result, args, kwargs))
       return result
   return wrapper
+
+def log_module(msg, level=default_log_level, logger=LOG_SYS_LOGGER):
+  if service.has_service("pyscript", "log"):
+    pyscript.log(msg=msg, logger=logger, level=level)
 
 def log_state_factory(entity, expression):
   @state_trigger(expr(entity, expression, defined=True))
@@ -77,7 +80,7 @@ class Logfile:
         self.log(msg.replace("\n", ""))
       self.log(" ")
     elif message == " ":
-        self.logger.debug('\n')
+        self.logger.info('\n')
         
   def truncate(self):
     func = "pyscript.log_truncate"
@@ -87,6 +90,5 @@ class Logfile:
   def finished(self):
     logs = "\n".join(self.logs)
     self.log(f"[executed] {self.name}: {logs}")
-    if service.has_service("pyscript", "log"):
-      pyscript.log(msg=f"[executed] {self.name}: {logs}")
+    log_module(msg=msg, logger=logger, level=level)
     return { "service": {self.name}, "logs": logs }

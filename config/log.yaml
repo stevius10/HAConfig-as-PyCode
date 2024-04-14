@@ -15,7 +15,7 @@ logger:
     custom_components.pyscript:
       - "Unloaded"
     custom_components.pyscript.global_ctx:
-      - "oaded"
+      - "Loaded"
     custom_components.hacs:
       - "https://api.github.com/rate_limit"
     homeassistant.components.openweathermap.weather_update_coordinator: 
