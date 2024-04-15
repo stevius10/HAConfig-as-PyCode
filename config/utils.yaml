@@ -1,2 +1,18 @@
+timer:
+  adguard_home_schutz:
+    name: timeout_adguard_home_schutz
+  heizdecke:
+    name: timeout_heizdecke
+  sofa:
+    name: timeout_sofa
+  bett:
+    name: timeout_bett
+  luftreiniger:
+    name: timeout_luftreiniger
+  sz_ventilator:
+    name: timeout_sz_ventilator
+  schlafzimmer:
+    name: timeout_schlafzimmer
+
 tts:
   - platform: google_translate

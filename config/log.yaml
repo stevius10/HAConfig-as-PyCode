@@ -1,7 +1,7 @@
 logger: 
   default: error
   logs:
-    py.log: debug
+    py: info
     custom_components.pyscript: info
     custom_components.tapo.coordinators: critical
     custom_components.xiaomi_miot: critical
@@ -12,16 +12,26 @@ logger:
     homeassistant:
       - "Error doing job: Future exception was never retrieved" # Tado
       - "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))" # Tado
+    custom_components.pyscript:
+      - "Unloaded"
     custom_components.pyscript.global_ctx:
       - "Loaded"
-      - "Un"
+      - "Reloaded"
     custom_components.hacs:
       - "https://api.github.com/rate_limit"
+    homeassistant.components.openweathermap.weather_update_coordinator: 
+      - "timeouted"
+    homeassistant.components.hassio.handler:
+      - "stat"
     homeassistant.components.google_assistant.http:
       - "404"
       - "500"
     homeassistant.components.websocket_api.http.connection: 
       - "io.robbie.HomeAssistant"
+    homeassistant.config_entries: 
+      - "tado"
+    homeassistant.util.logging:
+      - "HomeAssistant NOT_RUNNING"
     aiohttp.server: 
       - "Error handling request"
     root:

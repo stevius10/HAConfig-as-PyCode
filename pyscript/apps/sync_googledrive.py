@@ -477,10 +477,9 @@ class Utils():
 async def service_googledrive_sync():
   try:
     drive = Drive(service_google_drive_credentials_file=SERVICE_GOOGLE_DRIVE_CREDENTIALS_FILE)
-    # drive.synchronize(SERVICE_GOOGLE_DRIVE_LOCAL_FOLDER, SERVICE_GOOGLE_DRIVE_REMOTE_FOLDER)
     await hass.async_add_executor_job(drive.synchronize, SERVICE_GOOGLE_DRIVE_LOCAL_FOLDER, SERVICE_GOOGLE_DRIVE_REMOTE_FOLDER)
 
   except Exception as e:
-    pyscript.log(msg=f"Error synchronizing Google Drive: {e}", level=f"Error")
+    log(f"Error synchronizing Google Drive: {e}", level=f"Error")
   finally:
     logfile.finished()

@@ -11,8 +11,8 @@ currency: EUR
 temperature_unit: C
 unit_system: metric
 
-external_url: "https://steven-pi.duckdns.org"
-internal_url: "http://homeassistant.local:8123"
+internal_url: !secret ha_config_url_internal
+external_url: !secret ha_config_url_external
 
 auth_providers:
   - type: homeassistant
@@ -23,12 +23,11 @@ auth_providers:
       - 192.168.178.0/24
       - ::1
     trusted_users: 
-      192.168.178.0/24: c6df5968244e44358c6a5f34829ff884
+      192.168.178.0/24: !secret ha_config_user_trusted
     allow_bypass_login: true
 
 allowlist_external_dirs:
   - /config
   - /share
-#  - /share/Netzwerk
 
 packages: !include_dir_named config/ 

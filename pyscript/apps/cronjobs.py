@@ -8,8 +8,9 @@ SERVICES_AUTO = {
 trigger_services_auto = []
 
 def services_auto_factory(entity, cron): 
+  # @service(service_name=entity)
   @time_trigger(cron)
-  def service_auto(entity):
+  def service_auto(entity=entity):
     service.call(entity.split(".")[0], entity.split(".")[1])
 
   trigger_services_auto.append(service_auto)

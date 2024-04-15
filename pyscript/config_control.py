@@ -27,9 +27,12 @@ def on_press_factory(entity):
   @state_trigger(expr(entity, defined=True))
   def on_press(var_name=None, value=None):
     action = CONFIG_CONTROL.get(entity).get(value.split("-")[0])
-    if action:
-      scene.turn_on(entity_id=action)
-
+    if action is not None: 
+      if isinstance(action, str): 
+        action = [action]
+      for activate in action: 
+        homeassistant.turn_on(entity_id=activate)
+        
   trigger_control.append(on_press)
 
 for entity in CONFIG_CONTROL:

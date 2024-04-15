@@ -44,7 +44,7 @@ template_card_art:
       - type: custom:hui-element
         card_type: custom:swipe-card
         style:
-          top: 50%
+          top: 70%
           right: -1%
           left: -1%
           transform: translate(0%, -50%)
