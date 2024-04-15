@@ -38,9 +38,6 @@ def log_func(func):
       log_module("[{}{}] {} ({}, {}])".format(f"{func_name}", f":({ctx})", f"{result}", f"{args}", f", [{kwargs}]"))
       return result
   return wrapper
-
-# def log_module(msg, level=LOG_LOGGING_LEVEL, logger=LOG_SYS_LOGGER):
-#   call(PYSCRIPT_FUNC_LOG, msg="{ctx}: {msg}", logger=logger, level=level)
   
 # Factory
 
@@ -94,5 +91,5 @@ class Logfile:
   def finished(self):
     logs = "\n".join(self.logs)
     log(f"[executed] {self.name}: {logs}")
-    self.log(msg=logs)
+    self.log(message=logs)
     return { "service": {self.name}, "logs": logs }
