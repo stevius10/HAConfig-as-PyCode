@@ -37,28 +37,7 @@ def log_func(func):
     finally:
       log_module("[{}{}] {} ({}, {}])".format(f"{func_name}", f":({ctx})", f"{result}", f"{args}", f", [{kwargs}]"))
       return result
-  return wrapper
-
-# def log_module(msg, level=LOG_LOGGING_LEVEL, logger=LOG_SYS_LOGGER):
-#   call(PYSCRIPT_FUNC_LOG, msg="{ctx}: {msg}", logger=logger, level=level)
-  
-# Factory
-
-def log_state_factory(entity, expression):
-  @state_trigger(expr(entity, expression, defined=True))
-  def log_state(trigger_type=None, var_name=None, value=None, old_value=None):  
-    if old_value not in STATES_HA_UNDEFINED:
-      log(f"[{var_name}] {trigger_type}: {value} ({old_value})")
-
-  if LOG_DEBUG or entity in LOG_DEBUG_DEVICES:
-    log_state_trigger.append(log_state) 
-  info = expr(entity, expression)
-  try: info += f" ({state.get(entity)})" if state.get(entity) not in STATES_HA_UNDEFINED else ""
-  except: pass
-  log(f"[trigger] {info}")
-@service
-def log_state(entity, expr):
-  log_state_factory(entity, expression=expr)
+  return wrapper  
 
 # Class
 

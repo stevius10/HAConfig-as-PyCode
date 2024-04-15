@@ -2,7 +2,8 @@ STATE_ON = "on"
 
 # utils
 
-PYSCRIPT_FUNC_LOG = "pyscript.log"
+FUNC_PYLOG = "pyscript.log"
+FUNC_SYSLOG = "system_log.write"
 
 # script_air_cleaner
 
