@@ -6,7 +6,7 @@ from config import (
   SERVICE_GIT_REPO_MESSAGE, SERVICE_GIT_GITHUB_PR_TITLE, 
   SERVICE_GIT_GITHUB_PR_BODY, SERVICE_GIT_SETTINGS_CONFIG
 )
-from utils import Logfile
+from utils import log, Logfile
 
 import dump
 import subprocess
@@ -15,28 +15,27 @@ import requests
 logfile  = Logfile(pyscript.get_global_ctx())
 
 def create_or_update_pull_request(repo_owner, repo_name, base_branch, head_branch, title, body):
-    access_token  =  SERVICE_GIT_GITHUB_TOKEN
-    headers  = {
-        "Authorization": f"token {access_token}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-    url  = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls"
-    payload  = {
-        "title": title,
-        "body": body,
-        "base": base_branch,
-        "head": head_branch
-    }
-    response  = task.executor(requests.get, url, json=payload, headers=headers)
-    #logfile.log(f"{response['status_code']}: {response['json']}")
-    if response.status_code == 201:
-        return response.json()["html_url"]
-    elif response.status_code == 422:
-        pull_request_url  = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{head_branch}"
-        response  = requests.patch(pull_request_url, json=payload, headers=headers)
-        if response.status_code == 200:
-            return response.json()["html_url"]
-    return None
+  access_token  =  SERVICE_GIT_GITHUB_TOKEN
+  headers  = {
+    "Authorization": f"token {access_token}",
+    "Accept": "application/vnd.github.v3+json"
+  }
+  url  = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls"
+  payload  = {
+    "title": title,
+    "body": body,
+    "base": base_branch,
+    "head": head_branch
+  }
+  response  = task.executor(requests.get, url, json=payload, headers=headers)
+  if response.status_code == 201:
+      return response.json()["html_url"]
+  elif response.status_code == 422:
+      pull_request_url  = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{head_branch}"
+      response  = requests.patch(pull_request_url, json=payload, headers=headers)
+      if response.status_code == 200:
+          return response.json()["html_url"]
+  return None
 
 @service(supports_response="optional")
 @time_trigger(SERVICE_GIT_CRON)
