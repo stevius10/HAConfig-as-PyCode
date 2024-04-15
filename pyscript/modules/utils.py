@@ -93,6 +93,6 @@ class Logfile:
   
   def finished(self):
     logs = "\n".join(self.logs)
-    self.log(f"[executed] {self.name}: {logs}")
+    pyscr.log(f"[executed] {self.name}: {logs}")
     log(msg=logs)
     return { "service": {self.name}, "logs": logs }
