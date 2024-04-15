@@ -1,4 +1,5 @@
-from config import LOG_SYS_LOGGER, PATH_LOGS, LOG_DEBUG, LOG_DEBUG_DEVICES, STATES_HA_UNDEFINED
+from config import LOG_LOGGING_LEVEL, LOG_SYS_LOGGER, PATH_LOGS, LOG_DEBUG, LOG_DEBUG_DEVICES, STATES_HA_UNDEFINED
+from mapping import PYSCRIPT_FUNC_LOG
 from helper import expr
 
 import datetime
@@ -10,16 +11,18 @@ import sys
 
 log_state_trigger = []
 
-default_log_level = "info"
+# Function
 
-def log(msg, level=default_log_level, logger=LOG_SYS_LOGGER, ctx=pyscript.get_global_ctx()):
-  log_func="pyscript.log"
-  try: msg += (ctx + sys._getframe(1).f_code.co_name)
+def call(func, **kwargs):
+  if service.has_service(func.split(".")[0], func.split(".")[1]):
+    service.call(func.split(".")[0], func.split(".")[1], **kwargs)
+
+def log(msg, level=LOG_LOGGING_LEVEL, logger=LOG_SYS_LOGGER, ctx=pyscript.get_global_ctx()):
+  try: msg += f" <- {sys._getframe(1).f_code.co_name}" if sys._getframe(1).f_code.co_name not in [None, "ast_call"] else ""
   except: pass
   if msg is not None and not isinstance(msg, str): 
     msg = msg.get_name()
-  if service.has_service(log_func.split(".")[0], log_func.split(".")[1]):
-    service.call(log_func.split(".")[0], log_func.split(".")[1], msg=f"{ctx}: {msg}", logger=logger, level=level)
+  call(PYSCRIPT_FUNC_LOG, msg=f"{ctx}: {msg}", logger=logger, level=level)
 
 def log_func(func):
   def wrapper(*args, **kwargs):
@@ -32,13 +35,14 @@ def log_func(func):
     except Exception as e:
       result = f"Error: {e}"
     finally:
-      log_module("{} ({}) {} {}[{}])".format(ctx, func_name, result, args, kwargs))
+      log_module("[{}{}] {} ({}, {}])".format(f"{func_name}", f":({ctx})", f"{result}", f"{args}", f", [{kwargs}]"))
       return result
   return wrapper
 
-def log_module(msg, level=default_log_level, logger=LOG_SYS_LOGGER):
-  if service.has_service("pyscript", "log"):
-    pyscript.log(msg=msg, logger=logger, level=level)
+def log_module(msg, level=LOG_LOGGING_LEVEL, logger=LOG_SYS_LOGGER):
+  call(PYSCRIPT_FUNC_LOG, msg="{ctx}: {msg}", logger=logger, level=level)
+  
+# Factory
 
 def log_state_factory(entity, expression):
   @state_trigger(expr(entity, expression, defined=True))
@@ -55,6 +59,8 @@ def log_state_factory(entity, expression):
 @service
 def log_state(entity, expr):
   log_state_factory(entity, expression=expr)
+
+# Class
 
 class Logfile:
   def __init__(self, name):
@@ -83,9 +89,7 @@ class Logfile:
         self.logger.info('\n')
         
   def truncate(self):
-    func = "pyscript.log_truncate"
-    if service.has_service(func.split(".")[0], func.split(".")[1]):
-      service.call(func.split(".")[0], func.split(".")[1], logfile=self.logfile, blocking=True, logger=self.logger)
+    call("pyscript.log_truncate", logfile=self.logfile, blocking=True, logger=self.logger)
   
   def finished(self):
     logs = "\n".join(self.logs)

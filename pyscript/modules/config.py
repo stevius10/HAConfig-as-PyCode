@@ -6,6 +6,7 @@ import datetime
 SYSTEM_FILES = secrets.SYSTEM_FILES.update({
   "/config/files/.zshrc": "/root"
 })
+EVENT_SYSTEM_STARTED_DELAY = 120
 
 # Pyscript
 PYSCRIPT_DIR_NATIVE = "/config/pyscript/python"
@@ -22,6 +23,7 @@ LOG_HA_TRUNCATE_IO_RETRY = 3
 LOG_HA_ARCHIVE_SIZE = 10 * LOG_HA_SIZE
 LOG_ARCHIVE_SUFFIX = "1"
 LOG_SYS_LOGGER = "py.log"
+LOG_LOGGING_LEVEL = "info"
 
 LOG_DEBUG = True # False
 LOG_DEBUG_DEVICES = []
@@ -55,6 +57,7 @@ SERVICE_GIT_CRON = "cron(15 1 * * *)"
 # Events
 EVENT_FOLDER_WATCHER = "folder_watcher"
 EVENT_SYSTEM_PYSCRIPT_RELOADED = "event_system_pyscript_reloaded"
+EVENT_SYSTEM_STARTED = "event_system_started"
 
 # States
 STATE_HA_NONE = "None"

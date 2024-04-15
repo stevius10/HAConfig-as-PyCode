@@ -1,5 +1,9 @@
 STATE_ON = "on"
 
+# utils
+
+PYSCRIPT_FUNC_LOG = "pyscript.log"
+
 # script_air_cleaner
 
 SCRIPT_AIR_CLEANER_ENTITY = "fan.luftreiniger"

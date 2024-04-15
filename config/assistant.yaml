@@ -20,11 +20,11 @@ google_assistant:
         expose: true
       switch.sofa: 
         expose: true
-      # fan.sz_ventilator:
-      #   expose: false
-      # fan.luftreiniger:
-      #   expose: false
-      
+      switch.sz_luftung: 
+        expose: true
+      fan.wz_ventilator:
+        expose: false
+
       # light.browser_mod_iphone_screen:
       #   expose: false
       # light.browser_mod_ipad_screen: 
