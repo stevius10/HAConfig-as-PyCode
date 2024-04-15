@@ -1,7 +1,7 @@
 logger: 
   default: error
   logs:
-    py.log: debug
+    py: info
     custom_components.pyscript: info
     custom_components.tapo.coordinators: critical
     custom_components.xiaomi_miot: critical
@@ -16,6 +16,7 @@ logger:
       - "Unloaded"
     custom_components.pyscript.global_ctx:
       - "Loaded"
+      - "Reloaded"
     custom_components.hacs:
       - "https://api.github.com/rate_limit"
     homeassistant.components.openweathermap.weather_update_coordinator: 

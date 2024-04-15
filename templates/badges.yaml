@@ -28,7 +28,7 @@ template_badge_webfilter:
   - entity: sensor.adguard_home_dns_abfragen_blockiert
   - name: Web-filter
   - condition: "states('switch.adguard_home_schutz') == 'on'"
-  # - conditional: true
+  - conditional: true
   - style: ":host {}"
   - tap_action:
       action: call-service
@@ -173,14 +173,13 @@ template_badges_services:
         name: Luft reinigen
         tap_action:
           action: call-service
-          service: pyscript.script_air_cleaner
-        hold_action:
-          action: more-info
+          service: pyscript.script_air_cleaner_sleep
         double_tap_action:
           action: call-service
-          service: homeassistant.turn_off
-          data:
-            entity_id: pyscript.script_air_cleaner
+          service: pyscript.script_air_cleaner_clean
+        hold_action:
+          action: call-service
+          service: pyscript.script_air_cleaner
         card_mod: 
           style: |
             :host { 

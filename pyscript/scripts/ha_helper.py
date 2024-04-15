@@ -9,16 +9,18 @@ from utils import log
 import aiofiles
 import asyncio
 
-from homeassistant.const import EVENT_HOMEASSISTANT_STOP, EVENT_CALL_SERVICE
+from homeassistant.const import EVENT_HOMEASSISTANT_STOP
 
 from datetime import datetime
 from pathlib import Path
 
 log_trigger = []
 
-HA_LOG_FILTER = ["custom integration", "reload"]
+HA_LOG_FILTER = ["custom integration"]
 
-@service(supports_response="optional")
+# Automations
+
+@service
 @task_unique("ha_log_content_truncate", kill_me=True)
 @event_trigger(EVENT_FOLDER_WATCHER) 
 @event_trigger(EVENT_HOMEASSISTANT_STOP)
@@ -40,10 +42,47 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
   finally: 
     task.sleep(LOG_HA_TRUNCATE_BLOCK_DELAY)
 
+# Events
+@event_trigger(EVENT_SYSTEM_STARTED)
+def log_filter(logfile, filters=HA_LOG_FILTER):
+  logs = log_read(logfile)
+  lines = [line for line in logs if not any(filtering in line for filtering in filters)]
+  if logs != lines: 
+    lines.append(f"[removed] log_filter: {filters}")
+    log_write(logfile, lines)
+
+# Services
 @service
 def log(msg, level=LOG_LOGGING_LEVEL, logger=LOG_SYS_LOGGER):
   system_log.write(message=msg, logger=logger, level=level)
   
+@service(supports_response="optional")
+async def log_truncate(logfile, size_log_entries=LOG_HA_SIZE, size_log_tail=LOG_HA_TAIL, size_archive_entries=0, log_archive_suffix=LOG_ARCHIVE_SUFFIX):
+  logs_trunc = []
+  logs_truncated = []
+  archive_appended_trunc = []
+
+  logs = log_read(logfile)
+  archive = log_read(f"{logfile}.{log_archive_suffix}")
+  
+  if logs is not None and len(logs) > size_log_entries: 
+    logs_trunc = logs[:-size_log_tail]
+    logs_truncated = logs[-size_log_tail:]
+    logs_truncated.extend(f"\n# {len(logs_truncated)} / {size_log_entries} at {datetime.now()}\n")
+    log_write(logfile, logs_truncated)    
+    
+    if archive is not None and len(archive) > 0: 
+      archive.extend(logs_trunc)
+      log_write(f"{logfile}.{log_archive_suffix}", archive[-size_archive_entries:])
+  
+  # return { "log": log_read(logfile), "file": logfile }
+
+@event_trigger("SERVICE_RELOAD")
+def on_pyscript_reload(**kwargs):
+  log("on_pyscript_reload {kwargs}")
+
+# Utils
+
 async def log_read(logfile):
   for _ in range(LOG_HA_TRUNCATE_IO_RETRY):
     try:
@@ -62,30 +101,3 @@ async def log_write(logfile, lines, mode='w+'):
     except: 
       pass
   return []
-  
-@service
-async def log_truncate(logfile, size_log_entries=LOG_HA_SIZE, size_log_tail=LOG_HA_TAIL, size_archive_entries=0, log_archive_suffix=LOG_ARCHIVE_SUFFIX):
-  logs_trunc = []
-  logs_truncated = []
-  archive_appended_trunc = []
-
-  logs = log_read(logfile)
-  archive = log_read(f"{logfile}.{log_archive_suffix}")
-  
-  if logs is not None and len(logs) > size_log_entries: 
-    logs_trunc = logs[:-size_log_tail]
-    logs_truncated = logs[-size_log_tail:]
-    logs_truncated.extend(f"\n# {len(logs_truncated)} / {size_log_entries} at {datetime.now()}\n")
-    log_write(logfile, logs_truncated)    
-    
-    if archive is not None and len(archive) > 0: 
-      archive.extend(logs_trunc)
-      log_write(f"{logfile}.{log_archive_suffix}", archive[-size_archive_entries:])
-
-@event_trigger(EVENT_SYSTEM_STARTED)
-async def log_filter(logfile, filters=HA_LOG_FILTER):
-  logs = log_read(logfile)
-  lines = [line for line in logs if not any(filtering in line for filtering in filters)]
-  if logs != lines: 
-    lines.append(f"[removed] log_filter: {filters}")
-    log_write(logfile, lines)

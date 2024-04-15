@@ -4,6 +4,7 @@ from helper import expr
 
 import datetime
 import functools
+import inspect
 import logging
 import os
 import regex as re
@@ -18,11 +19,21 @@ def call(func, **kwargs):
     service.call(func.split(".")[0], func.split(".")[1], **kwargs)
 
 def log(msg, level=LOG_LOGGING_LEVEL, logger=LOG_SYS_LOGGER, ctx=pyscript.get_global_ctx()):
-  if sys._getframe(1).f_code.co_name not in [None, "ast_call"]:
-    msg += f" <- {sys._getframe(1).f_code.co_name}"
-  if msg is not None and not isinstance(msg, str): 
-    msg = msg.get_name()
-  call(FUNC_SYSLOG, message=f"{ctx}: {msg}", logger=logger, level=level)
+  # debug information
+  for finfo in reversed(inspect.stack()[1:]):
+    frame = finfo.frame
+    filename = frame.f_code.co_filename.split("/")[-1]
+    function_name = frame.f_code.co_name
+    line_number = frame.f_lineno
+    debug_var = frame.f_locals
+  debug = f" | {function_name} ({filename}:{line_number})" if function_name != "ast_call" else ""
+  
+  if not isinstance(msg, str): 
+    try: msg += msg.get_name(); msg += msg.get("func_name");
+    except: msg += msg.get("func_name");
+  
+  call(FUNC_SYSLOG, message=f"{msg} {debug}", logger=logger, level=level)
+  # call(FUNC_SYSLOG, message=f"{function_name}: {debug_var}", logger=logger, level="debug")
 
 def log_func(func):
   def wrapper(*args, **kwargs):
@@ -50,6 +61,7 @@ def log_state_factory(entity, expression):
   if LOG_DEBUG or entity in LOG_DEBUG_DEVICES:
     log_state_trigger.append(log_state) 
   info = expr(entity, expression)
+  info = " and ".join(info.split(" and ")[:-1]) if (" not in ") in info.split(" and ")[-1] else info
   try: info += f" ({state.get(entity)})" if state.get(entity) not in STATES_HA_UNDEFINED else ""
   except: pass
   log(f"[trigger] {info}")

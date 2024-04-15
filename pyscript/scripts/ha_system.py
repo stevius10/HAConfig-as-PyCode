@@ -1,4 +1,4 @@
-from config import EVENT_SYSTEM_STARTED, EVENT_SYSTEM_STARTED_DELAY, PATH_LOGS, PYSCRIPT_DIR_NATIVE, SYSTEM_FILES
+from config import EVENT_SYSTEM_STARTED, EVENT_SYSTEM_STARTED_DELAY, LOG_DEBUG, LOG_DEBUG_DEVICES, PATH_LOGS, PYSCRIPT_DIR_NATIVE, SYSTEM_FILES
 from utils import log 
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
@@ -13,12 +13,12 @@ import os
 # Automations 
 
 @event_trigger(EVENT_SYSTEM_STARTED)
-async def ha_setup_files(file=SYSTEM_FILES):
+def ha_setup_files(file=SYSTEM_FILES):
   try:
     for file in files:
       shutil.copy2(file, files[file])
   except Exception as e:
-    log.warn(e)
+    log(e)
 
 @event_trigger(EVENT_SYSTEM_STARTED)
 def ha_setup_environment():
@@ -28,7 +28,7 @@ def ha_setup_environment():
 # Events
 
 @event_trigger(EVENT_HOMEASSISTANT_STARTED)
-async def event_started(): 
+def event_system_started(): 
   task.sleep(EVENT_HOMEASSISTANT_STARTED_DELAY)
   event.fire(EVENT_SYSTEM_STARTED)
   

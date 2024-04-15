@@ -24,12 +24,10 @@ def default_factory(entity, func):
 
 def timeout_factory(entity, default, delay=None):
   @event_trigger(EVENT_HOMEASSISTANT_STARTED) 
-  @state_trigger(expr(entity, expression=entities_timeout.get(entity)['default'], comparator="!=", logs=True, defined=True))
+  @state_trigger(expr(entity, expression=entities_timeout.get(entity)['default'], comparator="!=", defined=True))
   def timeout_default(trigger_type=None, var_name=None):
-    log("[timeout_default]" + expr(entity, expression=entities_timeout.get(entity)['default'], comparator="!=", logs=True, defined=True))
-
     if state.get(entity) != default:
-      if trigger_type == "time" or delay == None: 
+      if trigger_type == "event" or delay == None: 
         reset(entity, default)
       if delay in entities_timeout.get(entity): 
         entity_timer = get_timer(entity, delay)
@@ -65,6 +63,4 @@ def reset(entity, default):
   state.set(entity, default)
 
 def get_timer(entity, delay):
-  name = f"timer.timer_{entity.split(".")[1]}"
-  state.set(name, str(delay), device_class='duration', state_class='measurement', unit_of_measurement='m')
-  return name
+  return f"timer.timer_{entity.split(".")[1]}"
