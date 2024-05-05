@@ -69,9 +69,8 @@ def script_air_cleaner_clean(entity=entities, percentage=clean_mode_percentage, 
     percentage = max(0, min(100, int((int(pm) - SCRIPT_AIR_CLEANER_THRESHOLD_START) / (SCRIPT_AIR_CLEANER_THRESHOLD_STOP - SCRIPT_AIR_CLEANER_THRESHOLD_START) * 100)))
     fan.set_percentage(entity_id=entity, percentage=percentage)
     if percentage >= helper_percentage_minimum:
-      for entity in helper:
-        homeassistant.turn_on(entity_id=entity)
-    log(f"{entity} with {percentage} at {pm}", ns, ctx, "clean")
+      script_air_cleaner_helper_air()
+    log(f"{entity} with {percentage}% at {pm} pm2,5", ns, ctx, "clean")
 
 @service
 def script_air_cleaner_sleep(entity=entities):
@@ -90,12 +89,25 @@ def script_air_cleaner_sleep(entity=entities):
 # Helper
 
 @service
+def script_air_cleaner_helper_air():
+  for entity in helper:
+    homeassistant.turn_on(entity_id=entity)
+
+@service
 def script_air_cleaner_turn_off(entity=entities):
   if isinstance(entity, list):
     for item in entity:
       script_air_cleaner_turn_off(item)
   else:
     pyscript.script_off_air(entity=[entity])
+  
+# Logging
+
+@state_trigger(expr(entities, STATE_OFF))
+@log_context
+def script_air_cleaner_log_entity_turned_off(var_name=None, ns=None, ctx=None):
+  pm = state.get(var_name.replace("fan", "sensor")) 
+  log(f"{var_name} turned off at {pm} pm2,5", ns, ctx, "clean")
 
 # Timeout
 

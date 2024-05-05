@@ -52,12 +52,12 @@ async def log_truncate(logfile, size_log_entries=LOG_HA_SIZE, size_log_tail=LOG_
     logs_trunc = logs[:-size_log_tail]
     logs_truncated = logs[-size_log_tail:]
     logs_truncated.extend(f"\n# {len(logs_truncated)} / {size_log_entries} at {datetime.now()}\n")
-    log_write(logfile, logs_truncated)    
+    log_write(logfile, logs_truncated, ns, ctx)    
     log(f"{logfile} truncated from {size_log_entries} to {len(trunc)}", ns, ctx, "truncated:log")
     
     if archive is not None and len(archive) > 0: 
       logs_trunc.extend(archive)
-      log_write(f"{logfile}.{log_archive_suffix}", logs_trunc[-size_archive_entries:])
+      log_write(f"{logfile}.{log_archive_suffix}", logs_trunc[-size_archive_entries:], ns, ctx)
       log(f"{logfile}.{log_archive_suffix} reseized from {len(archive)} to {len(logs_trunc)}", ns, ctx, "truncated:archive")
 
   return { "log": log_read(logfile), "file": logfile }
@@ -86,16 +86,33 @@ async def log_read(logfile, ns=None, ctx=None):
       async with aiofiles.open(logfile, mode='r+') as l:
         logs = l.readlines()
       return logs
+    except AttributeError: pass
     except Exception as e: 
       log(f"{logfile} could not be read ({e})", ns, ctx, "failed")
   return []
 
 @log_context
-async def log_write(logfile, lines, mode='w+'):
+async def log_write(logfile, lines, mode='w+', ns=None, ctx=None):
   for _ in range(LOG_HA_TRUNCATE_IO_RETRY):
     try:
       async with aiofiles.open(logfile, mode=mode) as l:
         l.writelines(lines)
+    except AttributeError: pass
     except: 
       log(f"{logfile} could not be append: {lines} ({e})", ns, ctx, "failed")
   return []
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
