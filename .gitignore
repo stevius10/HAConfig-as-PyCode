@@ -12,7 +12,7 @@
 !pyscript
 !pyscript/**/*
 pyscript/modules/secrets.py
-pyscript/snippets/**/*
+pyscript/snippets/*
 
 !scripts
 !scripts/**/*
