@@ -1,0 +1,2 @@
+shell_command:
+  ha_filebackup: 'bash /config/scripts/shell/ha-filebackup.sh > /dev/null 2>&1 &'

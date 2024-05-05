@@ -1,0 +1,17 @@
+pymap_google_luft_reinigen:
+  alias: pymap-google-luft-reinigen
+  sequence:
+  - service: pyscript.script_air_cleaner
+    metadata: {}
+    data: {}
+  mode: restart
+pymap_google_ich_gehe:
+  alias: pymap-google-ich-gehe
+  sequence:
+  - service: pyscript.script_off_away
+    data: {}
+  mode: restart
+pymap_google_schlafen:
+  alias: pymap-google-schlafen
+  sequence: []
+  mode: restart

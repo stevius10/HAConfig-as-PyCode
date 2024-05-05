@@ -1,0 +1,47 @@
+google_assistant: 
+  project_id: !secret google_project_id
+  service_account: !include /config/.storage/google_assistant_auth.json
+  report_state: true
+  exposed_domains:
+    - scene
+    - script
+  entity_config:
+      light.wz_beleuchtung:
+        expose: true
+      light.sz_beleuchtung:
+        expose: true
+      light.g_beleuchtung:
+        expose: true
+      light.k_beleuchtung:
+        expose: true
+      switch.bett: 
+        expose: true
+      switch.heizdecke: 
+        expose: true
+      switch.sofa: 
+        expose: true
+      switch.sz_luftung: 
+        expose: true
+      fan.wz_ventilator:
+        expose: false
+
+      # light.browser_mod_iphone_screen:
+      #   expose: false
+      # light.browser_mod_ipad_screen: 
+      #   expose: false
+  
+      # switch.zigbee2mqtt_bridge_permit_join:
+      #   expose: false
+        
+      # switch.adguard_home_abfrageprotokoll:
+      #   expose: false
+      # switch.adguard_home_filterung:
+      #   expose: false
+      # switch.adguard_home_schutz:
+      #   expose: false
+      # switch.adguard_home_kindersicherung:
+      #   expose: false
+      # switch.adguard_home_sichere_suche:
+      #   expose: false
+      # switch.adguard_home_sicheres_surfen:
+      #   expose: false

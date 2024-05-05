@@ -1,0 +1,21 @@
+timer:
+  adguard_home_schutz:
+    name: adguard_home_schutz
+  heizdecke:
+    name: heizdecke
+  sofa:
+    name: sofa
+  bett:
+    name: bett
+  luft: 
+    name: luft
+  wz_luft: 
+    name: wz_luft
+  sz_luft: 
+    name: sz_luft
+  wz_ventilator:
+    name: wz_ventilator
+  sz_ventilator:
+    name: sz_ventilator
+  schlafzimmer:
+    name: schlafzimmer

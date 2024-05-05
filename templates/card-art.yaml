@@ -1,0 +1,68 @@
+template_card_art:
+  card: 
+    type: custom:stack-in-card
+    mode: vertical
+    card_mod:
+      style: 'ha-card { --ha-card-background: none; border-radius: 10px; --primary-text-color: white; --paper-item-icon-color: silver; --ha-card-border-width: 0px; }'
+    cards:
+    
+    # Forecast
+    - type: custom:decluttering-card
+      template: template_forecast
+        
+    - type: picture-elements
+      image: /local/images/overview/overview-transparent.png
+      elements:
+      
+      # Image
+      - type: image
+        entity: 'sensor.overview_state_art'
+        state_image:
+          'an': '/local/images/overview/overview-art-light.jpg'
+          'licht': '/local/images/overview/overview-art-light.jpg'
+          'heizung': '/local/images/overview/overview-art-light.jpg'
+          'aus': '/local/images/overview/overview-art-sw.jpg'
+        tap_action: none
+        hold_action: none
+        card_mod:
+          style: 'z-index: -10 !important; overflow: hidden !important; '
+        style:
+          left: 50%
+          top: 50%
+          width: 100%
+          height: 100%
+      
+      # Weather
+      - type: custom:decluttering-card
+        template: template_weather
+        style:
+          top: 20%
+          right: 0%
+          transform: translate(0%, -50%)
+      
+      # Badges
+      - type: custom:hui-element
+        card_type: custom:swipe-card
+        style:
+          top: 80%
+          right: -1%
+          left: -1%
+          transform: translate(0%, -50%)
+          '--label-badge-text-color': rgb(80, 80, 80)
+          '--label-badge-red': rgb(80, 80, 80)
+          '--label-badge-background-color': rgb(227, 227, 227)
+        cards: 
+        - type: custom:decluttering-card
+          template: template_badges_general
+        - type: custom:decluttering-card
+          template: template_badges_services
+        - type: custom:decluttering-card
+          template: template_badges_system
+
+    
+    # Calendar
+    - type: custom:decluttering-card
+      template: template_calendar
+      style:
+        right: -1%
+        left: -1% 

@@ -1,0 +1,27 @@
+decluttering_templates: !include_dir_merge_named templates
+
+views:
+- type: custom:vertical-layout
+  theme: Backend-selected
+  cards: # !include_dir_merge_list dashboard
+    
+  - type: custom:decluttering-card
+    template: template_card
+    variables:
+    - room: wz
+
+  - type: custom:decluttering-card
+    template: template_card
+    variables:
+    - room: sz
+    
+  - type: custom:decluttering-card
+    template: template_card
+    variables:
+    - room: k
+    # - inject: weather
+    # - inject_top: 35%
+    # - inject_right: 0%
+
+  - type: custom:decluttering-card
+    template: template_card_art
