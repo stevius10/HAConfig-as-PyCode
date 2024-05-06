@@ -1,6 +1,6 @@
 from config import STATES_HA_UNDEFINED
 
-log_enabled = True
+log_enabled = False
 
 def expr(entity, expression="", comparator="==", defined=True, logs=log_enabled): 
   

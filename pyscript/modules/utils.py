@@ -12,15 +12,13 @@ import os
 import regex as re
 import sys
 
-log_state_trigger = []
-
 # Function
 
 def log(msg="", ns=None, ctx=None, title="", level=LOG_LOGGING_LEVEL):
-  if not isinstance(msg, str) and hasattr(msg, "get_name"): 
-    ns += msg.get_name()
-  if not isinstance(msg, str) and hasattr(msg, "func_name"): 
-    ns += msg.get("func_name")
+  if not isinstance(msg, str) and hasattr(msg, "get_name"): ns += msg.get_name()
+  if not isinstance(msg, str) and hasattr(msg, "func_name"): ns += msg.get("func_name")
+  #if ns is None: ns = LOG_LOGGER_SYS
+  # if ctx is None: ctx=pyscript.get_global_ctx()
   @ctx_call
   def ctx_debug(ctx=ctx):
     def debug(ctx): 

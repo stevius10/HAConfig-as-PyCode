@@ -3,9 +3,11 @@ from mapping import SCRIPT_AIR_CLEANER_PRESET_MODE_AWAY
 
 ENTITIES_AIR = [
   "humidifier.luftbefeuchter", 
-  "fan.luftreiniger",
+  "fan.wz_luft",
+  "fan.sz_luft",
   "fan.sz_ventilator",
-  "switch.sz_lufter"
+  "switch.sz_luftung",
+  "switch.wz_ventilator"
 ]
 
 ENTITIES_HEATING = [
@@ -64,13 +66,15 @@ def script_off_away():
   script_off(away=True)
 
 @service
-def script_off_air(entity=None, reset=True):
+def script_off_air(entity=None):
   if entity == None:
     script_off_air(entity=ENTITIES_AIR)
   elif isinstance(entity, list):
     for item in entity:
-      turn_off(entity=entity)
-
+      script_off_air(entity=item)
+  elif isinstance(entity, str):
+    turn_off(entity=entity)
+    
 @service
 def script_off_heating(entity=None, away=False):
   if entity == None:

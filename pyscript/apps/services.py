@@ -12,8 +12,9 @@ def services_auto_factory(entity, cron):
   @service() # (service_name=entity.split(".")[1])
   @time_trigger(cron)
   @log_context
-  def service_auto(entity=entity):
-    service.call(entity.split(".")[0], entity.split(".")[1])
+  def service_auto(entity=entity, ns=None, ctx=None):
+    result = service.call(entity.split(".")[0], entity.split(".")[1])
+    log(f"{result}", ns, ctx, title=f"{entity} called")
 
   trigger_services_auto.append(service_auto)
 
