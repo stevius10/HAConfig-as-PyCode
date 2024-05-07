@@ -1,12 +1,8 @@
+from config import *
 from helper import expr
 from utils import *
 
-SERVICES_AUTO_CRON_FILEBACKUP = "cron(0 1 * * *)"
-SERVICES_AUTO = {
-  'shell_command.ha_filebackup': SERVICES_AUTO_CRON_FILEBACKUP
-}
-
-trigger_services_auto = []
+trigger = []
 
 def services_auto_factory(entity, cron): 
   @service() # (service_name=entity.split(".")[1])
@@ -16,7 +12,7 @@ def services_auto_factory(entity, cron):
     result = service.call(entity.split(".")[0], entity.split(".")[1])
     log(f"{result}", ns, ctx, title=f"{entity} called")
 
-  trigger_services_auto.append(service_auto)
+  trigger.append(service_auto)
 
 for entity in SERVICES_AUTO:
   services_auto_factory(entity, SERVICES_AUTO.get(entity))

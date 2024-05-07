@@ -27,18 +27,16 @@ PYSCRIPT_DIR_NATIVE = "/config/pyscript/python"
 SYSTEM_FILES = secrets.SYSTEM_FILES.update({
   "/config/files/.zshrc": "/root"
 })
+
 SYSTEM_LINKS = { PATH_LOG_HA: PATH_LOG_PY_SYSTEM, 
   (PATH_LOG_HA+PATH_LOG_TAIL_SUFFIX): (PATH_LOG_PY_SYSTEM+PATH_LOG_TAIL_SUFFIX)
 }
-SYSTEM_STARTED_EVENT_DELAY = 10
 
 # Expressions
 EXPR_STATE_SEASON_POLLEN = "sensor.season in ['spring', 'summer']"
 EXPR_TIME_ACTIVE =  "cron(* 9-19 * * 1-6)"
 EXPR_TIME_RANGE_DAY = "range(00:00, 24:00)"
 EXPR_TIME_UPDATE_SENSORS = "cron(30 16 * * 1-5)"
-
-# TODO: EXPR_TIME_ACTIVE_MOTION_SUNSET = f"range(sunset - {entities.get(entity)['sun_diff']}min, sunrise + {entities.get(entity)['sun_diff']}min)" if 'sun_diff' in entities.get(entity) else EXPR_TIME_RANGE_DAY))
 
 EXPR_TIME_ACTIVE_RANGE_EVENING = "range(19:00, 24:00)"
 EXPR_TIME_ACTIVE_RANGE_NIGHT = "range(24:00, 6:00)"
@@ -47,10 +45,6 @@ EXPR_TIME_ACTIVE_RANGE_NIGHT = "range(24:00, 6:00)"
 AUTO_MOTION_TIMEOUT = 70
 AUTO_OFF_AWAY_TRANSITION = 20
 
-# AUTO_TIMER_DURATION_LUFTREINIGER = 5400
-# AUTO_TIMER_DURATION_SZ_VENTILATOR = 5400
-# AUTO_TIMER_DURATION_SCHLAFZIMMER = 5400
-
 # Scripts
 SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN = 600
 SCRIPT_AIR_CLEANER_TIMEOUT_HELPER = 240
@@ -58,13 +52,20 @@ SCRIPT_AIR_CLEANER_THRESHOLD_START = 15
 SCRIPT_AIR_CLEANER_THRESHOLD_STOP = 5
 
 # Services
-SERVICE_GOOGLE_DRIVE_CRON = "cron(30 1 * * *)"
+SERVICE_AUTO_CRON_FILEBACKUP = "cron(0 1 * * *)"
 SERVICE_GIT_CRON = "cron(15 1 * * *)"
+SERVICE_GOOGLE_DRIVE_CRON = "cron(30 1 * * *)"
+
+
+SERVICES_AUTO = {
+  'shell_command.filebackup': SERVICE_AUTO_CRON_FILEBACKUP
+}
 
 # Events
 EVENT_FOLDER_WATCHER = "folder_watcher"
 EVENT_SYSTEM_PYSCRIPT_RELOADED = "event_system_pyscript_reloaded"
 EVENT_SYSTEM_STARTED = "event_system_started"
+EVENT_SYSTEM_STARTED_DELAY = 10
 
 # States
 STATE_HA_NONE = "None"

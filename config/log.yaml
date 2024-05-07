@@ -18,7 +18,7 @@ logger:
       - "Unloaded"
     custom_components.pyscript.global_ctx:
       - "Loaded"
-      - "Reloaded"
+      # - "Reloaded"
     custom_components.hacs:
       - "https://api.github.com/rate_limit"
     homeassistant.components.binary_sensor: 
@@ -32,8 +32,6 @@ logger:
       - "500"
     homeassistant.components.websocket_api.http.connection: 
       - "io.robbie.HomeAssistant"
-    homeassistant.helpers.entity_registry:
-      - "device_tracker" # int also hashable
     homeassistant.util.logging:
       - "HomeAssistant NOT_RUNNING"
     aiohttp.server: 
@@ -49,4 +47,4 @@ logbook:
       - "*.*browser_mod*"
 
 system_log:
-  max_entries: 5
+  max_entries: 3

@@ -38,7 +38,7 @@ def ha_log_automations():
 # Events
 
 @event_trigger(EVENT_HOMEASSISTANT_STARTED)
-def event_system_started(delay=SYSTEM_STARTED_EVENT_DELAY): 
+def event_system_started(delay=EVENT_SYSTEM_STARTED_DELAY): 
   task.sleep(delay)
   event.fire(EVENT_SYSTEM_STARTED)
   log(EVENT_SYSTEM_STARTED)

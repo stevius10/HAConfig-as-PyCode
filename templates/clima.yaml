@@ -112,10 +112,10 @@ template_clima_graph:
       - entity: "sensor.[[room]]_heizung_temperature"
         color: white 
         show_fill: true
-      - entity: sensor.temperature_fix_top
+      - entity: sensor.graph_fix_up_temperature
         show_line: false
         show_fill: false
-      - entity: sensor.temperature_fix_down
+      - entity: sensor.graph_fix_down_temperature
         show_line: false
         show_fill: false
     line_width: 7
