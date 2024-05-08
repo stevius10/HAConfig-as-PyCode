@@ -2,6 +2,8 @@
 
 HAConfig-as-PyCode is a declarative Home Assistant configuration prtoject that aims to use a Python programming language-based approach over the default Home Assistant's low-code model, focusing on standardization, encapsulation and reusability. As Home Assistant currently offers only limited resources for developers I would like to share this configuration. 
 
+![Desktop](www/overview-desktop.png)
+
 ## Implementation
 
 The project's core functionality follows an event-driven approach, leveraging Python scripts using PyScript and Home Assistant's built-in automation capabilities to enable dynamic and responsive smart home behavior. 
@@ -41,5 +43,4 @@ The /pyscript/modules directory contains reusable Python modules that encapsulat
 
 ## Images
 
-![Desktop](www/overview-desktop.png)
-![Mobile](www/overview-desktop.png)
+![Mobile](www/overview-mobile.png)
