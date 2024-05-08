@@ -1,0 +1,224 @@
+template: 
+
+  - sensor:
+    - name: "Overview-State-WZ"
+      unique_id: overview_state_wz
+      state: >
+        {% if not (
+          states('light.wz_beleuchtung') == "on" or 
+          states('switch.heizdecke') == "on" or 
+          states('switch.sofa') == "on" or 
+          states('switch.wz_ventilator') == "on"
+        ) %}
+            {% if states('climate.wz') == "heat" %}
+              heizung
+            {% else %}
+              aus
+            {% endif %}
+        {% else %}
+            {% if not (states('climate.wz') == "heat") %}
+              licht
+            {% else %}
+              an
+            {% endif %}
+        {% endif %}
+
+  - sensor:
+    - name: "Overview-State-SZ"
+      unique_id: overview_state_sz
+      state: >
+        {% if not (
+          states('light.sz_beleuchtung') == "on" or 
+          states('fan.sz-ventilator') == "on" or 
+          states('switch.bett') == "on" 
+        ) %}
+            {% if states('climate.sz') == "heat" %}
+              heizung
+            {% else %}
+              aus
+            {% endif %}
+        {% else %}
+            {% if not (states('climate.sz') == "heat") %}
+              licht
+            {% else %}
+              an
+            {% endif %}
+        {% endif %}
+
+  - sensor:
+    - name: "Overview-State-K"
+      unique_id: overview_state_k
+      state: >
+        {% if not (
+          states('light.k_beleuchtung') == "on" or 
+          states('light.g_lampe') == "on" or 
+          states('switch.g_tischlampe') == "on" or 
+          
+          states('fan.luftreiniger') == "on" or 
+          states('humidifier.luftbefeuchter') == "on" or 
+          states('switch.sz_luftung') == "on" 
+        ) %}
+            {% if states('climate.k') == "heat" %}
+              heizung
+            {% else %}
+              aus
+            {% endif %}
+        {% else %}
+            {% if not (states('climate.k') == "heat") %}
+              licht
+            {% else %}
+              an
+            {% endif %}
+        {% endif %}
+
+  - sensor:
+    - name: "Overview-State-Art"
+      unique_id: overview_state_art
+      state: >
+        {% if not (
+          states('script.gh_luften') == "on" or
+          
+          states('media_player.kueche') == "playing" or
+          states('media_player.bad') == "playing" or
+          states('media_player.schlafzimmer') == "playing" or
+          states('media_player.wohnzimmer') == "playing" or
+          
+          states('timer.h_timer_sz_ventilator') != "idle" or
+          states('timer.h_timer_luftreiniger') != "idle" 
+          ) %}
+          aus
+        {% else %}
+          an
+        {% endif %}
+
+  - sensor:
+    - name: "Luft"
+      unique_id: luft
+      state: >
+        {{ states('sensor.wz_luft') }}/{{ states('sensor.sz_luft') }}
+        
+  - sensor: 
+    - name: "WZ-Temperatur-Veränderung"
+      unique_id: wz_temperature_change
+      state: >
+        {% if is_state('binary_sensor.wz_temperature_rise', 'on') %}
+          steigend
+        {% elif is_state('binary_sensor.wz_temperature_fall', 'on') %}
+          sinkend
+        {% else %}
+          gleichbleibend
+        {% endif %}
+      attributes:
+          outside: >
+            {% if (states('sensor.wz_heizung_temperature') | is_number) and
+                  (states('sensor.openweathermap_temperature') | is_number) %}
+              {% set diff = ( states('sensor.wz_heizung_temperature') | float | round(1)) - 
+                ( states('sensor.openweathermap_temperature') | float | round(1)) %}
+              {% if diff > 0 %}+{% else %}-{% endif %}{{ diff | round(0) | replace("-", "") }}°
+            {% endif %}
+            
+  - sensor:
+    - name: "SZ-Temperatur-Veränderung"
+      unique_id: sz_temperature_change
+      state: >
+        {% if is_state('binary_sensor.sz_temperature_rise', 'on') %}
+          steigend
+        {% elif is_state('binary_sensor.sz_temperature_fall', 'on') %}
+          sinkend
+        {% else %}
+          gleichbleibend
+        {% endif %}
+      attributes:
+          outside: >
+            {% if (states('sensor.sz_heizung_temperature') | is_number) and
+                  (states('sensor.openweathermap_temperature') | is_number) %}
+              {% set diff = ( states('sensor.sz_heizung_temperature') | float | round(1)) - 
+                ( states('sensor.openweathermap_temperature') | float | round(1)) %}
+              {% if diff > 0 %}+{% else %}-{% endif %}{{ diff | round(0) | replace("-", "") }}°
+            {% endif %}
+
+  - sensor: 
+    - name: "K-Temperatur-Veränderung"
+      unique_id: k_temperature_change
+      state: >
+        {% if is_state('binary_sensor.k_temperature_rise', 'on') %}
+          steigend
+        {% elif is_state('binary_sensor.k_temperature_fall', 'on') %}
+          sinkend
+        {% else %}
+          gleichbleibend
+        {% endif %}
+      attributes:
+          outside: >
+            {% if (states('sensor.wz_heizung_temperature') | is_number) and
+                  (states('sensor.openweathermap_temperature') | is_number) %}
+              {% set diff = ( states('sensor.k_heizung_temperature') | float | round(1)) - 
+                ( states('sensor.openweathermap_temperature') | float | round(1)) %}
+              {% if diff > 0 %}+{% else %}-{% endif %}{{ diff | round(0) | replace("-", "") }}°
+            {% endif %}
+      
+  - sensor:
+    - name: "Temperature-Fix-Top"
+      unique_id: temperature_fix_top
+      state: >
+        {% if (states('sensor.wz_heizung_temperature') | is_number) and
+              (states('sensor.sz_heizung_temperature') | is_number) and
+              (states('sensor.k_heizung_temperature') | is_number) and
+              (states('sensor.g_sensor_temperature') | is_number) and
+              (states('sensor.k_sensor_device_temperature') | is_number) %}
+          {% set avg_temp = ((
+              ( states('sensor.wz_heizung_temperature') | float | round(1)) +
+              ( states('sensor.sz_heizung_temperature') | float | round(1)) +
+              ( states('sensor.k_heizung_temperature') | float | round(1)) +
+              ( states('sensor.g_sensor_temperature') | float | round(1)) +
+              ( states('sensor.k_sensor_device_temperature') | float | round(1))
+            ) / 5) + 1 | float | round(1) %}
+          {{ avg_temp | float }}
+        {% endif %}
+
+  - sensor:
+    - name: "Temperature-Fix-Down"
+      unique_id: temperature_fix_down
+      state: >
+        {% if (states('sensor.wz_heizung_temperature') | is_number) and
+              (states('sensor.sz_heizung_temperature') | is_number) and
+              (states('sensor.k_heizung_temperature') | is_number) and
+              (states('sensor.g_sensor_temperature') | is_number) and
+              (states('sensor.k_sensor_device_temperature') | is_number) %}
+        {% set avg_temp = ((
+            ( states('sensor.wz_heizung_temperature') | float | round(1)) +
+            ( states('sensor.sz_heizung_temperature') | float | round(1)) +
+            ( states('sensor.k_heizung_temperature') | float | round(1)) +
+            ( states('sensor.g_sensor_temperature') | float | round(1)) +
+            ( states('sensor.k_sensor_device_temperature') | float | round(1))
+          ) / 5) - 1 | float | round(1) %}
+        {{ avg_temp | float }}
+        {% endif %}
+
+  - sensor:
+    - name: "Open Window"
+      unique_id: open_window
+      state: >
+        {% if (states('binary_sensor.wz_heizung_open_window') == "offen") or
+              (states('binary_sensor.sz_heizung_open_window') == "offen") %}
+          true
+        {% else %}
+          false
+        {% endif %}
+
+  - sensor:
+    - name: "None"
+      unique_id: "none"
+      state: ""
+
+  # - sensor: 
+  #   - name: "Luftreiniger-Geschwindigkeit"
+  #     unique_id: luftreiniger_geschwindigkeit
+  #     state: >
+  #       {% if is_state('fan.luftreiniger', 'off') %}
+  #         Aus
+  #       {% elif state_attr('fan.luftreiniger', 'mode') == 'sleep' %}
+  #         Sleep
+  #       {% else %}
+  #         {{ state_attr('fan.luftreiniger', 'percentage') }}
+  #       {% endif %}

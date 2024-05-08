@@ -15,6 +15,7 @@ import sys
 # Function
 
 def log(msg="", ns=None, ctx=None, title="", level=LOG_LOGGING_LEVEL):
+<<<<<<< Updated upstream
   if not isinstance(msg, str) and hasattr(msg, "get_name"): ns += msg.get_name()
   if not isinstance(msg, str) and hasattr(msg, "func_name"): ns += msg.get("func_name")
   #if ns is None: ns = LOG_LOGGER_SYS
@@ -24,6 +25,17 @@ def log(msg="", ns=None, ctx=None, title="", level=LOG_LOGGING_LEVEL):
     def debug(ctx): 
       return f"{globals()['__name__']} ({ctx.replace('.', '/')}.py)" 
     return debug(ctx)
+=======
+  if not isinstance(msg, str) and hasattr(msg, "get_name"): 
+    ns += msg.get_name()
+  if not isinstance(msg, str) and hasattr(msg, "func_name"): 
+    ns += msg.get("func_name")
+  # @ctx_call
+  # def ctx_debug(ctx=ctx):
+  #   def debug(ctx): 
+  #     return f"{globals()['__name__']} ({ctx.replace('.', '/')}.py)" 
+  #   return debug(ctx)
+>>>>>>> Stashed changes
   message = ": ".join([f"{ctx.replace('.', '/')}.py", msg]) if ctx else msg
   if title: message = f"[{title}] {message}"
   log_internal(msg=message, logger=get_logger(ns))
@@ -65,6 +77,42 @@ class Logfile:
     log(f"{logs.replace("\n", " ")}", ctx=self.ctx, ns=self.name)
     self.log(message=logs)
     return { "service": {self.name}, "logs": logs }
+
+# class Logfile:
+#   def __init__(self, ctx):
+#     self.ctx = ctx
+#     self.name = ctx.split(".")[1]
+#     self.logger = logging.getLogger(self.name)
+#     self.logs = []
+#     self.logfile = os.path.join(PATH_LOGS, self.name) + ".log"
+#     handler = logging.FileHandler(self.logfile, mode='w+')
+#     handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
+#     self.logger.addHandler(handler)
+#     self.logger.setLevel(logging.DEBUG)
+#     self.logger.propagate = False
+#     await self.truncate()
+#     self.log("# {}".format(datetime.datetime.now()))
+    
+#   def log(self, message=None):
+#     if isinstance(message, str):
+#       if re.search('[a-zA-Z]', message): 
+#         self.logger.info(message)
+#         self.logs.append(message)
+#     elif isinstance(message, list): 
+#       for msg in message:
+#         self.log(msg.replace("\n", ""))
+#       self.log(" ")
+#     elif message == " ":
+#         self.logger.info('\n')
+        
+#   def truncate(self):
+#     call_func("pyscript.log_truncate", logfile=self.logfile, blocking=True)
+  
+#   def finished(self):
+#     logs = "\n".join(self.logs)
+#     log(f"{logs.replace("\n", " ")}", ctx=self.ctx, ns=self.name)
+#     self.log(message=logs)
+#     return { "service": {self.name}, "logs": logs }
 
 # Helper
 

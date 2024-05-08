@@ -31,9 +31,15 @@ logger:
     - "404"
     - "500"
     homeassistant.components.websocket_api.http.connection: 
+<<<<<<< Updated upstream
     - "io.robbie.HomeAssistant"
     homeassistant.helpers.entity:
     - "Remote end closed connection without response"
+=======
+      - "io.robbie.HomeAssistant"
+    homeassistant.helpers.entity_registry:
+      - "device_tracker" # int also hashable
+>>>>>>> Stashed changes
     homeassistant.util.logging:
     - "HomeAssistant NOT_RUNNING"
     aiohttp.server: 
@@ -48,7 +54,12 @@ logbook:
     domains:
     - sensor
     entity_globs: 
+<<<<<<< Updated upstream
     - "*.*browser_mod*"
+=======
+      - "sensor.*"
+      - "*.*browser_mod*"
+>>>>>>> Stashed changes
 
 system_log:
   max_entries: 3

@@ -1,13 +1,20 @@
-import secrets
-
+from secrets import *
 import datetime
 
 # Log
+<<<<<<< Updated upstream
 LOG_HA_SIZE = 20
 LOG_HA_TAIL = 5
 LOG_HA_TRUNCATE_BLOCK_DELAY = 15
 LOG_HA_TRUNCATE_IO_RETRY = 3
 LOG_HA_ARCHIVE_SIZE = 10 * LOG_HA_SIZE
+=======
+LOG_HA_SIZE = 25
+LOG_HA_TAIL = 5
+LOG_HA_TRUNCATE_BLOCK_DELAY = 15
+LOG_HA_TRUNCATE_IO_RETRY = 3
+LOG_HA_ARCHIVE_SIZE = 20 * LOG_HA_SIZE
+>>>>>>> Stashed changes
 LOG_LOGGER_SYS = "py"
 LOG_LOGGING_LEVEL = "info"
 
@@ -15,29 +22,44 @@ LOG_DEBUG = False
 LOG_DEBUG_DEVICES = []
 
 # Path
-PATH_LOG_HA = "/config/home-assistant.log"
-PATH_LOG_PY_SYSTEM = "/config/pyscript/logs/home-assistant.log"
-PATH_LOGS = "/config/pyscript/logs/"
+PATH_LOG_HA_FILE = "home-assistant.log"
+PATH_LOG_HA = f"/config/{PATH_LOG_HA_FILE}"
 PATH_LOG_TAIL_SUFFIX = "1"
+PATH_LOGS = "/config/pyscript/logs/"
+PATH_PYLOG_HA = f"{PATH_LOGS}{PATH_LOG_HA_FILE}"
 
 # Pyscript
 PYSCRIPT_DIR_NATIVE = "/config/pyscript/python"
 
 # System
-SYSTEM_FILES = secrets.SYSTEM_FILES.update({
-  "/config/files/.zshrc": "/root"
+SYSTEM_FILES.update({
+   "/config/files/.zshrc": "/root"
 })
 
+<<<<<<< Updated upstream
 SYSTEM_LINKS = { PATH_LOG_HA: PATH_LOG_PY_SYSTEM, 
   (PATH_LOG_HA+PATH_LOG_TAIL_SUFFIX): (PATH_LOG_PY_SYSTEM+PATH_LOG_TAIL_SUFFIX)
 }
+=======
+SYSTEM_LINKS = { 
+  PATH_LOG_HA: PATH_PYLOG_HA, 
+  f"{PATH_LOG_HA}.{PATH_LOG_TAIL_SUFFIX}": f"{PATH_PYLOG_HA}.{PATH_LOG_TAIL_SUFFIX}"
+}
+
+SYSTEM_STARTED_EVENT_DELAY = 30
+>>>>>>> Stashed changes
 
 # Expressions
 EXPR_STATE_SEASON_POLLEN = "sensor.season in ['spring', 'summer']"
+EXPR_STATE_OPEN_WINDOW = "sensor.open_window == 'true'"
 EXPR_TIME_ACTIVE =  "cron(* 9-19 * * 1-6)"
 EXPR_TIME_RANGE_DAY = "range(00:00, 24:00)"
 EXPR_TIME_UPDATE_SENSORS = "cron(30 16 * * 1-5)"
+<<<<<<< Updated upstream
 
+=======
+# TODO: EXPR_TIME_ACTIVE_MOTION_SUNSET = f"range(sunset - {entities.get(entity)['sun_diff']}min, sunrise + {entities.get(entity)['sun_diff']}min)" if 'sun_diff' in entities.get(entity) else EXPR_TIME_RANGE_DAY))
+>>>>>>> Stashed changes
 EXPR_TIME_ACTIVE_RANGE_EVENING = "range(19:00, 24:00)"
 EXPR_TIME_ACTIVE_RANGE_NIGHT = "range(24:00, 6:00)"
 
@@ -47,9 +69,16 @@ AUTO_OFF_AWAY_TRANSITION = 20
 
 # Scripts
 SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN = 600
+<<<<<<< Updated upstream
 SCRIPT_AIR_CLEANER_TIMEOUT_HELPER = 240
 SCRIPT_AIR_CLEANER_THRESHOLD_START = 15
 SCRIPT_AIR_CLEANER_THRESHOLD_STOP = 5
+=======
+SCRIPT_AIR_CLEANER_TIMEOUT_HELPER = 180
+SCRIPT_AIR_CLEANER_THRESHOLD_START = 20
+SCRIPT_AIR_CLEANER_THRESHOLD_STOP = 5
+SCRIPT_AIR_CLEANER_SLEEP_MODE_PERCENTAGE = 10
+>>>>>>> Stashed changes
 
 # Services
 SERVICE_AUTO_CRON_FILEBACKUP = "cron(0 1 * * *)"
@@ -77,25 +106,25 @@ STATE_HA_TIMER_STOPPED = "idle"
 
 # Secrets
 
-secret_keys = [
-  "SERVICE_GOOGLE_DRIVE_LOCAL_FOLDER",
-  "SERVICE_GOOGLE_DRIVE_REMOTE_FOLDER",
-  "SERVICE_GOOGLE_DRIVE_TRASH_FOLDER",
-  "SERVICE_GOOGLE_DRIVE_IGNORE_FOLDERS",
-  "SERVICE_GOOGLE_DRIVE_CREDENTIALS_FILE",
-  "SERVICE_GIT_GITHUB_PR_BODY",
-  "SERVICE_GIT_GITHUB_PR_TITLE",
-  "SERVICE_GIT_GITHUB_TOKEN",
-  "SERVICE_GIT_GITHUB_USER",
-  "SERVICE_GIT_REPO_MAIN",
-  "SERVICE_GIT_REPO_BRANCH",
-  "SERVICE_GIT_REPO_MESSAGE",
-  "SERVICE_GIT_REPO_NAME",
-  "SERVICE_GIT_REPO_TARGET",
-  "SERVICE_GIT_REPO_URL",
-  "SERVICE_GIT_SETTINGS_CONFIG",
-  "SERVICE_GIT_SETTINGS_CREDENTIALS"
-]
+# secret_keys = [
+#   "SERVICE_GOOGLE_DRIVE_LOCAL_FOLDER",
+#   "SERVICE_GOOGLE_DRIVE_REMOTE_FOLDER",
+#   "SERVICE_GOOGLE_DRIVE_TRASH_FOLDER",
+#   "SERVICE_GOOGLE_DRIVE_IGNORE_FOLDERS",
+#   "SERVICE_GOOGLE_DRIVE_CREDENTIALS_FILE",
+#   "SERVICE_GIT_GITHUB_PR_BODY",
+#   "SERVICE_GIT_GITHUB_PR_TITLE",
+#   "SERVICE_GIT_GITHUB_TOKEN",
+#   "SERVICE_GIT_GITHUB_USER",
+#   "SERVICE_GIT_REPO_MAIN",
+#   "SERVICE_GIT_REPO_BRANCH",
+#   "SERVICE_GIT_REPO_MESSAGE",
+#   "SERVICE_GIT_REPO_NAME",
+#   "SERVICE_GIT_REPO_TARGET",
+#   "SERVICE_GIT_REPO_URL",
+#   "SERVICE_GIT_SETTINGS_CONFIG",
+#   "SERVICE_GIT_SETTINGS_CREDENTIALS"
+# ]
 
-for secret_key in secret_keys:
-  exec(f"{secret_key} = getattr(secrets, secret_key)")
+# for secret_key in secret_keys:
+#   exec(f"{secret_key} = getattr(secrets, secret_key)")

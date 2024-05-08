@@ -12,7 +12,7 @@ import os
 # Automations 
 
 @event_trigger(EVENT_SYSTEM_STARTED)
-def ha_setup_files(file=SYSTEM_FILES):
+def ha_setup_files(files=SYSTEM_FILES):
   for file in files:
     shutil.copy2(file, files[file])
     
@@ -26,10 +26,11 @@ def ha_setup_environment():
     sys.path.append(PYSCRIPT_DIR_NATIVE)
 
 @event_trigger(EVENT_SYSTEM_STARTED)
-def ha_setup_links(file=SYSTEM_LINKS):
-  for source, target in file.items():
+def ha_setup_links(links=SYSTEM_LINKS):
+  for source, target in links.items():
     if not os.path.exists(target):
       os.symlink(source, target)
+<<<<<<< Updated upstream
 
 @event_trigger(EVENT_SYSTEM_STARTED)
 def ha_log_automations():
@@ -39,6 +40,13 @@ def ha_log_automations():
 
 @event_trigger(EVENT_HOMEASSISTANT_STARTED)
 def event_system_started(delay=EVENT_SYSTEM_STARTED_DELAY): 
+=======
+      
+# Events
+
+@time_trigger
+def event_system_started(delay=SYSTEM_STARTED_EVENT_DELAY): 
+>>>>>>> Stashed changes
   task.sleep(delay)
   event.fire(EVENT_SYSTEM_STARTED)
   log(EVENT_SYSTEM_STARTED)

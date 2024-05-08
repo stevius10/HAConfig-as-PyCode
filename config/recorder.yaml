@@ -7,6 +7,7 @@ recorder:
     domains:
       - scripts
       - pyscript
+      - sensor
     entities:
       - switch.bett
       - switch.sofa
@@ -14,6 +15,10 @@ recorder:
       - switch.sz_luftung
       - fan.luftreiniger
     entity_globs:
+<<<<<<< Updated upstream
       - sensor.system_monitor_*
       - sensor.*temperature
       - fritz_box_*_durchsatz
+=======
+      - sensor.system_monitor_*
+>>>>>>> Stashed changes

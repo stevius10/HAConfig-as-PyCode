@@ -36,7 +36,6 @@ def on_press_factory(entity):
           turn_on(item)
       if isinstance(action, str): 
         turn_on(action)
-        
   trigger_control.append(on_press)
 
 for entity in entities:
