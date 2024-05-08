@@ -73,15 +73,13 @@ template:
       unique_id: overview_state_art
       state: |
         {% if not (
-          states('script.gh_luften') == "on" or
-          
           states('media_player.kueche') == "playing" or
           states('media_player.bad') == "playing" or
           states('media_player.schlafzimmer') == "playing" or
           states('media_player.wohnzimmer') == "playing" or
           
-          states('timer.h_timer_sz_ventilator') != "idle" or
-          states('timer.h_timer_luftreiniger') != "idle" 
+          states('timer.sz_ventilator') != "idle" or
+          states('timer.luftreiniger') != "idle" 
           ) %}
           aus
         {% else %}
@@ -123,6 +121,7 @@ template:
           ) / 5) - 1 | float | round(1) %}
         {{ avg_temp | float }} {% endif %}
     - name: WZ-Temperatur-Veränderung
+      unique_id: sensor.wz_temperatur_veranderung
       state: |
         {% if is_state('binary_sensor.wz_temperature_rise', 'on') %}
           steigend
@@ -140,6 +139,7 @@ template:
             {% if diff > 0 %}+{% else %}-{% endif %}{{ diff | round(0) | replace("-", "") }}°
           {% endif %}
     - name: SZ-Temperatur-Veränderung
+      unique_id: sensor.sz_temperatur_veranderung
       state: |
         {% if is_state('binary_sensor.sz_temperature_rise', 'on') %}
           steigend
@@ -157,6 +157,7 @@ template:
             {% if diff > 0 %}+{% else %}-{% endif %}{{ diff | round(0) | replace("-", "") }}°
           {% endif %}
     - name: K-Temperatur-Veränderung
+      unique_id: sensor.k_temperatur_veranderung
       state: |
         {% if is_state('binary_sensor.k_temperature_rise', 'on') %}
           steigend
@@ -175,12 +176,14 @@ template:
           {% endif %}
     
     # Air
-    - name: Luftqualitat
+    - name: Luftqualität
+      unique_id: sensor.luftqualitat
       state: |
         {{ states('sensor.wz_luft') }}/{{ states('sensor.sz_luft') }}
     
     # Helper
     - name: None
+      unique_id: sensor.none
       state: ''
 
 # Other platform based sensors 

@@ -227,7 +227,7 @@ template_badges_services:
       state_color: false
       show_header_toggle: false
       badges:
-      - entity: sensor.luft
+      - entity: sensor.luftqualitat
         name: Luft reinigen
         tap_action:
           action: call-service
@@ -260,8 +260,8 @@ template_badges_services:
             display: none
     
             {% if states('script.gh_luften') == "on" or
-              states('climate.wz_klima') == "on" or
-              states('climate.sz_klima') == "on" or
+              states('climate.wz') == "on" or
+              states('climate.sz') == "on" or
               states('light.wz_beleuchtung') == "on" or
               states('light.sz_beleuchtung') == "on" or
               states('switch.wz_ventilator') == "on" or

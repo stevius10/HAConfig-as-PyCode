@@ -16,3 +16,4 @@ recorder:
     entity_globs:
       - sensor.system_monitor_*
       - sensor.*temperature
+      - fritz_box_*_durchsatz

@@ -41,10 +41,12 @@ logger:
       - "ical"
       - "caldav"
 
-logbook: 
+logbook:  
   exclude:
+    domains:
+    - sensor
     entity_globs: 
-      - "*.*browser_mod*"
+    - "*.*browser_mod*"
 
 system_log:
   max_entries: 3

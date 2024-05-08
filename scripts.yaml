@@ -1,17 +1,20 @@
 pymap_google_luft_reinigen:
-  alias: pymap-google-luft-reinigen
+  alias: gh_script-air-cleaner
   sequence:
   - service: pyscript.script_air_cleaner
     metadata: {}
     data: {}
   mode: restart
 pymap_google_ich_gehe:
-  alias: pymap-google-ich-gehe
+  alias: gh_script-off-away
   sequence:
   - service: pyscript.script_off_away
     data: {}
   mode: restart
 pymap_google_schlafen:
-  alias: pymap-google-schlafen
-  sequence: []
+  alias: gh_script-air-cleaner_helper-air
+  sequence:
+  - service: pyscript.script_air_cleaner_helper_air
+    metadata: {}
+    data: {}
   mode: restart
