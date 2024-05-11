@@ -1,10 +1,6 @@
 from config import STATES_HA_UNDEFINED
 
-<<<<<<< Updated upstream
 log_enabled = False
-=======
-log_enabled = True # TODO: implement namespace
->>>>>>> Stashed changes
 
 def expr(entity, expression="", comparator="==", defined=True, logs=log_enabled): 
   

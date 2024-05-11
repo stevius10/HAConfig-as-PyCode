@@ -15,7 +15,6 @@ import sys
 # Function
 
 def log(msg="", ns=None, ctx=None, title="", level=LOG_LOGGING_LEVEL):
-<<<<<<< Updated upstream
   if not isinstance(msg, str) and hasattr(msg, "get_name"): ns += msg.get_name()
   if not isinstance(msg, str) and hasattr(msg, "func_name"): ns += msg.get("func_name")
   #if ns is None: ns = LOG_LOGGER_SYS
@@ -25,7 +24,6 @@ def log(msg="", ns=None, ctx=None, title="", level=LOG_LOGGING_LEVEL):
     def debug(ctx): 
       return f"{globals()['__name__']} ({ctx.replace('.', '/')}.py)" 
     return debug(ctx)
-=======
   if not isinstance(msg, str) and hasattr(msg, "get_name"): 
     ns += msg.get_name()
   if not isinstance(msg, str) and hasattr(msg, "func_name"): 
@@ -35,7 +33,6 @@ def log(msg="", ns=None, ctx=None, title="", level=LOG_LOGGING_LEVEL):
   #   def debug(ctx): 
   #     return f"{globals()['__name__']} ({ctx.replace('.', '/')}.py)" 
   #   return debug(ctx)
->>>>>>> Stashed changes
   message = ": ".join([f"{ctx.replace('.', '/')}.py", msg]) if ctx else msg
   if title: message = f"[{title}] {message}"
   log_internal(msg=message, logger=get_logger(ns))

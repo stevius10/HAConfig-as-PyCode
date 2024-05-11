@@ -29,13 +29,6 @@ def script_air_cleaner():
     else: 
       script_air_cleaner_turn_off()
 
-<<<<<<< Updated upstream
-# Functions
-
-@service
-@log_context
-def script_air_cleaner_clean(entity=entities, percentage=clean_mode_percentage, ctx=None, ns=None):
-=======
 # Trigger
 
 @state_trigger(expr(entities, STATE_ON))
@@ -69,7 +62,6 @@ def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=Non
 @service
 @log_context
 def script_air_cleaner_clean(entity=entities, ctx=None, ns=None):
->>>>>>> Stashed changes
   if isinstance(entity, list): 
     for item in entity:
       script_air_cleaner_clean(entity=item)
@@ -77,20 +69,11 @@ def script_air_cleaner_clean(entity=entities, ctx=None, ns=None):
     script_air_cleaner_sleep()
     task.sleep(sleep_clean_delay)
     pm = state.get(entity.replace("fan", "sensor")) # TODO: sensors in entity dict
-<<<<<<< Updated upstream
     percentage = max(33, min(100, (int(pm) * 10)))
     fan.set_percentage(entity_id=entity, percentage=percentage)
     if percentage >= helper_percentage_minimum:
       script_air_cleaner_helper_air()
     log(f"clean: {percentage}% at {pm} pm2,5", ns, ctx, entity)
-=======
-    percentage = max(0, min(100, int((int(pm) - SCRIPT_AIR_CLEANER_THRESHOLD_START) / (SCRIPT_AIR_CLEANER_THRESHOLD_STOP - SCRIPT_AIR_CLEANER_THRESHOLD_START) * 100)))
-    fan.set_percentage(entity_id=entity, percentage=percentage)
-    if percentage >= helper_percentage_minimum:
-      for entity in helper:
-        homeassistant.turn_on(entity_id=entity)
-    log(f"{entity} with {percentage} at {pm}", ns, ctx, "clean")
->>>>>>> Stashed changes
 
 @state_trigger(expr(entities, STATE_ON))
 @service
@@ -109,7 +92,6 @@ def script_air_cleaner_sleep(entity=entities, var_name=None, value=STATE_ON, ns=
       else:
         fan.turn_on(entity_id=entity)
         fan.set_percentage(entity_id=entity, percentage=sleep_mode_percentage)
-<<<<<<< Updated upstream
         log(f"sleep mode ({sleep_mode_percentage}%)", ns, ctx, entity)
   script_air_cleaner_turn_off(helper)
 
@@ -147,12 +129,6 @@ def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=Non
 #   else:
 #     script_air_cleaner_sleep(entity)
 
-=======
-  script_air_cleaner_turn_off(helper)
-
-# Helper
-
->>>>>>> Stashed changes
 @service
 def script_air_cleaner_turn_off(entity=entities):
   if isinstance(entity, list):

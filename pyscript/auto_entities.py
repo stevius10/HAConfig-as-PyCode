@@ -47,8 +47,6 @@ def timeout_factory(entity, default, delay=None):
     entity_timer = f"timer.{var_name.split(".")[1]}"
     timer.cancel(entity_id=entity_timer)
   timeout_trigger.append(timer_reset)
-<<<<<<< Updated upstream
-=======
 
 # Initialization
 
@@ -59,7 +57,6 @@ for entity in entities:
     default_factory(entity, entities.get(entity)['func'])
   else: 
     timeout_factory(entity, entities[entity]["default"], entities[entity]["delay"])
->>>>>>> Stashed changes
 
 # Helper
 

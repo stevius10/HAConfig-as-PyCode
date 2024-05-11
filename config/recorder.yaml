@@ -5,20 +5,16 @@ recorder:
   commit_interval: 45
   include:
     domains:
-      - scripts
-      - pyscript
-      - sensor
+    - scripts
+    - pyscript
+    - sensor
     entities:
-      - switch.bett
-      - switch.sofa
-      - switch.heizdecke
-      - switch.sz_luftung
-      - fan.luftreiniger
+    - switch.bett
+    - switch.sofa
+    - switch.heizdecke
+    - switch.sz_luftung
+    - fan.luftreiniger
     entity_globs:
-<<<<<<< Updated upstream
-      - sensor.system_monitor_*
-      - sensor.*temperature
-      - fritz_box_*_durchsatz
-=======
-      - sensor.system_monitor_*
->>>>>>> Stashed changes
+    - sensor.*temperature
+    - fritz_box_*_durchsatz
+    - sensor.system_monitor_*
