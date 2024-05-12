@@ -28,12 +28,18 @@ SYSTEM_FILES.update({
    "/config/files/.zshrc": "/root"
 })
 
+<<<<<<< Updated upstream
 SYSTEM_LINKS = { 
   PATH_LOG_HA: PATH_PYLOG_HA, 
   f"{PATH_LOG_HA}.{PATH_LOG_TAIL_SUFFIX}": f"{PATH_PYLOG_HA}.{PATH_LOG_TAIL_SUFFIX}"
 }
 
 SYSTEM_STARTED_EVENT_DELAY = 30
+=======
+SYSTEM_LINKS = { PATH_LOG_HA: PATH_LOG_PY_SYSTEM, 
+  (PATH_LOG_HA+PATH_LOG_TAIL_SUFFIX): (PATH_LOG_PY_SYSTEM+PATH_LOG_TAIL_SUFFIX)
+}
+>>>>>>> Stashed changes
 
 # Expressions
 EXPR_STATE_SEASON_POLLEN = "sensor.season in ['spring', 'summer']"
@@ -41,6 +47,10 @@ EXPR_STATE_OPEN_WINDOW = "sensor.open_window == 'true'"
 EXPR_TIME_ACTIVE =  "cron(* 9-19 * * 1-6)"
 EXPR_TIME_RANGE_DAY = "range(00:00, 24:00)"
 EXPR_TIME_UPDATE_SENSORS = "cron(30 16 * * 1-5)"
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 EXPR_TIME_ACTIVE_RANGE_EVENING = "range(19:00, 24:00)"
 EXPR_TIME_ACTIVE_RANGE_NIGHT = "range(24:00, 6:00)"
 

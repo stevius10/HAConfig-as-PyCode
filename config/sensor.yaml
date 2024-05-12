@@ -1,0 +1,287 @@
+# Template based sensors
+
+template:
+  - sensor:
+  
+    # UI
+    - name: Overview-State-WZ
+      unique_id: overview_state_wz
+      state: |
+        {% if not (
+          states('light.wz_beleuchtung') == "on" or 
+          states('switch.heizdecke') == "on" or 
+          states('switch.sofa') == "on" or 
+          states('switch.wz_ventilator') == "on"
+        ) %}
+            {% if states('climate.wz') == "heat" %}
+              heizung
+            {% else %}
+              aus
+            {% endif %}
+        {% else %}
+            {% if not (states('climate.wz') == "heat") %}
+              licht
+            {% else %}
+              an
+            {% endif %}
+        {% endif %}
+    - name: Overview-State-SZ
+      unique_id: overview_state_sz
+      state: |
+        {% if not (
+          states('light.sz_beleuchtung') == "on" or 
+          states('fan.sz-ventilator') == "on" or 
+          states('switch.bett') == "on" 
+        ) %}
+            {% if states('climate.sz') == "heat" %}
+              heizung
+            {% else %}
+              aus
+            {% endif %}
+        {% else %}
+            {% if not (states('climate.sz') == "heat") %}
+              licht
+            {% else %}
+              an
+            {% endif %}
+        {% endif %}
+    - name: Overview-State-K
+      unique_id: overview_state_k
+      state: |
+        {% if not (
+          states('light.k_beleuchtung') == "on" or 
+          states('light.g_lampe') == "on" or 
+          states('switch.g_tischlampe') == "on" or 
+          
+          states('fan.luftreiniger') == "on" or 
+          states('humidifier.luftbefeuchter') == "on" or 
+          states('switch.sz_luftung') == "on" 
+        ) %}
+            {% if states('climate.k') == "heat" %}
+              heizung
+            {% else %}
+              aus
+            {% endif %}
+        {% else %}
+            {% if not (states('climate.k') == "heat") %}
+              licht
+            {% else %}
+              an
+            {% endif %}
+        {% endif %}
+    - name: Overview-State-Art
+      unique_id: overview_state_art
+      state: |
+        {% if not (
+          states('script.gh_luften') == "on" or
+          
+          states('media_player.kueche') == "playing" or
+          states('media_player.bad') == "playing" or
+          states('media_player.schlafzimmer') == "playing" or
+          states('media_player.wohnzimmer') == "playing" or
+          
+          states('timer.h_timer_sz_ventilator') != "idle" or
+          states('timer.h_timer_luftreiniger') != "idle" 
+          ) %}
+          aus
+        {% else %}
+          an
+        {% endif %}
+    
+    # Temperature
+    - name: Graph-Fix-Up-Temperature
+      unique_id: graph_fix_up_temperature
+      state: |
+        {% if (states('sensor.wz_heizung_temperature') | is_number) and
+              (states('sensor.sz_heizung_temperature') | is_number) and
+              (states('sensor.k_heizung_temperature') | is_number) and
+              (states('sensor.g_sensor_temperature') | is_number) and
+              (states('sensor.k_sensor_device_temperature') | is_number) %}
+          {% set avg_temp = ((
+              ( states('sensor.wz_heizung_temperature') | float | round(1)) +
+              ( states('sensor.sz_heizung_temperature') | float | round(1)) +
+              ( states('sensor.k_heizung_temperature') | float | round(1)) +
+              ( states('sensor.g_sensor_temperature') | float | round(1)) +
+              ( states('sensor.k_sensor_device_temperature') | float | round(1))
+            ) / 5) + 1 | float | round(1) %}
+          {{ avg_temp | float }}
+        {% endif %}
+    - name: Graph-Fix-Down-Temperature
+      unique_id: graph_fix_down_temperature
+      state: |
+        {% if (states('sensor.wz_heizung_temperature') | is_number) and
+              (states('sensor.sz_heizung_temperature') | is_number) and
+              (states('sensor.k_heizung_temperature') | is_number) and
+              (states('sensor.g_sensor_temperature') | is_number) and
+              (states('sensor.k_sensor_device_temperature') | is_number) %}
+        {% set avg_temp = ((
+            ( states('sensor.wz_heizung_temperature') | float | round(1)) +
+            ( states('sensor.sz_heizung_temperature') | float | round(1)) +
+            ( states('sensor.k_heizung_temperature') | float | round(1)) +
+            ( states('sensor.g_sensor_temperature') | float | round(1)) +
+            ( states('sensor.k_sensor_device_temperature') | float | round(1))
+          ) / 5) - 1 | float | round(1) %}
+        {{ avg_temp | float }} {% endif %}
+    - name: WZ-Temperatur-Veränderung
+      state: |
+        {% if is_state('binary_sensor.wz_temperature_rise', 'on') %}
+          steigend
+        {% elif is_state('binary_sensor.wz_temperature_fall', 'on') %}
+          sinkend
+        {% else %}
+          gleichbleibend
+        {% endif %}
+      attributes:
+        outside: |
+          {% if (states('sensor.wz_heizung_temperature') | is_number) and
+                (states('sensor.openweathermap_temperature') | is_number) %}
+            {% set diff = ( states('sensor.wz_heizung_temperature') | float | round(1)) - 
+              ( states('sensor.openweathermap_temperature') | float | round(1)) %}
+            {% if diff > 0 %}+{% else %}-{% endif %}{{ diff | round(0) | replace("-", "") }}°
+          {% endif %}
+    - name: SZ-Temperatur-Veränderung
+      state: |
+        {% if is_state('binary_sensor.sz_temperature_rise', 'on') %}
+          steigend
+        {% elif is_state('binary_sensor.sz_temperature_fall', 'on') %}
+          sinkend
+        {% else %}
+          gleichbleibend
+        {% endif %}
+      attributes:
+        outside: |
+          {% if (states('sensor.sz_heizung_temperature') | is_number) and
+                (states('sensor.openweathermap_temperature') | is_number) %}
+            {% set diff = ( states('sensor.sz_heizung_temperature') | float | round(1)) - 
+              ( states('sensor.openweathermap_temperature') | float | round(1)) %}
+            {% if diff > 0 %}+{% else %}-{% endif %}{{ diff | round(0) | replace("-", "") }}°
+          {% endif %}
+    - name: K-Temperatur-Veränderung
+      state: |
+        {% if is_state('binary_sensor.k_temperature_rise', 'on') %}
+          steigend
+        {% elif is_state('binary_sensor.k_temperature_fall', 'on') %}
+          sinkend
+        {% else %}
+          gleichbleibend
+        {% endif %}
+      attributes:
+        outside: |
+          {% if (states('sensor.wz_heizung_temperature') | is_number) and
+                (states('sensor.openweathermap_temperature') | is_number) %}
+            {% set diff = ( states('sensor.k_heizung_temperature') | float | round(1)) - 
+              ( states('sensor.openweathermap_temperature') | float | round(1)) %}
+            {% if diff > 0 %}+{% else %}-{% endif %}{{ diff | round(0) | replace("-", "") }}°
+          {% endif %}
+    
+    # Air
+    - name: Luftqualitat
+      state: |
+        {{ states('sensor.wz_luft') }}/{{ states('sensor.sz_luft') }}
+    
+    # Helper
+    - name: None
+      state: ''
+
+# Other platform based sensors 
+binary_sensor:
+
+  - platform: trend
+    sensors:
+      wz_temperature_fall:
+        friendly_name: WZ-Temperatur-Sinkend
+        entity_id: sensor.wz_heizung_temperature
+        sample_duration: 1800
+        max_samples: 4
+        min_gradient: -0.00016
+        device_class: cold
+  
+      wz_temperature_rise: 
+        friendly_name: WZ-Temperatur-Steigend
+        entity_id: sensor.wz_heizung_temperature
+        sample_duration: 1800
+        max_samples: 4
+        min_gradient: 0.00016
+        device_class: heat
+  
+      sz_temperature_fall:
+        friendly_name: SZ-Temperatur-Sinkend
+        entity_id: sensor.sz_heizung_temperature
+        sample_duration: 1800
+        max_samples: 4
+        min_gradient: -0.00016
+        device_class: cold
+  
+      sz_temperature_rise: 
+        friendly_name: SZ-Temperatur-Steigend
+        entity_id: sensor.sz_heizung_temperature
+        sample_duration: 1800
+        max_samples: 4
+        min_gradient: 0.00016
+        device_class: heat
+
+      k_temperature_fall:
+        friendly_name: K-Temperatur-Sinkend
+        entity_id: sensor.k_heizung_temperature
+        sample_duration: 1800
+        max_samples: 4
+        min_gradient: -0.00016
+        device_class: cold
+  
+      k_temperature_rise: 
+        friendly_name: K-Temperatur-Steigend
+        entity_id: sensor.k_heizung_temperature
+        sample_duration: 1800
+        max_samples: 4
+        min_gradient: 0.00016
+        device_class: heat
+  
+        # min_gradient / sample_duration = diff_in_duration
+        # 0,2+ deg. per 30min: 
+        # sample_duration: 1800
+        # max_samples: 4
+        # min_gradient: -0.00011
+
+# CLI based sensors
+
+command_line:
+
+  - sensor: 
+      name: V-Last-Backup
+      command: "bash /config/config/.sensors/v-lastbackup.sh"
+      scan_interval: 3600
+      
+  - sensor: 
+      name: V-Wetter-Pollenflug
+      command: "python3 /config/config/.sensors/v-pollenflug.py"
+      scan_interval: 86400
+      
+  - sensor: 
+      name: V-Friedrichsheim
+      command: "python3 /config/config/.sensors/v-friedrichsheim.py"
+      scan_interval: 86400
+  
+  - sensor: 
+      name: V-Neukölln
+      command: "python3 /config/config/.sensors/v-neukolln.py"
+      scan_interval: 86400
+  
+  - sensor: 
+      name: V-InBerlinWohnen
+      command: "python3 /config/config/.sensors/v-ibw.py"
+      scan_interval: 86400
+  
+  - sensor: 
+      name: V-WBM
+      command: "python3 /config/config/.sensors/v-wbm.py"
+      scan_interval: 86400
+  
+  - sensor: 
+      name: V-Gewobag
+      command: "python3 /config/config/.sensors/v-gewobag.py"
+      scan_interval: 86400
+  
+  # - platform: qbittorrent
+  #   url: "http://192.168.178.100:8081"
+  #   username: steven
+  #   password: !secret ha_addon_password
