@@ -17,8 +17,8 @@ logger:
     custom_components.pyscript:
     - "Unloaded"
     custom_components.pyscript.global_ctx:
-     - "Loaded"
-    # - "Reloaded"
+    - "Loaded"
+    - "Reloaded"
     custom_components.hacs:
     - "https://api.github.com/rate_limit"
     homeassistant.components.binary_sensor: 

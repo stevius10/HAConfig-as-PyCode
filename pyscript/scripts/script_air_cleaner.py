@@ -23,11 +23,12 @@ def script_air_cleaner():
   if state.get(group) != STATE_ON:
     script_air_cleaner_clean()
   else: 
-    modes = [(state.getattr(entity).get(SCRIPT_AIR_CLEANER_ENTITY_MODE)) for entity in entities]
-    if SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL in modes: 
-      script_air_cleaner_sleep()
-    else: 
-      script_air_cleaner_turn_off()
+    script_air_cleaner_sleep()
+    # modes = [(state.getattr(entity).get(SCRIPT_AIR_CLEANER_ENTITY_MODE)) for entity in entities]
+    # if SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL in modes: 
+    #   script_air_cleaner_sleep()
+    # else: 
+    #   script_air_cleaner_turn_off()
 
 # Automation
 
@@ -72,6 +73,7 @@ def script_air_cleaner_clean(entity=entities, ctx=None, ns=None):
     log(f"clean: {percentage}% at {pm} pm2,5", ns, ctx, entity)
 
 @state_trigger(expr(entities, STATE_ON))
+@state_trigger(expr(f"{group}.percentage", sleep_mode_percentage, comparator='>'), state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN)
 @service
 def script_air_cleaner_sleep(entity=entities, var_name=None, value=STATE_ON, ns=None, ctx=None):
   if var_name != None: entity = var_name # called by state trigger
@@ -86,6 +88,7 @@ def script_air_cleaner_sleep(entity=entities, var_name=None, value=STATE_ON, ns=
         fan.set_preset_mode(entity_id=entity, preset_mode= SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
         log(f"sleep mode", ns, ctx, entity)
       else:
+        
         fan.turn_on(entity_id=entity)
         fan.set_percentage(entity_id=entity, percentage=sleep_mode_percentage)
   script_air_cleaner_turn_off(helper)
@@ -112,10 +115,3 @@ def script_air_cleaner_helper_air():
 def script_air_cleaner_log_entity_turned_off(var_name=None, ns=None, ctx=None):
   pm = state.get(var_name.replace("fan", "sensor")) 
   log(f"turned off ({pm} pm2,5)", ns, ctx, var_name)
-
-# Timeout
-
-@state_trigger(expr(entities, STATE_ON), state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN)
-def script_air_cleaner_timeout(var_name=None):
-  script_air_cleaner_sleep(var_name)
-  script_air_cleaner_turn_off(helper)

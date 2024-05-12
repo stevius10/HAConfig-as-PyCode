@@ -7,8 +7,6 @@ timer:
     name: sofa
   bett:
     name: bett
-  luft: 
-    name: luft
   wz_luft: 
     name: wz_luft
   sz_luft: 
@@ -19,3 +17,5 @@ timer:
     name: sz_ventilator
   schlafzimmer:
     name: schlafzimmer
+  sz_luftung: 
+    name: sz_luftung

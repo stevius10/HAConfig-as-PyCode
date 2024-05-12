@@ -41,7 +41,6 @@ def ha_log_automations():
 def event_system_started(delay=SYSTEM_STARTED_EVENT_DELAY): 
   task.sleep(delay)
   event.fire(EVENT_SYSTEM_STARTED)
-  log(EVENT_SYSTEM_STARTED)
 
 @event_trigger(EVENT_CALL_SERVICE, "domain == 'pyscript' and service == 'reload'")
 @event_trigger("SERVICE_RELOAD")

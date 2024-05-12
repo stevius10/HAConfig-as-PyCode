@@ -1,5 +1,4 @@
 from config import AUTO_OFF_AWAY_TRANSITION
-from mapping import SCRIPT_AIR_CLEANER_PRESET_MODE_AWAY
 
 ENTITIES_AIR = [
   "humidifier.luftbefeuchter", 
@@ -30,8 +29,6 @@ ENTITIES_LIGHT = [
   "light.k_beleuchtung",
   "light.g_beleuchtung"
 ]
-
-ENTITIES_SCRIPTS = []
 
 ENTITIES_SERVICES = [
   "switch.fritz_box_7530_wi_fi_generation_lockdown_gast"
@@ -80,8 +77,6 @@ def script_off_heating(entity=None, away=False):
   if isinstance(entity, str):
     if not away: 
       climate.turn_off(entity_id=entity)
-    else:
-      climate.set_preset_mode(entity_id=entity, preset_mode=SCRIPT_AIR_CLEANER_PRESET_MODE_AWAY)
   if isinstance(entity, list):
     for item in entity:
       script_off_heating(entity=item, away=away)
@@ -109,14 +104,6 @@ def script_off_lights(entity=None, away=False):
     if away:
       task.sleep(AUTO_CONFIG_OFF_AWAY_TRANSITION)
     turn_off(entity[-1])
-
-@service
-def script_off_scripts(entity=None):
-  if entity == None:
-    script_off_scripts(entity=ENTITIES_SCRIPTS)
-  if isinstance(entity, list):
-    for item in entity:
-      turn_off(entity=item)
 
 @service
 def script_off_services(entity=None):
