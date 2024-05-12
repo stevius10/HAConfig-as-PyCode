@@ -37,13 +37,9 @@ def ha_log_automations():
 
 # Events
 
-<<<<<<< Updated upstream
 @time_trigger
-def event_system_started(delay=SYSTEM_STARTED_EVENT_DELAY): 
-=======
 @event_trigger(EVENT_HOMEASSISTANT_STARTED)
 def event_system_started(delay=EVENT_SYSTEM_STARTED_DELAY): 
->>>>>>> Stashed changes
   task.sleep(delay)
   event.fire(EVENT_SYSTEM_STARTED)
 

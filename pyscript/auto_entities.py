@@ -38,10 +38,6 @@ def timeout_factory(entity, default, delay=None):
   @event_trigger("timer.finished", f"entity_id == 'timer.{entity.split(".")[1]}'")
   def timer_stop(**kwargs):
     reset(entity=entity, default=default)
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
   timeout_trigger.append(timer_stop)
 
   @state_trigger(expr(entity, expression=entities.get(entity)['default'], comparator="=="))

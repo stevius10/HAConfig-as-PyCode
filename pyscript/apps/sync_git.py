@@ -49,14 +49,14 @@ def service_git_sync(
   commands  = [
       f"git config --local include.path '{config_path}'",
       f"eval $(ssh-agent); ssh-add {key_path}", 
-      "git stash",
       
-      "git checkout main",
-      "git pull origin main",
-      f"git checkout {branch_name}",
-      "git merge main",
+      # "git stash",
+      # "git checkout develop",
+      # "git pull origin main",
+      # f"git checkout {branch_name}",
+      # "git merge main",
+      # "git stash pop",
       
-      "git stash pop",
       "git add .",
       f"git commit -m '{commit_message}'", 
       f"git push origin {branch_name}"

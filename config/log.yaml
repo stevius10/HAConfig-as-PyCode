@@ -17,13 +17,8 @@ logger:
     custom_components.pyscript:
     - "Unloaded"
     custom_components.pyscript.global_ctx:
-<<<<<<< Updated upstream
     - "Loaded"
     - "Reloaded"
-=======
-      - "Loaded"
-      # - "Reloaded"
->>>>>>> Stashed changes
     custom_components.hacs:
     - "https://api.github.com/rate_limit"
     homeassistant.components.binary_sensor: 
@@ -33,17 +28,10 @@ logger:
     homeassistant.components.hassio.handler:
     - "stat"
     homeassistant.components.google_assistant.http:
-<<<<<<< Updated upstream
     - "404"
     - "500"
     homeassistant.helpers.entity:
     - "Remote end closed connection without response"
-=======
-      - "404"
-      - "500"
-    homeassistant.components.websocket_api.http.connection: 
-      - "io.robbie.HomeAssistant"
->>>>>>> Stashed changes
     homeassistant.util.logging:
     - "HomeAssistant NOT_RUNNING"
     aiohttp.server: 
