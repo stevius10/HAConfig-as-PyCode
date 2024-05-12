@@ -31,9 +31,7 @@ ENTITIES_LIGHT = [
   "light.g_beleuchtung"
 ]
 
-ENTITIES_SCRIPTS = [
-  "script.gh_luften"
-]
+ENTITIES_SCRIPTS = []
 
 ENTITIES_SERVICES = [
   "switch.fritz_box_7530_wi_fi_generation_lockdown_gast"

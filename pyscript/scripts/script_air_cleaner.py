@@ -29,11 +29,7 @@ def script_air_cleaner():
     else: 
       script_air_cleaner_turn_off()
 
-# Trigger
-
-@state_trigger(expr(entities, STATE_ON))
-def script_air_cleaner_turned_on(entity=entities, var_name=None):
-  script_air_cleaner_sleep(entity=var_name)
+# Automation
 
 @task_unique("script_air_cleaner_threshold_on", kill_me=True)
 @state_trigger(expr(sensors, SCRIPT_AIR_CLEANER_THRESHOLD_START, comparator=">"), watch=sensors)
@@ -92,42 +88,9 @@ def script_air_cleaner_sleep(entity=entities, var_name=None, value=STATE_ON, ns=
       else:
         fan.turn_on(entity_id=entity)
         fan.set_percentage(entity_id=entity, percentage=sleep_mode_percentage)
-        log(f"sleep mode ({sleep_mode_percentage}%)", ns, ctx, entity)
   script_air_cleaner_turn_off(helper)
 
-# Automation
-
-@task_unique("script_air_cleaner_threshold_on", kill_me=True)
-@state_trigger(expr(sensors, SCRIPT_AIR_CLEANER_THRESHOLD_START, comparator=">"), watch=sensors)
-@state_active(EXPR_STATE_SEASON_POLLEN)
-@time_active(EXPR_TIME_ACTIVE)
-@log_context
-def script_air_cleaner_threshold_on(var_name=None, ns=None, ctx=None):
-  if state.get(var_name) != STATE_ON:
-    script_air_cleaner_sleep()
-    log(f"{value} pm2,5 above {SCRIPT_AIR_CLEANER_THRESHOLD_START} threshold", ns, ctx, var_name)
-  task.sleep(retrigger_delay)
-
-@task_unique("script_air_cleaner_threshold_off", kill_me=True)
-@state_trigger(expr(sensors, SCRIPT_AIR_CLEANER_THRESHOLD_STOP, comparator="<"), watch=sensors, state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN)
-@state_active(EXPR_STATE_SEASON_POLLEN)
-@time_active(EXPR_TIME_ACTIVE)
-def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=None, **kwargs):
-  if state.get(var_name) == STATE_ON:
-    script_air_cleaner_turn_off()
-    script_air_cleaner_turn_off(helper)
-    log(f"{value} pm2,5 below {SCRIPT_AIR_CLEANER_THRESHOLD_STOP} threshold", ns, ctx, var_name)
-  task.sleep(SCRIPT_AIR_CLEANER_RETRIGGER_DELAY)
-
 # Helper
-
-# @state_trigger(expr(entities, STATE_ON))
-# def script_air_cleaner_turn_on(entity=entities, var_name=None):
-#   if isinstance(entity, list):
-#     for item in entity:
-#       script_air_cleaner_turn_on(item)
-#   else:
-#     script_air_cleaner_sleep(entity)
 
 @service
 def script_air_cleaner_turn_off(entity=entities):

@@ -109,10 +109,6 @@ async def log_read(logfile, ns=None, ctx=None):
     except Exception as e: 
       log(f"{logfile} could not be read ({e})", "failed")
   return []
-    except Exception as e: 
-      if not "_file" in str(e): log(f"{logfile} could not be read ({e})", ns, ctx, "retry") 
-      else: pass 
-  return logs
 
 @log_context
 async def log_write(logfile, lines, mode='w+', ns=None, ctx=None):
@@ -124,22 +120,3 @@ async def log_write(logfile, lines, mode='w+', ns=None, ctx=None):
     except: 
       log(f"{logfile} could not be append: {lines} ({e})", "failed")
   return []
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-=======
-      log(f"{logfile} could not be append: {lines} ({e})", ns, ctx, "failed")
-  return []
->>>>>>> Stashed changes

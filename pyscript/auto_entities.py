@@ -17,7 +17,6 @@ def default_factory(entity, func):
   @state_trigger(expr(entity, entities.get(entity)['default'], comparator="!="), func)
   def default(func):
     service.call(func.split(".")[0], func.split(".")[1], entity_id=entity)
-    log(f" {var_name} with {value} PM 2,5 below threshold {SCRIPT_AIR_CLEANER_THRESHOLD_STOP}", ctx, ns)
   default_trigger.append(default)
 
 # Timeout
