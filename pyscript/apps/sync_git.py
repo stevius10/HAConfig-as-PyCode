@@ -50,12 +50,10 @@ def service_git_sync(
       f"git config --local include.path '{config_path}'",
       f"eval $(ssh-agent); ssh-add {key_path}", 
       
-      # "git stash",
-      # "git checkout develop",
-      # "git pull origin main",
-      # f"git checkout {branch_name}",
-      # "git merge main",
-      # "git stash pop",
+      "git stash",
+      f"git pull origin {branch_name}",
+      f"git checkout {branch_name}",
+      "git stash apply",
       
       "git add .",
       f"git commit -m '{commit_message}'", 
