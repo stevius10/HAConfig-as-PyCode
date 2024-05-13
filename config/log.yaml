@@ -21,13 +21,14 @@ logger:
     - "Reloaded"
     custom_components.hacs:
     - "https://api.github.com/rate_limit"
-    homeassistant.components.binary_sensor: 
+    homeassistant.components: 
+    - "io.robbie.HomeAssistant"
     - "update_available"
-    homeassistant.components.openweathermap.weather_update_coordinator: 
+    homeassistant.components.openweathermap: 
     - "timeouted"
-    homeassistant.components.hassio.handler:
+    homeassistant.components.hassio:
     - "stat"
-    homeassistant.components.google_assistant.http:
+    homeassistant.components.google_assistant:
     - "404"
     - "500"
     homeassistant.helpers.entity:

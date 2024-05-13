@@ -15,7 +15,7 @@ retrigger_delay = SCRIPT_AIR_CLEANER_RETRIGGER_DELAY
 clean_mode_percentage = SCRIPT_AIR_CLEANER_CLEAN_MODE_PERCENTAGE
 sleep_mode_percentage = SCRIPT_AIR_CLEANER_SLEEP_MODE_PERCENTAGE
 
-sleep_clean_delay = 1
+sleep_clean_delay = 2
 helper_percentage_minimum = 50
 
 @service
@@ -37,7 +37,7 @@ def script_air_cleaner():
 @state_active(f"{EXPR_STATE_SEASON_POLLEN} and not {EXPR_STATE_OPEN_WINDOW}")
 @time_active(EXPR_TIME_ACTIVE)
 @log_context
-def script_air_cleaner_threshold_on(var_name=None, ns=None, ctx=None):
+def script_air_cleaner_threshold_on(var_name=None, value=None, ns=None, ctx=None):
   if state.get(var_name) != STATE_ON:
     script_air_cleaner_sleep()
     log(f"{var_name} with {value}pm2,5 above threshold {SCRIPT_AIR_CLEANER_THRESHOLD_START}", ns, ctx, "threshold:on")
@@ -66,7 +66,7 @@ def script_air_cleaner_clean(entity=entities, ctx=None, ns=None):
     script_air_cleaner_sleep()
     task.sleep(sleep_clean_delay)
     pm = state.get(entity.replace("fan", "sensor")) # TODO: sensors in entity dict
-    percentage = max(33, min(100, (int(pm) * 10)))
+    percentage = max(clean_mode_percentage, min(100, (int(pm) * 10)))
     fan.set_percentage(entity_id=entity, percentage=percentage)
     if percentage >= helper_percentage_minimum:
       script_air_cleaner_helper_air()
