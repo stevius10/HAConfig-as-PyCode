@@ -12,40 +12,40 @@ logger:
     
   filters:
     homeassistant:
-    - "Error doing job: Future exception was never retrieved" # Tado
-    - "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))" # Tado
+      - "Error doing job: Future exception was never retrieved" # Tado
+      - "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))" # Tado
     custom_components.pyscript:
-    - "Unloaded"
+      - "Unloaded"
     custom_components.pyscript.global_ctx:
-    - "Loaded"
-    - "Reloaded"
+      - "Loaded"
+      - "Reloaded"
     custom_components.hacs:
-    - "https://api.github.com/rate_limit"
+      - "https://api.github.com/rate_limit"
     homeassistant.components: 
-    - "io.robbie.HomeAssistant"
-    - "update_available"
+      - "io.robbie.HomeAssistant"
+      - "update_available"
     homeassistant.components.openweathermap: 
-    - "timeouted"
+      - "timeouted"
     homeassistant.components.hassio:
-    - "stat"
-    homeassistant.components.google_assistant:
-    - "404"
-    - "500"
+      - "stat"
+    homeassistant.components.google_assistant.http:
+      - "404"
+      - "500"
     homeassistant.helpers.entity:
-    - "Remote end closed connection without response"
+      - "Remote end closed connection without response"
     homeassistant.util.logging:
-    - "HomeAssistant NOT_RUNNING"
+      - "HomeAssistant NOT_RUNNING"
     aiohttp.server: 
-    - "Error handling request"
+      - "Error handling request"
     root:
-    - "VEVENT"
-    - "ical"
-    - "caldav"
+      - "VEVENT"
+      - "ical"
+      - "caldav"
 
 logbook:  
   exclude:
     domains:
-    - sensor
+      - sensor
     entity_globs: 
       - "sensor.*"
       - "*.*browser_mod*"
