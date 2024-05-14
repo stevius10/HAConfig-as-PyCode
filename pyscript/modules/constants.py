@@ -1,6 +1,6 @@
 from config import *
 from entities import *
 from expressions import *
-from mappings import *
+from mapping import *
 from secrets import *
 from settings import *
