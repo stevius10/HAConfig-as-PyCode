@@ -10,9 +10,11 @@ helper = SCRIPT_AIR_CLEANER_HELPER
 
 clean_mode_percentage = SCRIPT_AIR_CLEANER_CLEAN_MODE_PERCENTAGE
 sleep_mode_percentage = SCRIPT_AIR_CLEANER_SLEEP_MODE_PERCENTAGE
-helper_percentage_minimum = SCRIPT_AIR_CLEANER_HELPER_PERCENTAGE_MINIMUM
+helper_pm_minimum = SCRIPT_AIR_CLEANER_HELPER_PM_MINIMUM
 retrigger_delay = SCRIPT_AIR_CLEANER_THRESHOLD_RETRIGGER_DELAY
 wait_active_delay = SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY
+
+# Service
 
 @service
 def script_air_cleaner():
@@ -56,10 +58,8 @@ def script_air_cleaner_clean(entity=entities):
     for item in entity:
       task.sleep(wait_active_delay)
       script_air_cleaner_clean(entity=item)
+    script_air_cleaner_helper_air()
   else:
-    # script_air_cleaner_sleep()
-    #
-    
     fan.set_percentage(entity_id=entity, percentage=script_air_cleaner_get_clean_percentage(entity))
 
 @state_trigger(expr(entities, STATE_ON))
@@ -100,6 +100,8 @@ def script_air_cleaner_get_clean_percentage(entity, ns=None, ctx=None):
   log(f"{percentage}% at {pm} pm2,5", ns, ctx, entity)
   return percentage
 
-def script_air_cleaner_helper_air():
-  for entity in helper:
-    homeassistant.turn_on(entity_id=entity)
+def script_air_cleaner_helper_air(entity=entities):
+  pm_total = sum([int(state.get(item.replace("fan", "sensor"))) for item in entity])
+  if pm_total > helper_pm_minimum:
+    for item in helper:
+      homeassistant.turn_on(entity_id=entity)
