@@ -1,5 +1,4 @@
 from entities import AUTO_ENTITIES
-from helper import expr
 from utils import *
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED

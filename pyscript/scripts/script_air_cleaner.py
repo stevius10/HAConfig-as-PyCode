@@ -1,7 +1,4 @@
-from config import *
-from mapping import *
-from settings import *
-from helper import expr
+from constants import *
 from utils import *
 
 import sys 
@@ -11,24 +8,18 @@ entities = SCRIPT_AIR_CLEANER_ENTITIES
 sensors = SCRIPT_AIR_CLEANER_SENSOR
 helper = SCRIPT_AIR_CLEANER_HELPER
 
-retrigger_delay = SCRIPT_AIR_CLEANER_RETRIGGER_DELAY
 clean_mode_percentage = SCRIPT_AIR_CLEANER_CLEAN_MODE_PERCENTAGE
 sleep_mode_percentage = SCRIPT_AIR_CLEANER_SLEEP_MODE_PERCENTAGE
-
-sleep_clean_delay = 2
-helper_percentage_minimum = 50
+helper_percentage_minimum = SCRIPT_AIR_CLEANER_HELPER_PERCENTAGE_MINIMUM
+retrigger_delay = SCRIPT_AIR_CLEANER_THRESHOLD_RETRIGGER_DELAY
+wait_active_delay = SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY
 
 @service
 def script_air_cleaner():
-  if state.get(group) != STATE_ON:
+  if int(state.get(f"{group}.percentage")) <= sleep_mode_percentage:
     script_air_cleaner_clean()
   else: 
     script_air_cleaner_sleep()
-    # modes = [(state.getattr(entity).get(SCRIPT_AIR_CLEANER_ENTITY_MODE)) for entity in entities]
-    # if SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL in modes: 
-    #   script_air_cleaner_sleep()
-    # else: 
-    #   script_air_cleaner_turn_off()
 
 # Automation
 
@@ -56,24 +47,24 @@ def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=Non
 
 # Functionality
 
+@event_trigger(EVENT_NEVER)
+@task_unique(group, kill_me=False)
 @service
-@log_context
-def script_air_cleaner_clean(entity=entities, ctx=None, ns=None):
+def script_air_cleaner_clean(entity=entities):
+  fan.turn_on(entity_id=entity)
   if isinstance(entity, list): 
     for item in entity:
+      task.sleep(wait_active_delay)
       script_air_cleaner_clean(entity=item)
   else:
-    script_air_cleaner_sleep()
-    task.sleep(sleep_clean_delay)
-    pm = state.get(entity.replace("fan", "sensor")) # TODO: sensors in entity dict
-    percentage = max(clean_mode_percentage, min(100, (int(pm) * 10)))
-    fan.set_percentage(entity_id=entity, percentage=percentage)
-    if percentage >= helper_percentage_minimum:
-      script_air_cleaner_helper_air()
-    log(f"clean: {percentage}% at {pm} pm2,5", ns, ctx, entity)
+    # script_air_cleaner_sleep()
+    #
+    
+    fan.set_percentage(entity_id=entity, percentage=script_air_cleaner_get_clean_percentage(entity))
 
 @state_trigger(expr(entities, STATE_ON))
 @state_trigger(expr(f"{group}.percentage", sleep_mode_percentage, comparator='>'), state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN)
+@task_unique(group, kill_me=True)
 @service
 def script_air_cleaner_sleep(entity=entities, var_name=None, value=STATE_ON, ns=None, ctx=None):
   if var_name != None: entity = var_name # called by state trigger
@@ -84,13 +75,12 @@ def script_air_cleaner_sleep(entity=entities, var_name=None, value=STATE_ON, ns=
   else: 
     entity_state = state.get(entity)
     if entity_state: 
-      if int(str(entity_state.supported_features)) > 1:
+      if entity_state.supported_features > 1:
         fan.set_preset_mode(entity_id=entity, preset_mode= SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
-        log(f"sleep mode", ns, ctx, entity)
       else:
-        
         fan.turn_on(entity_id=entity)
         fan.set_percentage(entity_id=entity, percentage=sleep_mode_percentage)
+
   script_air_cleaner_turn_off(helper)
 
 # Helper
@@ -103,15 +93,13 @@ def script_air_cleaner_turn_off(entity=entities):
   else:
     pyscript.script_off_air(entity=entity)
 
-@service
+@log_context
+def script_air_cleaner_get_clean_percentage(entity, ns=None, ctx=None):
+  pm = state.get(entity.replace("fan", "sensor"))
+  percentage = max(clean_mode_percentage, min(100, (int(pm) * 10)))
+  log(f"{percentage}% at {pm} pm2,5", ns, ctx, entity)
+  return percentage
+
 def script_air_cleaner_helper_air():
   for entity in helper:
     homeassistant.turn_on(entity_id=entity)
-
-# Logging
-
-@state_trigger(expr(entities, STATE_OFF))
-@log_context
-def script_air_cleaner_log_entity_turned_off(var_name=None, ns=None, ctx=None):
-  pm = state.get(var_name.replace("fan", "sensor")) 
-  log(f"turned off ({pm} pm2,5)", ns, ctx, var_name)

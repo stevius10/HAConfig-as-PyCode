@@ -51,7 +51,6 @@ def script_off(away=False):
   script_off_heating(away=away)
   script_off_lights(away=away)
   script_off_media()
-  script_off_scripts()
   script_off_services()
   script_off_switches()
   script_off_tv()

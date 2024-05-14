@@ -1,6 +1,4 @@
-from config import *
-from helper import expr
-from mapping import FUNC_SYSLOG
+from constants import *
 
 import asyncio
 import datetime
@@ -11,6 +9,46 @@ import logging
 import os
 import regex as re
 import sys
+
+log_enabled = False
+
+def expr(entity, expression="", comparator="==", defined=True, logs=log_enabled): 
+  
+  if isinstance(entity, list) or isinstance(entity, dict):
+    return expressions(entities=entity, expression=expression, defined=defined, logs=logs, comparator=comparator)
+
+  statement_condition_defined = f"and {entity} not in {STATES_HA_UNDEFINED}" if defined else ""
+
+  if expression is not None:
+    if any([isinstance(expression, (int, float)), '>' in comparator, '<' in comparator]):
+      entity = "int({})".format(entity)
+    elif expression in [True, False]: expression = str(expression)
+    elif isinstance(expression, str): expression = f"'{expression}'"
+    expression = f"{comparator} {expression}"
+  else:
+    expression = ""
+  
+  if logs: 
+    try: pyscript.log_state(expression=f"{entity} {expression}")
+    except: pass
+  
+  return f"{entity} {expression} {statement_condition_defined}"
+  
+def expressions(entities, expression=None, comparator="==", defined=True, operator='or', logs=log_enabled):  
+  if expression:
+    if isinstance(expression, int):
+      for i in range(len(entities)):
+        entities[i] = f"{entities[i]}"
+
+    result = f" {operator} ".join([expr(entity, expression, defined=defined, logs=False, comparator=comparator) for entity in entities])
+  else: 
+    result = f" {operator} ".join([expr(entity, expression=None, defined=defined, logs=False) for entity in entities])
+    
+  if logs: 
+    try: pyscript.log_state(expression=result)
+    except: pass
+
+  return result
 
 # Function
 
@@ -74,42 +112,6 @@ class Logfile:
     log(f"{logs.replace("\n", " ")}", ctx=self.ctx, ns=self.name)
     self.log(message=logs)
     return { "service": {self.name}, "logs": logs }
-
-# class Logfile:
-#   def __init__(self, ctx):
-#     self.ctx = ctx
-#     self.name = ctx.split(".")[1]
-#     self.logger = logging.getLogger(self.name)
-#     self.logs = []
-#     self.logfile = os.path.join(PATH_LOGS, self.name) + ".log"
-#     handler = logging.FileHandler(self.logfile, mode='w+')
-#     handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
-#     self.logger.addHandler(handler)
-#     self.logger.setLevel(logging.DEBUG)
-#     self.logger.propagate = False
-#     await self.truncate()
-#     self.log("# {}".format(datetime.datetime.now()))
-    
-#   def log(self, message=None):
-#     if isinstance(message, str):
-#       if re.search('[a-zA-Z]', message): 
-#         self.logger.info(message)
-#         self.logs.append(message)
-#     elif isinstance(message, list): 
-#       for msg in message:
-#         self.log(msg.replace("\n", ""))
-#       self.log(" ")
-#     elif message == " ":
-#         self.logger.info('\n')
-        
-#   def truncate(self):
-#     call_func("pyscript.log_truncate", logfile=self.logfile, blocking=True)
-  
-#   def finished(self):
-#     logs = "\n".join(self.logs)
-#     log(f"{logs.replace("\n", " ")}", ctx=self.ctx, ns=self.name)
-#     self.log(message=logs)
-#     return { "service": {self.name}, "logs": logs }
 
 # Helper
 
