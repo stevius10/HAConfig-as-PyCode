@@ -17,7 +17,6 @@ HA_LOG_FILTER = ["custom integration"]
 @service
 @task_unique("ha_log_truncate", kill_me=True)
 @event_trigger(EVENT_FOLDER_WATCHER) 
-#@event_trigger(EVENT_HOMEASSISTANT_STOP)
 async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder="", path="", ns=None, ctx=None, **kwargs):
   if trigger_type == "event" and event_type == EVENT_FOLDER_WATCHER:
     if kwargs.get('trigger_type') != "modified":
