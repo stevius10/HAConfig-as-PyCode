@@ -45,7 +45,7 @@ def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=Non
     script_air_cleaner_turn_off()
     script_air_cleaner_turn_off(helper)
     log(f"{var_name} with {value} PM 2,5 below threshold {SCRIPT_AIR_CLEANER_THRESHOLD_STOP}", ns, ctx, "threshold:off")
-  task.sleep(SCRIPT_AIR_CLEANER_RETRIGGER_DELAY)
+  task.sleep(retrigger_delay)
 
 # Functionality
 

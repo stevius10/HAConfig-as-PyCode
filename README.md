@@ -37,7 +37,7 @@ The `/pyscript/modules` directory contains reusable Python modules that encapsul
 
 - **System Monitoring**: Monitoring of system resources and performance metrics.
 - **Backup and Synchronization**: Automated backup and synchronization of the Home Assistant configuration and data. 
-- **Berlin housing offers**: Scraping for housing offers and real estate listenings by various companies in Berlin**
+- **Berlin housing offers**: Scraping for housing offers and real estate listenings by various companies in Berlin
 - **Lovelace UI Customization**: Customization of the Home Assistant's Lovelace UI, e. g. **Calendar Integration** or **Weather Monitoring and derived Metric Calculations**
 
 ## Images
