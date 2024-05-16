@@ -23,13 +23,15 @@ LOG_LOGGING_LEVEL = "info"
 # Paths
 
 PATH_DIR_CONFIG = "/config"
-PATH_DIR_DOCKER = "/homeassistant"
 
 PATH_DIR_PY_LOG = f"{PATH_DIR_CONFIG}/pyscript/logs/"
 PATH_DIR_PY_NATIVE = f"{PATH_DIR_CONFIG}/pyscript/python"
 
 PATH_LOG_HA = f"{PATH_DIR_CONFIG}/{LOG_HA_FILE}"
-PATH_LOG_PY_HA = f"{PATH_DIR_PY_LOG}{LOG_HA_FILE}"
+PATH_LOG_PY_HA = f"{PATH_DIR_PY_LOG}/{LOG_HA_FILE}"
+
+PATH_DOCKER_LOG_HA = f"/homeassistant/{LOG_HA_FILE}"
+PATH_DOCKER_LOG_PY_HA = f"pyscript/logs/{LOG_HA_FILE}"
 
 # System
 
@@ -39,12 +41,12 @@ SERVICE_GOOGLE_DRIVE_CRON = "cron(30 1 * * *)"
 
 SERVICES_AUTO = { 'shell_command.filebackup': SERVICE_AUTO_CRON_FILEBACKUP }
 
-SYSTEM_STARTED_EVENT_DELAY = 10
-SYSTEM_FILES.update({f"{PATH_DIR_DOCKER}/files/.zshrc": "/root"})
+SYSTEM_STARTED_EVENT_DELAY = 5
+SYSTEM_FILES.update({f"{PATH_DIR_CONFIG}/files/.zshrc": "/root/.zshrc2"})
 SYSTEM_LINKS = { 
-    PATH_LOG_HA: 
-      PATH_LOG_PY_HA, 
+    PATH_DOCKER_LOG_HA: 
+      PATH_DOCKER_LOG_PY_HA, 
       
-    f"{PATH_LOG_HA}.{LOG_ARCHIVE_SUFFIX}": 
-      f"{PATH_LOG_PY_HA}.{LOG_ARCHIVE_SUFFIX}"
+    f"{PATH_DOCKER_LOG_HA}.{LOG_ARCHIVE_SUFFIX}": 
+      f"{PATH_DOCKER_LOG_PY_HA}.{LOG_ARCHIVE_SUFFIX}"
 }

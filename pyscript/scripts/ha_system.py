@@ -24,18 +24,17 @@ def ha_setup_logging():
 
 @event_trigger(EVENT_SYSTEM_STARTED)
 def ha_setup_environment():
-  if PYSCRIPT_DIR_NATIVE not in sys.path:
-    sys.path.append(PYSCRIPT_DIR_NATIVE)
+  if PATH_DIR_PY_NATIVE not in sys.path:
+    sys.path.append(PATH_DIR_PY_NATIVE)
 
 @event_trigger(EVENT_SYSTEM_STARTED)
+@service
 def ha_setup_links(links=SYSTEM_LINKS):
   for source, target in links.items():
-    if not os.path.exists(target):
-      os.symlink(source, target)
-
-@event_trigger(EVENT_SYSTEM_STARTED)
-def ha_log_automations():
-  pass
+    tmp_target = f"{target}.tmp"
+    # shortcut to overwrite symlink
+    os.symlink(source, tmp_target)
+    os.rename(tmp_target, target)
 
 # Events
 
@@ -44,8 +43,3 @@ def ha_log_automations():
 def event_system_started(delay=SYSTEM_STARTED_EVENT_DELAY): 
   task.sleep(delay)
   event.fire(EVENT_SYSTEM_STARTED)
-
-# @event_trigger(EVENT_CALL_SERVICE, "domain == 'pyscript' and service == 'reload'")
-# @event_trigger("SERVICE_RELOAD")
-# def on_pyscript_reload(**kwargs):
-#   log("on_pyscript_reload {kwargs}")

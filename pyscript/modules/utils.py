@@ -10,9 +10,7 @@ import os
 import regex as re
 import sys
 
-log_enabled = False
-
-def expr(entity, expression="", comparator="==", defined=True, logs=log_enabled): 
+def expr(entity, expression="", comparator="==", defined=True, logs=LOG_ENABLED): 
   
   if isinstance(entity, list) or isinstance(entity, dict):
     return expressions(entities=entity, expression=expression, defined=defined, logs=logs, comparator=comparator)
@@ -34,7 +32,7 @@ def expr(entity, expression="", comparator="==", defined=True, logs=log_enabled)
   
   return f"{entity} {expression} {statement_condition_defined}"
   
-def expressions(entities, expression=None, comparator="==", defined=True, operator='or', logs=log_enabled):  
+def expressions(entities, expression=None, comparator="==", defined=True, operator='or', logs=LOG_ENABLED):  
   if expression:
     if isinstance(expression, int):
       for i in range(len(entities)):
