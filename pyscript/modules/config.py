@@ -42,7 +42,7 @@ SERVICE_GOOGLE_DRIVE_CRON = "cron(30 1 * * *)"
 SERVICES_AUTO = { 'shell_command.filebackup': SERVICE_AUTO_CRON_FILEBACKUP }
 
 SYSTEM_STARTED_EVENT_DELAY = 5
-SYSTEM_FILES.update({f"{PATH_DIR_CONFIG}/files/.zshrc": "/root/.zshrc2"})
+SYSTEM_FILES.update({f"{PATH_DIR_CONFIG}/files/.zshrc": "/root/.zshrc"}) # TODO: move to supervisor
 SYSTEM_LINKS = { 
     PATH_DOCKER_LOG_HA: 
       PATH_DOCKER_LOG_PY_HA, 
