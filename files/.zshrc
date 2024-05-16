@@ -32,8 +32,6 @@ file_copy-to-extern() {
 }
 alias cpd='file_copy-to-desktop'
 
-
-
 # Shell
 
 setopt AUTO_CD

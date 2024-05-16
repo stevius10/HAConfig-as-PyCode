@@ -92,7 +92,7 @@ class Logfile:
     
   def log(self, message=None):
     if isinstance(message, str):
-      if re.search('[a-zA-Z]', message): 
+      if message is not None: # re.search('[a-zA-Z]', message): 
         self.logger.info(message)
         self.logs.append(message)
     elif isinstance(message, list): 

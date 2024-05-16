@@ -4,7 +4,7 @@ AUTO_ENTITIES = {
   "fan.sz_luft": { "default": "off", "delay": 7200 }, 
   "fan.sz_ventilator": { "default": "off", "delay": 5400 }, 
   "fan.wz_luft": { "default": "off", "delay": 7200 }, 
-  "media_player.schlafzimmer": { "default": "idle", "delay": 3600 },
+  "media_player.schlafzimmer": { "default": "idle", "delay": 4200 },
   "switch.adguard_home_schutz": { "default": "on", "delay": 600 }, 
   "switch.bett": { "default": "off", "delay": 1800 },
   "switch.heizdecke": { "default": "off", "delay": 1800 }, 
