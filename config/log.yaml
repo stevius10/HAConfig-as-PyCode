@@ -37,6 +37,8 @@ logger:
       - "HomeAssistant NOT_RUNNING"
     aiohttp.server: 
       - "Error handling request"
+    habluetooth.scanner:
+      - "org.bluez.Error.InProgress"
     root:
       - "VEVENT"
       - "ical"

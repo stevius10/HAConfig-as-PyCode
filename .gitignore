@@ -9,6 +9,9 @@
 !config
 !config/**/*
 
+!files
+!files/**/*
+
 !pyscript
 !pyscript/**/*
 pyscript/logs/**/*

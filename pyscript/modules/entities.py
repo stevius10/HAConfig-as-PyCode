@@ -37,3 +37,48 @@ CONFIG_CONTROL_ENTITIES = {
     'long': ''
   }
 }
+
+ENTITIES_AIR = [
+  "humidifier.luftbefeuchter", 
+  "fan.wz_luft",
+  "fan.sz_luft",
+  "fan.sz_ventilator",
+  "switch.sz_luftung",
+  "switch.wz_ventilator"
+]
+
+ENTITIES_HEATING = [
+  "clima.wz_heizung",
+  "clima.sz_heizung",
+  "clima.k_heizung"
+]
+
+ENTITIES_MEDIA= [
+  "media_player.bad",
+  "media_player.kueche",
+  "media_player.schlafzimmer",
+  "media_player.wohnzimmer",
+  "media_player.uberall"
+]
+
+ENTITIES_LIGHT = [
+  "light.wz_beleuchtung",
+  "light.sz_beleuchtung",
+  "light.k_beleuchtung",
+  "light.g_beleuchtung"
+]
+
+ENTITIES_SERVICES = [
+  "switch.fritz_box_7530_wi_fi_generation_lockdown_gast"
+]
+
+ENTITIES_SWITCHES = [
+  "switch.bett",
+  "switch.sofa",
+  "switch.heizdecke"
+]
+
+ENTITIES_TV = [
+  "media.wz_fernseher",
+  "media.sz_fernseher"
+]

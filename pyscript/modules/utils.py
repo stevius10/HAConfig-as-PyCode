@@ -83,7 +83,7 @@ class Logfile:
     self.name = ctx.split(".")[1]
     self.logger = logging.getLogger(self.name)
     self.logs = []
-    self.logfile = os.path.join(PATH_LOGS, self.name) + ".log"
+    self.logfile = os.path.join(PATH_DIR_PY_LOG, self.name) + ".log"
     handler = logging.FileHandler(self.logfile, mode='w+')
     handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
     self.logger.addHandler(handler)

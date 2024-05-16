@@ -1,7 +1,7 @@
-from config import AUTO_MOTION_TIMEOUT
+from entities import AUTO_MOTION_ENTITIES
 from expressions import EXPR_TIME_RANGE_DAY
 from mapping import STATE_ON, STATE_OFF
-from entities import AUTO_MOTION_ENTITIES
+from settings import AUTO_MOTION_TIMEOUT
 from utils import expr
 
 trigger = []

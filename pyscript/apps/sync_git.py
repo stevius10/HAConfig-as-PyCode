@@ -5,7 +5,7 @@ import dump
 import subprocess
 import requests
 
-logfile  = Logfile(pyscript.get_global_ctx()) # "scripts.ha_system") 
+logfile  = Logfile(pyscript.get_global_ctx())
 
 def create_or_update_pull_request(repo_owner, repo_name, base_branch, head_branch, title, body):
   access_token  =  SERVICE_GIT_GITHUB_TOKEN

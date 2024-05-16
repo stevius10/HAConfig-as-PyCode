@@ -1,6 +1,8 @@
 from config import *
 from utils import *
 
+from events import EVENT_SYSTEM_STARTED
+
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, EVENT_CALL_SERVICE
 
 import datetime
@@ -39,11 +41,11 @@ def ha_log_automations():
 
 @time_trigger
 @event_trigger(EVENT_HOMEASSISTANT_STARTED)
-def event_system_started(delay=EVENT_SYSTEM_STARTED_DELAY): 
+def event_system_started(delay=SYSTEM_STARTED_EVENT_DELAY): 
   task.sleep(delay)
   event.fire(EVENT_SYSTEM_STARTED)
 
-@event_trigger(EVENT_CALL_SERVICE, "domain == 'pyscript' and service == 'reload'")
-@event_trigger("SERVICE_RELOAD")
-def on_pyscript_reload(**kwargs):
-  log("on_pyscript_reload {kwargs}")
+# @event_trigger(EVENT_CALL_SERVICE, "domain == 'pyscript' and service == 'reload'")
+# @event_trigger("SERVICE_RELOAD")
+# def on_pyscript_reload(**kwargs):
+#   log("on_pyscript_reload {kwargs}")
