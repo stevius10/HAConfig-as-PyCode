@@ -10,6 +10,13 @@ STATES_HA_UNDEFINED = [STATE_HA_NONE, STATE_HA_UNAVAILABLE, STATE_HA_UNKNOWN]
 
 STATE_HA_TIMER_STOPPED = "idle"
 
+# Services
+
+SERVICE_HA_TURN_OFF = "homeassistant.turn_off"
+SERVICE_HA_SYSLOG_WRITE = "system_log.write"
+
+SERVICE_PY_LOG = "pyscript.log"
+
 # Scripts
 
 SCRIPT_AIR_CLEANER_GROUP = "fan.luft"
@@ -21,8 +28,3 @@ SCRIPT_AIR_CLEANER_SENSOR = [ "sensor.wz_luft", "sensor.sz_luft" ]
 SCRIPT_AIR_CLEANER_SPEED_THRESHOLD = 30
 SCRIPT_AIR_CLEANER_PRESET_MODE_MANUAL = "manual"
 SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP = "sleep"
-
-# Helper
-
-FUNC_PYLOG = "pyscript.log"
-FUNC_SYSLOG = "system_log.write"

@@ -141,7 +141,7 @@ def log_context(func):
   return wrapper
   
 def log_internal(msg="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL):
-  call_func(FUNC_SYSLOG, message=msg, logger=logger, level=level)
+  call_func(SERVICE_HA_SYSLOG_WRITE, message=msg, logger=logger, level=level)
 
 def set_log_context(ctx=pyscript.get_global_ctx()):
   global logs
