@@ -19,26 +19,6 @@ for entity in CONFIG_CONTROL_ENTITIES:
 #
 # from utils import *
 #
-# CONFIG_CONTROL = {
-#   'sensor.wz_schalter_action': {
-#     'on': 'scene.wz_indirekt',
-#     'off': ['scene.wz_aus', 'scene.k_aus'],
-#     'up': 'scene.wz_hell',
-#     'down': 'scene.wz_schwach'
-#   }, 
-#   'sensor.sz_schalter_action': {
-#     'on': 'scene.sz_indirekt',
-#     'off': 'scene.sz_aus',
-#     'up': 'scene.sz_hell',
-#     'down': 'scene.sz_schwach'
-#   },
-#   'sensor.g_schalter_action': {
-#     'single': 'scene.g_indirekt',
-#     'double': 'scene.g_aus',
-#     'long': ''
-#   }
-# }
-#
 # entities = CONFIG_CONTROL
 #
 # trigger_control = []

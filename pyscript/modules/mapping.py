@@ -10,6 +10,10 @@ STATES_HA_UNDEFINED = [STATE_HA_NONE, STATE_HA_UNAVAILABLE, STATE_HA_UNKNOWN]
 
 STATE_HA_TIMER_STOPPED = "idle"
 
+# Notifications
+
+NOTIFICATION_ID_CHANGE_DETECTION = "changedetection"
+
 # Services
 
 SERVICE_HA_TURN_OFF = "homeassistant.turn_off"
