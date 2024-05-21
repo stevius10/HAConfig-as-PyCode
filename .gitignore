@@ -1,8 +1,6 @@
 *
-!automations.yaml
 !configuration.yaml
 !homeassistant.yaml
-!scripts.yaml
 !system.yaml
 !ui-lovelace.yaml
 
