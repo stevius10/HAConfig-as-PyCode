@@ -15,7 +15,12 @@ The core functionality of HAConfig-as-PyCode is built around an event-driven arc
 - **[`auto_notify.py`](pyscript/auto_notify.py)**: Sends notifications to other devices e. g. mobile, utilizing the `notify_immo` function, which parses housing offers from various Berlin housing associations.
 - **[`config_control.py`](pyscript/config_control.py)**: Defines controller behavior and maps it to scenes and actions using the `CONFIG_CONTROL` data structure.
 
-### Leverage home automation capabilities  
+### Leverage home automation capabilities
+
+#### Apps
+
+- **[`services.py`](pyscript/apps/services.py)**: Defines a service factory that creates periodically executed services based on provided cron expressions, e.g., `filebackup.sh` for backing up Home Assistant configuration and data.
+- **[`sync_git.py`](pyscript/apps/sync_git.py)**: Synchronizes the configuration automatically to this Git repository.
 
 #### Scripts 
 
@@ -26,11 +31,6 @@ For the purpose of integration:
 For the purpose of functionality:  
 - **[`script_air_cleaner.py`](pyscript/scripts/script_air_cleaner.py)**: Controls automatic air purification based on pollen concentration, scheduled according to various thresholds.
 - **[`script_off.py`](pyscript/scripts/script_off.py)**: Provides functionality to turn off all types of integrated entities, either individually or by domain.
-
-#### Apps
-
-- **[`services.py`](pyscript/apps/services.py)**: Defines a service factory that creates periodically executed services based on provided cron expressions, e.g., `filebackup.sh` for backing up Home Assistant configuration and data.
-- **[`sync_git.py`](pyscript/apps/sync_git.py)**: Synchronizes the configuration automatically to this Git repository.
 
 ### Modules
 
@@ -52,7 +52,7 @@ The `/pyscript/modules` directory contains reusable Python modules that encapsul
 
 - **System Monitoring**: Monitoring of system resources and performance metrics.
 - **Backup and Synchronization**: Automated backup and synchronization of the Home Assistant configuration and data.
-- **Berlin Housing Offers**: Scraping for housing offers and real estate listings from various companies in Berlin. (__needs to be updated__)
+- **Berlin Housing Offers**: Scraping for housing offers and real estate listings from various companies in Berlin. (*needs to be updated*)
 - **Lovelace UI Customization**: Customization of Home Assistant's Lovelace UI, e. g.  **Calendar Integration** or **Weather Monitoring with Derived Metric Calculations**.
 
 ## Images
