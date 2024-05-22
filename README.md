@@ -41,7 +41,7 @@ The `/pyscript/modules` directory contains reusable Python modules that encapsul
 - **[`helper.py`](pyscript/modules/helper.py)**: Provides helper functions and utilities for repeating general tasks such as defining conditions and expressions, handling state triggers, and managing time-based triggers.
 - **[`mapping.py`](pyscript/modules/mapping.py)**: Contains naming and mappings to entities and device capabilities.
 - **[`settings.py`](pyscript/modules/settings.py)**: Contains settings or configuration values specific to application logic. 
-- **[`utils.py`](pyscript/modules/utils.py)**: Contains utility functions for logging, contexts, and other general-purpose tasks.
+- **[`utils.py`](pyscript/modules/utils.py)**: Contains utility functions that do not use home automation capabilities. 
 
 ## Constraints
 
