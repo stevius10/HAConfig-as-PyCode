@@ -42,7 +42,6 @@ def timeout_factory(entity, default, delay=None):
     else: 
       if entity_domain is "media_player": # if works adopt for generic
         state.set(entity, value=default)
-        
   trigger.append(timer_stop)
 
   @state_trigger(expr(entity, expression=default, comparator="=="))
