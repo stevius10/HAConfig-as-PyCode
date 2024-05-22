@@ -46,7 +46,7 @@ The `/pyscript/modules` directory contains reusable Python modules that encapsul
 ## Constraints
 
 1. The folder structure is dictated by the PyScript integration. Given these restrictions, it aims for a well-structured and logical approach, leveraging the benefits of varied visibility offered by PyScript.
-2. No error or warning logs occur, implying a focus on stability and extended debugging functionality over features.
+2. No error or warning logs should occur in consequence of implementation, which is implying a project's focus on stability and extended debugging functionality over features.
 
 ## Exemplary Functionality
 
