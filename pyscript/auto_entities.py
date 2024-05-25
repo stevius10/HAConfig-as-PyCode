@@ -29,7 +29,7 @@ def timeout_factory(entity, default, delay=None):
   def start_timer(trigger_type=None, var_name=None):
     if state.get(entity) != default:
       if trigger_type == "event" or delay == None: 
-        reset(entity, default)
+        timer_stop(entity=entity)
       if "delay" in entities.get(entity): 
         timer.cancel(entity_id=entity_timer)
         timer.start(entity_id=entity_timer, duration=delay)
@@ -37,7 +37,8 @@ def timeout_factory(entity, default, delay=None):
 
   @event_trigger("timer.finished", f"entity_id == '{entity_timer}'")
   def timer_stop(**kwargs):
-    state.set(entity, value=default)
+    # if default == STATE_OFF:
+    service.call("homeassistant", f"turn_{default}", entity_id=entity)
   trigger.append(timer_stop)
   
   @state_trigger(expr(entity, expression=default, comparator="=="))
