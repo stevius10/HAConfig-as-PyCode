@@ -1,7 +1,4 @@
 *
-!configuration.yaml
-!homeassistant.yaml
-!system.yaml
 !ui-lovelace.yaml
 
 !config
