@@ -35,15 +35,11 @@ def timeout_factory(entity, default, delay=None):
         timer.start(entity_id=entity_timer, duration=delay)
   trigger.append(start_timer)
 
-  @event_trigger("timer.finished", f"entity_id == {entity_timer}")
+  @event_trigger("timer.finished", f"entity_id == '{entity_timer}'")
   def timer_stop(**kwargs):
-    if default is STATE_OFF:
-      service.call("homeassistant", f"turn_{default}", entity_id=entity)
-    else: 
-      if entity_domain is "media_player": # if works adopt for generic
-        state.set(entity, value=default)
+    state.set(entity, value=default)
   trigger.append(timer_stop)
-
+  
   @state_trigger(expr(entity, expression=default, comparator="=="))
   def timer_reset(var_name=None):
     timer.cancel(entity_id=entity_timer)

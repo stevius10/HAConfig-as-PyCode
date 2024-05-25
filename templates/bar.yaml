@@ -124,7 +124,7 @@ template_data_footer_wz:
     - type: custom:decluttering-card
       template: template_bar_footer_button
       variables: 
-        - entity: switch.sofa
+        - entity: switch.heizdecke
 
 # Schlafzimmer
 
@@ -228,14 +228,13 @@ template_data_footer_k:
     - type: custom:decluttering-card
       template: template_bar_footer_button
       variables: 
-        - entity: switch.heizdecke
-    - type: custom:decluttering-card
-      template: template_bar_footer_button
-      variables: 
         - entity: switch.sz_luftung
-        # - icon_height: 22
     - type: custom:decluttering-card
       template: template_bar_footer_button
       variables: 
         - entity: humidifier.luftbefeuchter
         - icon_height: 25
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
+        - entity: switch.sofa

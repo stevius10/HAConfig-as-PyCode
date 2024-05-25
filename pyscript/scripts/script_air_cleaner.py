@@ -38,7 +38,7 @@ def script_air_cleaner_threshold_on(var_name=None, value=None, ns=None, ctx=None
 
 @task_unique("script_air_cleaner_threshold_off", kill_me=True)
 @state_trigger(expr(sensors, SCRIPT_AIR_CLEANER_THRESHOLD_STOP, comparator="<"), watch=sensors)
-@state_active(EXPR_STATE_SEASON_POLLEN)
+@state_active(f"{EXPR_STATE_SEASON_POLLEN} and {group} == STATE_ON")
 @time_active(EXPR_TIME_ACTIVE)
 def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=None, **kwargs):
   if state.get(var_name) == STATE_ON:

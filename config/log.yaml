@@ -39,8 +39,9 @@ logger:
       - "Error handling request"
     habluetooth.scanner:
       - "org.bluez.Error.InProgress"
-    py.warnings:
-      - "vobject" #caldav
+    root:
+      - "BEGIN:VEVENT" #caldav
+      - "Ical data was modified to avoid compatibility issues" # caldav
 
 logbook:  
   exclude:
