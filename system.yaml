@@ -1,3 +1,0 @@
-automation: !include /config/system/automations.yaml
-scene: !include /config/system/scenes.yaml
-script: !include /config/system/scripts.yaml
