@@ -9,6 +9,7 @@ AUTO_ENTITIES = {
   "switch.bett": { "default": "off", "delay": 1800 },
   "switch.heizdecke": { "default": "off", "delay": 1800 }, 
   "switch.sofa": { "default": "off", "delay": 1800 }, 
+  "switch.wz_luftung": { "default": "off", "delay": 600 },
   "switch.sz_luftung": { "default": "off", "delay": 600 },
   "switch.wz_ventilator": { "default": "off", "delay": 600 }
 }
@@ -52,8 +53,9 @@ ENTITIES_AIR = [
   "fan.wz_luft",
   "fan.sz_luft",
   "fan.sz_ventilator",
-  "switch.sz_luftung",
   "switch.wz_ventilator"
+  "switch.wz_luftung",
+  "switch.sz_luftung"
 ]
 
 ENTITIES_HEATING = [

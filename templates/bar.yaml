@@ -112,15 +112,15 @@ template_data_footer_wz:
     - type: custom:decluttering-card
       template: template_bar_footer_button
       variables: 
+        - entity: fan.wz_ventilator
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
         - entity: fan.wz_luft
         - icon_height: 22
         - action: call-service
         - double_tap_action: call-service
         - service: call-service
-    - type: custom:decluttering-card
-      template: template_bar_footer_button
-      variables: 
-        - entity: switch.wz_ventilator
     - type: custom:decluttering-card
       template: template_bar_footer_button
       variables: 
@@ -170,15 +170,15 @@ template_data_footer_sz:
     - type: custom:decluttering-card
       template: template_bar_footer_button
       variables: 
+        - entity: fan.sz_ventilator
+    - type: custom:decluttering-card
+      template: template_bar_footer_button
+      variables: 
         - entity: fan.sz_luft
         - icon_height: 22
         - action: call-service
         - double_tap_action: call-service
         - service: call-service
-    - type: custom:decluttering-card
-      template: template_bar_footer_button
-      variables: 
-        - entity: fan.sz_ventilator
     - type: custom:decluttering-card
       template: template_bar_footer_button
       variables: 
@@ -228,12 +228,13 @@ template_data_footer_k:
     - type: custom:decluttering-card
       template: template_bar_footer_button
       variables: 
-        - entity: switch.sz_luftung
+        - entity: humidifier.luftbefeuchter
+        - icon_height: 25
+    
     - type: custom:decluttering-card
       template: template_bar_footer_button
       variables: 
-        - entity: humidifier.luftbefeuchter
-        - icon_height: 25
+        - entity: switch.luftung
     - type: custom:decluttering-card
       template: template_bar_footer_button
       variables: 

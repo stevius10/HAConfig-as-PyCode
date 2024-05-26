@@ -1,102 +1,38 @@
-x-anchors:
-  &alarm
-  entity: '[[entity]]'
-  name: '[[name]]'
+badge_webfilter:
+  &badge_webfilter
+  entity: switch.adguard_home_schutz # sensor.adguard_home_dns_abfragen_blockiert
+  name: Web-Filter
   card_mod:
     style: | 
       :host { 
-        {% if [[condition]] %}{% if [[conditional]] == true %}display: none;{% endif %}
+        {% if states('switch.adguard_home_schutz') == 'on' %}
           --label-badge-red: #556B2F;
         {% else %}
           --label-badge-text-color: rgba(128, 0, 0, 0.5); 
           --label-badge-red: maroon; 
         {% endif %} 
-  tap_action: '[[tap_action]]'
-    
-template_badge_webfilter: 
-  card: 
-    type: custom:mod-card
-    card_mod:
-      style: | 
-        ha-card { 
-          display: flex !important;
-          flex-wrap: nowrap !important;
-        }
-        badge-card { 
-          display: flex !important;
-          flex-wrap: nowrap !important;
-        }
-        div { 
-          display: flex !important;
-          flex-wrap: nowrap !important;
-        }
-        div#badges { 
-          display: flex !important;
-          flex-wrap: nowrap !important;
-        }
-        #badge-card { 
-          display: flex !important;
-          flex-wrap: nowrap !important;
-        }
-        #badges { 
-          display: flex !important;
-          flex-wrap: nowrap !important;
-        }
-    card: 
-      type: entity-filter
-      conditions:
-      - condition: state
-        state_not: ["idle", "unavailable", "none", ""]
-      card:
-        type: custom:badge-card
-      entities: 
-        - <<: *alarm
+  tap_action: 
+    action: call-service
+    service: switch.toggle
+    data:
+      entity_id: switch.adguard_home_schutz
 
-  default:
-  - entity: sensor.adguard_home_dns_abfragen_blockiert
-  - name: Web-filter
-  - condition: "states('switch.adguard_home_schutz') == 'on'"
-  - conditional: true
-  - style: ".badges { display:inline; }"
-  - tap_action:
-      action: call-service
-      service: switch.toggle
-      data:
-        entity_id: switch.adguard_home_schutz
-
-template_badge_backup:
-  card: 
-    type: entity-filter
-    conditions:
-    - condition: state
-      state_not: ["idle", "unavailable", "none", ""]
-    card:
-      type: custom:badge-card
-    entities: 
-      - <<: *alarm
-  default:
-    - entity: sensor.v_last_backup
-    - name: Sicherung
-    - condition: "'d' not in states('sensor.v_last_backup')"
-    - conditional: false
-    - style: ":host {}"
-    - tap_action:
-        action: navigate
-        navigation_path: /cebe7a76_hassio_google_drive_backup/ingress
-
-template_badges_alarms: 
-  card: 
-    type: entity-filter
-    conditions:
-    - condition: state
-      state_not: ["idle", "unavailable", "none", ""]
-    card:
-      type: custom:badge-card
-    entities:
-    - type: custom:decluttering-card
-      template: template_badge_webfilter
-    - type: custom:decluttering-card
-      template: template_badge_backup
+badge_backup:
+  &badge_backup
+  entity: sensor.v_last_backup
+  name: Sicherung
+  card_mod:
+    style: | 
+      :host { 
+        {% if 'd' not in states('sensor.v_last_backup') %}
+          --label-badge-red: #556B2F;
+        {% else %}
+          --label-badge-text-color: rgba(128, 0, 0, 0.5); 
+          --label-badge-red: maroon; 
+        {% endif %} 
+  tap_action:
+    action: navigate
+    navigation_path: /cebe7a76_hassio_google_drive_backup/ingress
     
 # Badges 
 
@@ -107,14 +43,18 @@ template_badges_general:
     cards:
     - type: 'custom:badge-card'
       badges: 
-      - type: custom:decluttering-card
-        template: template_badge_webfilter
-      
-      - type: custom:decluttering-card
-        template: template_badges_alarms
-  
-      
-
+      - type: entity-filter
+        entities: 
+          - *badge_webfilter
+        conditions:
+        - condition: state
+          state_not: "on"
+      - type: entity-filter
+        entities: 
+          - *badge_backup
+        state_filter:
+          - operator: regex
+            value: "[d]"
       - type: entity-filter
         entities: 
           - entity: timer.adguard_home_schutz
@@ -304,16 +244,8 @@ template_badges_system:
       state_color: false
       show_header_toggle: false
       badges:
-      - type: custom:decluttering-card
-        template: template_badge_webfilter
-        variables: 
-          - conditional: false
-  
-      - type: custom:decluttering-card
-        template: template_badge_backup
-        variables: 
-          - conditional: false
-          
+      - *badge_webfilter
+      - *badge_backup
       - entity: sensor.fritz_box_7530_gb_empfangen
         name: Erneut verbinden
         double_tap_action:
@@ -325,19 +257,3 @@ template_badges_system:
             text: Internetverbindung trennen und neu herstellen? 
         tap_action:
           action: more-info
-        
-      - entity: switch.fritz_box_7530_wi_fi_generation_lockdown_gast
-        name: Gäste-WLAN
-        double_tap_action:
-          action: call-service
-          service: switch.toggle
-          data:
-            entity_id: switch.fritz_box_7530_wi_fi_generation_lockdown_gast
-          confirmation:
-            text: "Gäste-WLAN umschalten"
-        tap_action:
-          action: call-service
-          service: browser_mod.more_info
-          data:
-            entity: image.fritz_box_7530_generation_lockdown_gast
-            large: true
