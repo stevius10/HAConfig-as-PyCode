@@ -24,7 +24,7 @@ def timeout_factory(entity, default, delay=None):
   entity_name = entity.split(".")[1]
   entity_timer = f"timer.{entity_name}"
   
-  @event_trigger(EVENT_HOMEASSISTANT_STARTED) 
+  @event_trigger(EVENT_HOMEASSISTANT_STARTED)
   @state_trigger(expr(entity, expression=default, comparator="!=", defined=True))
   def start_timer(trigger_type=None, var_name=None):
     if state.get(entity) != default:

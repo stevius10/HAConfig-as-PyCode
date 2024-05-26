@@ -11,8 +11,8 @@
     },
     {
       "item": "code", 
-      "icon": "mdi:code-braces",
-      "name": "Studio Code"
+      "icon": "mdi:microsoft-visual-studio-code",
+      "name": "Entwicklung"
     },
     {
       "item": "adguard", 

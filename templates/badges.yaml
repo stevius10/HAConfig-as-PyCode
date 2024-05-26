@@ -33,6 +33,29 @@ badge_backup:
   tap_action:
     action: navigate
     navigation_path: /cebe7a76_hassio_google_drive_backup/ingress
+
+badge_air_quality:
+  &badge_air_quality
+  entity: sensor.luftqualitat
+  name: Luft reinigen
+  card_mod:
+    style: | 
+      :host { 
+        {% if not states('sensor.luftqualitat') | regex_search('d{2}') %}
+          --label-badge-red: #556B2F;
+        {% else %}
+          --label-badge-text-color: rgba(128, 0, 0, 0.5); 
+          --label-badge-red: maroon; 
+        {% endif %} 
+  tap_action:
+    action: call-service
+    service: pyscript.script_air_cleaner_sleep
+  double_tap_action:
+    action: call-service
+    service: pyscript.script_air_cleaner_clean
+  hold_action:
+    action: call-service
+    service: pyscript.script_air_cleaner_turn_off
     
 # Badges 
 
@@ -43,18 +66,28 @@ template_badges_general:
     cards:
     - type: 'custom:badge-card'
       badges: 
+      
       - type: entity-filter
         entities: 
           - *badge_webfilter
         conditions:
         - condition: state
           state_not: "on"
+          
       - type: entity-filter
         entities: 
           - *badge_backup
         state_filter:
           - operator: regex
             value: "[d]"
+            
+      - type: entity-filter
+        entities: 
+          - *badge_air_quality
+        conditions:
+          - operator: regex
+            value: "d{2}"
+          
       - type: entity-filter
         entities: 
           - entity: timer.adguard_home_schutz
@@ -117,11 +150,6 @@ template_badges_general:
         - condition: state
           state_not: ["idle", "unavailable", "none", ""]
 
-      - entity: sensor.fritz_box_7530_download_durchsatz
-        name: "⇩"
-      - entity: sensor.fritz_box_7530_upload_durchsatz
-        name: "⇧"
-        
       - type: entity-filter
         entities:
           - entity: media_player.wohnzimmer
@@ -130,7 +158,7 @@ template_badges_general:
           - entity: media_player.schlafzimmer
         state_filter:
           - playing
-              
+
       - type: entity-filter
         entities: 
         - entity: timer.h_timer_schlafzimmer
@@ -157,7 +185,12 @@ template_badges_general:
         conditions:
         - condition: state
           state_not: ["idle", "unavailable", "none", ""]
-            
+
+      - entity: sensor.fritz_box_7530_download_durchsatz
+        name: "⇩"
+      - entity: sensor.fritz_box_7530_upload_durchsatz
+        name: "⇧"
+
 template_badges_services: 
   card:
     type: custom:layout-card
@@ -167,32 +200,9 @@ template_badges_services:
       state_color: false
       show_header_toggle: false
       badges:
-      - entity: sensor.luftqualitat
-        name: Luft reinigen
-        tap_action:
-          action: call-service
-          service: pyscript.script_air_cleaner_sleep
-        double_tap_action:
-          action: call-service
-          service: pyscript.script_air_cleaner_clean
-        hold_action:
-          action: call-service
-          service: pyscript.script_air_cleaner_turn_off
-        # card_mod: 
-        #   style: |
-        #     :host { 
-        #       {% if states('sensor.luftreiniger_geschwindigkeit') == "Sleep" %}
-        #         --label-badge-background-color: white;
-        #       {% elif  states('sensor.luftreiniger_geschwindigkeit') | int(0) | int > 30 %}
-        #         --label-badge-text-color: #556B2F;
-        #       {% elif  states('sensor.luftreiniger_geschwindigkeit') | int(0) | int > 50 %}
-        #         --label-badge-text-color: maroon;
-        #       {% endif %}
-        #       {% if states('sensor.luftreiniger_pm_25') | int(0) | int > 15 %}
-        #         --label-badge-background-color: maroon;
-        #       {% endif %}
-        #     }
-            
+      
+      - *badge_air_quality
+
       - entity: sensor.none
         name: Alles aus- schalten
         style: |

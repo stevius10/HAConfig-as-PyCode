@@ -39,6 +39,8 @@ logger:
       - "Error handling request"
     habluetooth.scanner:
       - "org.bluez.Error.InProgress"
+    pyvesync.helpers:
+      - "No response"
     root:
       - "BEGIN:VEVENT" #caldav
       - "Ical data was modified to avoid compatibility issues" # caldav

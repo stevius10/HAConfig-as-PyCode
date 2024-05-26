@@ -14,15 +14,6 @@ helper_pm_minimum = SCRIPT_AIR_CLEANER_HELPER_PM_MINIMUM
 retrigger_delay = SCRIPT_AIR_CLEANER_THRESHOLD_RETRIGGER_DELAY
 wait_active_delay = SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY
 
-# Service
-
-@service
-def script_air_cleaner():
-  if int(state.get(f"{group}.percentage")) <= sleep_mode_percentage:
-    script_air_cleaner_clean()
-  else: 
-    script_air_cleaner_sleep()
-
 # Automation
 
 @task_unique("script_air_cleaner_threshold_on", kill_me=True)
@@ -32,7 +23,7 @@ def script_air_cleaner():
 @log_context
 def script_air_cleaner_threshold_on(var_name=None, value=None, ns=None, ctx=None):
   if state.get(var_name) != STATE_ON:
-    script_air_cleaner_sleep()
+    script_air_cleaner_sleep(var_name)
     log(f"{var_name} with {value}pm2,5 above threshold {SCRIPT_AIR_CLEANER_THRESHOLD_START}", ns, ctx, "threshold:on")
   task.sleep(retrigger_delay)
 
@@ -42,7 +33,7 @@ def script_air_cleaner_threshold_on(var_name=None, value=None, ns=None, ctx=None
 @time_active(EXPR_TIME_ACTIVE)
 def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=None, **kwargs):
   if state.get(var_name) == STATE_ON:
-    script_air_cleaner_turn_off()
+    script_air_cleaner_turn_off(var_name)
     script_air_cleaner_turn_off(helper)
     log(f"{var_name} with {value} PM 2,5 below threshold {SCRIPT_AIR_CLEANER_THRESHOLD_STOP}", ns, ctx, "threshold:off")
   task.sleep(retrigger_delay)
