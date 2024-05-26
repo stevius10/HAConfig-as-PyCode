@@ -17,5 +17,7 @@ timer:
     name: sz_ventilator
   schlafzimmer:
     name: schlafzimmer
+  wz_luftung: 
+    name: sz_luftung
   sz_luftung: 
     name: sz_luftung

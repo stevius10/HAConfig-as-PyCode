@@ -27,6 +27,7 @@ logger:
     homeassistant.components.openweathermap: 
       - "timeouted"
     homeassistant.components.hassio:
+      - "/addons"
       - "stat"
     homeassistant.components.google_assistant.http:
       - "404"

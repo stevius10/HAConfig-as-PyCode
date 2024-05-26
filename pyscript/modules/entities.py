@@ -1,17 +1,16 @@
 AUTO_ENTITIES = {
   "climate.k": { "default": "off", "func": "climate.turn_off" },
-  "fan.luft": { "default": "off", "delay": 7200 }, 
-  "fan.sz_luft": { "default": "off", "delay": 7200 }, 
-  "fan.sz_ventilator": { "default": "off", "delay": 5400 }, 
-  "fan.wz_luft": { "default": "off", "delay": 7200 }, 
   "media_player.schlafzimmer": { "default": "off", "delay": 7200 },
-  "switch.adguard_home_schutz": { "default": "on", "delay": 900 }, 
+  "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
   "switch.bett": { "default": "off", "delay": 1800 },
   "switch.heizdecke": { "default": "off", "delay": 1800 }, 
   "switch.sofa": { "default": "off", "delay": 1800 }, 
+  "fan.wz_ventilator": { "default": "off", "delay": 5400 }, 
+  "fan.sz_ventilator": { "default": "off", "delay": 5400 }, 
+  "fan.wz_luft": { "default": "off", "delay": 7200 }, 
+  "fan.sz_luft": { "default": "off", "delay": 7200 }, 
   "switch.wz_luftung": { "default": "off", "delay": 600 },
-  "switch.sz_luftung": { "default": "off", "delay": 600 },
-  "switch.wz_ventilator": { "default": "off", "delay": 600 }
+  "switch.sz_luftung": { "default": "off", "delay": 600 }
 }
 
 AUTO_MOTION_ENTITIES = { 
@@ -21,7 +20,7 @@ AUTO_MOTION_ENTITIES = {
 
 AUTO_NOTIFY_ENTITIES = { 
   "sensor.v_friedrichsheim": { "url": "https://www.friedrichsheim-eg.de/category/freie-wohnungen/" }, 
-  # "sensor.v_bmv": { "url": "https://www.bwv-berlin.de/wohnungsangebote.html" }, 
+  "sensor.v_bwv": { "url": "https://www.bwv-berlin.de/wohnungsangebote.html" }, 
   "sensor.v_neukolln": { "url": "https://www.gwneukoelln.de/wohnungen/wohnungsangebote/" }, 
   "sensor.v_wbm": { "url": "https://www.wbm.de/wohnungen-berlin/angebote-wbm/" }, 
   "sensor.v_gewobag": { "url": "https://www.wbm.de/wohnungen-berlin/angebote-wbm/" }, 
@@ -48,48 +47,22 @@ CONFIG_CONTROL_ENTITIES = {
   }
 }
 
-ENTITIES_AIR = [
+ENTITIES_AIR = [ 
   "humidifier.luftbefeuchter", 
-  "fan.wz_luft",
-  "fan.sz_luft",
-  "fan.sz_ventilator",
-  "switch.wz_ventilator"
-  "switch.wz_luftung",
-  "switch.sz_luftung"
+  "fan.wz_ventilator", "fan.sz_ventilator", 
+  "fan.wz_luft", "fan.sz_luft",
+  "switch.wz_luftung", "switch.sz_luftung"
 ]
-
-ENTITIES_HEATING = [
-  "clima.wz_heizung",
-  "clima.sz_heizung",
-  "clima.k_heizung"
-]
-
+ENTITIES_HEATING = [ "clima.wz_heizung", "clima.sz_heizung", "clima.k_heizung" ]
 ENTITIES_MEDIA= [
-  "media_player.bad",
-  "media_player.kueche",
-  "media_player.schlafzimmer",
-  "media_player.wohnzimmer",
+  "media_player.bad", "media_player.kueche",
+  "media_player.schlafzimmer", "media_player.wohnzimmer",
   "media_player.uberall"
 ]
-
 ENTITIES_LIGHT = [
-  "light.wz_beleuchtung",
-  "light.sz_beleuchtung",
-  "light.k_beleuchtung",
-  "light.g_beleuchtung"
+  "light.wz_beleuchtung", "light.sz_beleuchtung",
+  "light.k_beleuchtung", "light.g_beleuchtung"
 ]
-
-ENTITIES_SERVICES = [
-  "switch.fritz_box_7530_wi_fi_generation_lockdown_gast"
-]
-
-ENTITIES_SWITCHES = [
-  "switch.bett",
-  "switch.sofa",
-  "switch.heizdecke"
-]
-
-ENTITIES_TV = [
-  "media.wz_fernseher",
-  "media.sz_fernseher"
-]
+ENTITIES_SERVICES = []
+ENTITIES_SWITCHES = [ "switch.bett", "switch.sofa", "switch.heizdecke" ]
+ENTITIES_TV = [ "media.wz_fernseher", "media.sz_fernseher" ]

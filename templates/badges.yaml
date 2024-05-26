@@ -151,15 +151,6 @@ template_badges_general:
           state_not: ["idle", "unavailable", "none", ""]
 
       - type: entity-filter
-        entities:
-          - entity: media_player.wohnzimmer
-          - entity: media_player.bad
-          - entity: media_player.kueche
-          - entity: media_player.schlafzimmer
-        state_filter:
-          - playing
-
-      - type: entity-filter
         entities: 
         - entity: timer.h_timer_schlafzimmer
           tap_action:
@@ -190,6 +181,15 @@ template_badges_general:
         name: "⇩"
       - entity: sensor.fritz_box_7530_upload_durchsatz
         name: "⇧"
+
+      - type: entity-filter
+        entities:
+          - entity: media_player.wohnzimmer
+          - entity: media_player.bad
+          - entity: media_player.kueche
+          - entity: media_player.schlafzimmer
+        state_filter:
+          - playing
 
 template_badges_services: 
   card:
