@@ -1,8 +1,6 @@
 from constants import *
 from utils import *
 
-import sys 
-
 group = SCRIPT_AIR_CLEANER_GROUP
 entities = SCRIPT_AIR_CLEANER_ENTITIES
 sensors = SCRIPT_AIR_CLEANER_SENSOR

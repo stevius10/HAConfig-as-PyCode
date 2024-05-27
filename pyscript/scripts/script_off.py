@@ -1,5 +1,4 @@
 from entities import *
-from settings import AUTO_TURN_OFF_AWAY_TRANSITION
 
 @service
 def script_off(away=False):

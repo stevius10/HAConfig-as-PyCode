@@ -1,5 +1,5 @@
 from entities import AUTO_ENTITIES
-from mapping import SERVICE_HA_TURN_OFF, STATE_OFF
+from mapping import SERVICE_HA_TURN_OFF
 from utils import *
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
@@ -20,7 +20,7 @@ def default_factory(entity, func):
 
 def timeout_factory(entity, default, delay=None):
   
-  entity_domain = entity.split(".")[0]
+  entity.split(".")[0]
   entity_name = entity.split(".")[1]
   entity_timer = f"timer.{entity_name}"
   
