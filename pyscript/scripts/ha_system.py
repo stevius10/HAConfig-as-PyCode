@@ -3,11 +3,8 @@ from utils import *
 
 from events import EVENT_SYSTEM_STARTED
 
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, EVENT_CALL_SERVICE
+from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 
-import datetime
-import logging
-import regex as re
 import shutil
 import os
 

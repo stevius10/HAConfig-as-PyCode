@@ -4,12 +4,10 @@ from utils import *
 from events import EVENT_FOLDER_WATCHER
 
 import aiofiles
-import asyncio
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP
 
 from datetime import datetime
-from pathlib import Path
 
 # Automations
 
@@ -45,7 +43,6 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
 async def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_log_tail=LOG_HA_SIZE_TAIL, size_archive_entries=0, log_archive_suffix=LOG_ARCHIVE_SUFFIX, ns=None, ctx=None):
   logs_trunc = []
   logs_truncated = []
-  archive_appended_trunc = []
 
   logs = log_read(logfile)
   archive = log_read(f"{logfile}.{log_archive_suffix}")
