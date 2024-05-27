@@ -2,6 +2,11 @@ frontend:
   extra_module_url: 
   - /hacsfiles/lovelace-card-mod/card-mod.js
   - /hacsfiles/ha-custom-sidebar/ha-custom-sidebar.js
+  
+  themes:
+    test: 
+      info-color: "#778C36"
+      error-color: "#8B0000"
 
 lovelace:
   mode: yaml
@@ -14,6 +19,8 @@ lovelace:
     - url: /hacsfiles/swipe-card/swipe-card.js
       type: module
     - url: /hacsfiles/lovelace-badge-card/badge-card.js
+      type: module
+    - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
       type: module
     - url: /hacsfiles/simple-thermostat/simple-thermostat.js
       type: module

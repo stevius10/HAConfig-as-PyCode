@@ -6,11 +6,10 @@ badge_webfilter:
     style: | 
       :host { 
         {% if states('switch.adguard_home_schutz') == 'on' %}
-          --label-badge-red: #556B2F;
+          --label-badge-red: var(--info-color)
         {% else %}
-          --label-badge-text-color: rgba(128, 0, 0, 0.5); 
-          --label-badge-red: maroon; 
-        {% endif %} 
+          --label-badge-red: var(--error-color); 
+        {% endif %}
   tap_action: 
     action: call-service
     service: switch.toggle
@@ -25,10 +24,9 @@ badge_backup:
     style: | 
       :host { 
         {% if 'd' not in states('sensor.v_last_backup') %}
-          --label-badge-red: #556B2F;
+          --label-badge-red: var(--info-color)
         {% else %}
-          --label-badge-text-color: rgba(128, 0, 0, 0.5); 
-          --label-badge-red: maroon; 
+          --label-badge-red: var(--error-color); 
         {% endif %} 
   tap_action:
     action: navigate
@@ -42,10 +40,9 @@ badge_air_quality:
     style: | 
       :host { 
         {% if not states('sensor.luftqualitat') | regex_search('d{2}') %}
-          --label-badge-red: #556B2F;
+          --label-badge-red: var(--info-color)
         {% else %}
-          --label-badge-text-color: rgba(128, 0, 0, 0.5); 
-          --label-badge-red: maroon; 
+          --label-badge-red: var(--error-color); 
         {% endif %} 
   tap_action:
     action: call-service
@@ -87,68 +84,89 @@ template_badges_general:
         conditions:
           - operator: regex
             value: "d{2}"
-          
-      - type: entity-filter
-        entities: 
-          - entity: timer.adguard_home_schutz
-            name: Web-Filter
-            tap_action:
-              action: call-service
-              service: timer.finish
-              target: 
-                entity_id: timer.adguard_home_schutz
-          - entity: timer.heizdecke
-            name: Heizdecke
-            tap_action:
-              action: call-service
-              service: timer.finish
-              target: 
-                entity_id: timer.heizdecke
-          - entity: timer.sofa
-            name: Sofa
-            tap_action:
-              action: call-service
-              service: timer.finish
-              target: 
-                entity_id: timer.sofa
-          - entity: timer.bett
-            name: Bett
-            tap_action:
-              action: call-service
-              service: timer.finish
-              target: 
-                entity_id: timer.bett
-          - entity: timer.luftreiniger
-            name: Luftreiniger
-            tap_action:
-              action: call-service
-              service: timer.finish
-              target: 
-                entity_id: timer.luftreiniger
-          - entity: timer.wz_ventilator
-            name: WZ-Ventilator
-            tap_action:
-              action: call-service
-              service: timer.finish
-              target: 
-                entity_id: timer.wz_ventilator
-          - entity: timer.sz_ventilator
-            name: SZ-Ventilator
-            tap_action:
-              action: call-service
-              service: timer.finish
-              target: 
-                entity_id: timer.sz_ventilator
-          - entity: timer.schlafzimmer
-            name: Schlafzimmer
-            tap_action:
-              action: call-service
-              service: timer.finish
-              target: 
-                entity_id: timer.schlafzimmer
-        conditions:
-        - condition: state
-          state_not: ["idle", "unavailable", "none", ""]
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: Timer
+        filter:
+          include:
+            - entity_id: timer.adguard*
+              # options:
+              #   tap_action:
+              #     action: call-service
+              #     service: timer.finish
+              #     service_data:
+              #       entity_id: this.entity_id
+          exclude:
+            - state: "idle"
+            - state: "unavailable"
+            - state: "none"
+            - state: ""
+        show_empty: false
+
+
+      # - type: entity-filter
+      #   entities: 
+      #     - entity: timer.adguard_home_schutz
+      #       name: Web-Filter
+      #       tap_action:
+      #         action: call-service
+      #         service: timer.finish
+      #         target: 
+      #           entity_id: timer.adguard_home_schutz
+      #     - entity: timer.heizdecke
+      #       name: Heizdecke
+      #       tap_action:
+      #         action: call-service
+      #         service: timer.finish
+      #         target: 
+      #           entity_id: timer.heizdecke
+      #     - entity: timer.sofa
+      #       name: Sofa
+      #       tap_action:
+      #         action: call-service
+      #         service: timer.finish
+      #         target: 
+      #           entity_id: timer.sofa
+      #     - entity: timer.bett
+      #       name: Bett
+      #       tap_action:
+      #         action: call-service
+      #         service: timer.finish
+      #         target: 
+      #           entity_id: timer.bett
+      #     - entity: timer.luftreiniger
+      #       name: Luftreiniger
+      #       tap_action:
+      #         action: call-service
+      #         service: timer.finish
+      #         target: 
+      #           entity_id: timer.luftreiniger
+      #     - entity: timer.wz_ventilator
+      #       name: WZ-Ventilator
+      #       tap_action:
+      #         action: call-service
+      #         service: timer.finish
+      #         target: 
+      #           entity_id: timer.wz_ventilator
+      #     - entity: timer.sz_ventilator
+      #       name: SZ-Ventilator
+      #       tap_action:
+      #         action: call-service
+      #         service: timer.finish
+      #         target: 
+      #           entity_id: timer.sz_ventilator
+      #     - entity: timer.schlafzimmer
+      #       name: Schlafzimmer
+      #       tap_action:
+      #         action: call-service
+      #         service: timer.finish
+      #         target: 
+      #           entity_id: timer.schlafzimmer
+      #   conditions:
+      #   - condition: state
+      #     state_not: ["idle", "unavailable", "none", ""]
 
       - type: entity-filter
         entities: 
@@ -205,35 +223,6 @@ template_badges_services:
 
       - entity: sensor.none
         name: Alles aus- schalten
-        style: |
-          :host { 
-            display: none
-    
-            {% if states('script.gh_luften') == "on" or
-              states('climate.wz') == "on" or
-              states('climate.sz') == "on" or
-              states('light.wz_beleuchtung') == "on" or
-              states('light.sz_beleuchtung') == "on" or
-              states('switch.wz_ventilator') == "on" or
-              states('switch.g_tischlampe') == "on" or
-              states('light.sz_beleuchtung') == "on" or
-              states('light.k_beleuchtung') == "on" or
-              states('light.g_lampe') == "on" or
-              states('switch.g_tischlampe') == "on" or
-              states('fan.sz_ventilator') == "on" or         
-              states('switch.sofa') == "on" or
-              states('switch.heizdecke') == "on" or
-              states('switch.bett') == "on" or
-    
-              states('media_player.kueche') == "playing" or
-              states('media_player.bad') == "playing" or
-              states('media_player.schlafzimmer') == "playing" or
-              states('media_player.wohnzimmer') == "playing" %}
-              
-                display: block;
-    
-            {% endif %}
-          }
         tap_action:
           action: call-service
           service: pyscript.script_off

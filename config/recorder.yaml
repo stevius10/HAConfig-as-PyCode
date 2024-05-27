@@ -12,9 +12,8 @@ recorder:
     - switch.bett
     - switch.sofa
     - switch.heizdecke
-    - switch.sz_luftung
-    - fan.luftreiniger
     entity_globs:
     - sensor.*temperature
     - fritz_box_*_durchsatz
     - sensor.system_monitor_*
+    - sensor.*_window
