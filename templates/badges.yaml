@@ -1,3 +1,5 @@
+# Alarm badges
+
 badge_webfilter:
   &badge_webfilter
   entity: switch.adguard_home_schutz # sensor.adguard_home_dns_abfragen_blockiert
@@ -54,7 +56,7 @@ badge_air_quality:
     action: call-service
     service: pyscript.script_air_cleaner_turn_off
     
-# Badges 
+# Badges
 
 template_badges_general: 
   card:
@@ -85,115 +87,6 @@ template_badges_general:
           - operator: regex
             value: "d{2}"
 
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: timer.*
-              # options:
-              #   tap_action:
-              #     action: call-service
-              #     service: timer.finish
-              #     service_data:
-              #       entity_id: this.entity_id
-          exclude:
-            - state: "idle"
-            - state: "unavailable"
-            - state: "none"
-            - state: ""
-        show_empty: false
-
-
-      # - type: entity-filter
-      #   entities: 
-      #     - entity: timer.adguard_home_schutz
-      #       name: Web-Filter
-      #       tap_action:
-      #         action: call-service
-      #         service: timer.finish
-      #         target: 
-      #           entity_id: timer.adguard_home_schutz
-      #     - entity: timer.heizdecke
-      #       name: Heizdecke
-      #       tap_action:
-      #         action: call-service
-      #         service: timer.finish
-      #         target: 
-      #           entity_id: timer.heizdecke
-      #     - entity: timer.sofa
-      #       name: Sofa
-      #       tap_action:
-      #         action: call-service
-      #         service: timer.finish
-      #         target: 
-      #           entity_id: timer.sofa
-      #     - entity: timer.bett
-      #       name: Bett
-      #       tap_action:
-      #         action: call-service
-      #         service: timer.finish
-      #         target: 
-      #           entity_id: timer.bett
-      #     - entity: timer.luftreiniger
-      #       name: Luftreiniger
-      #       tap_action:
-      #         action: call-service
-      #         service: timer.finish
-      #         target: 
-      #           entity_id: timer.luftreiniger
-      #     - entity: timer.wz_ventilator
-      #       name: WZ-Ventilator
-      #       tap_action:
-      #         action: call-service
-      #         service: timer.finish
-      #         target: 
-      #           entity_id: timer.wz_ventilator
-      #     - entity: timer.sz_ventilator
-      #       name: SZ-Ventilator
-      #       tap_action:
-      #         action: call-service
-      #         service: timer.finish
-      #         target: 
-      #           entity_id: timer.sz_ventilator
-      #     - entity: timer.schlafzimmer
-      #       name: Schlafzimmer
-      #       tap_action:
-      #         action: call-service
-      #         service: timer.finish
-      #         target: 
-      #           entity_id: timer.schlafzimmer
-      #   conditions:
-      #   - condition: state
-      #     state_not: ["idle", "unavailable", "none", ""]
-
-    #   - type: entity-filter
-    #     entities: 
-    #     - entity: timer.h_timer_schlafzimmer
-    #       tap_action:
-    #         action: call-service
-    #         service: timer.finish
-    #         target:
-    #           entity_id: timer.h_timer_schlafzimmer
-    #     - entity: timer.h_timer_luftreiniger
-    #       name: Reiniger
-    #       tap_action:
-    #         action: call-service
-    #         service: timer.finish
-    #         target:
-    #           entity_id: timer.h_timer_luftreiniger
-    #     - entity: timer.h_timer_sz_ventilator
-    #       name: Ventilator
-    #       tap_action:
-    #         action: call-service
-    #         service: timer.finish
-    #         target:
-    #           entity_id: timer.h_timer_sz_ventilator
-    #     - entity: sensor.qbittorrent_status
-    #     conditions:
-    #     - condition: state
-    #       state_not: ["idle", "unavailable", "none", ""]
-
       - entity: sensor.fritz_box_7530_download_durchsatz
         name: "⇩"
       - entity: sensor.fritz_box_7530_upload_durchsatz
@@ -208,6 +101,21 @@ template_badges_general:
         state_filter:
           - playing
 
+      - type: custom:auto-entities
+        card:
+          type: custom:badge-card
+        filter:
+          include:
+            - domain: timer
+              state: "active"
+              options:
+                tap_action:
+                  action: call-service
+                  service: timer.finish
+                  service_data:
+                    entity_id: this.entity_id
+        show_empty: false
+        
 template_badges_services: 
   card:
     type: custom:layout-card
