@@ -15,7 +15,7 @@ template_bar:
       - type: custom:decluttering-card
         template: template_data_[[type]]_[[room]]
 
-template_bar_header_button: 
+template_bar_string_button: 
   card:
     type: custom:decluttering-card
     template: template_bar_button
@@ -25,7 +25,7 @@ template_bar_header_button:
       - name: '[[name]]'
       - entity: '[[entity]]'
 
-template_bar_footer_button: 
+template_bar_icon_button: 
   card:
     type: custom:decluttering-card
     template: template_bar_button
@@ -71,27 +71,27 @@ template_data_header_wz:
     mode: horizontal
     cards: 
     - type: custom:decluttering-card
-      template: template_bar_header_button
+      template: template_bar_string_button
       variables: 
         - name: Hell
         - entity: scene.wz_hell
     - type: custom:decluttering-card
-      template: template_bar_header_button
+      template: template_bar_string_button
       variables: 
         - name: Normal
         - entity: scene.wz_normal
     - type: custom:decluttering-card
-      template: template_bar_header_button
+      template: template_bar_string_button
       variables: 
         - name: Indirekt
         - entity: scene.wz_indirekt
     - type: custom:decluttering-card
-      template: template_bar_header_button
+      template: template_bar_string_button
       variables: 
         - name: Gering
         - entity: scene.wz_schwach
     - type: custom:decluttering-card
-      template: template_bar_header_button
+      template: template_bar_string_button
       variables: 
         - name: Aus
         - entity: scene.wz_aus
@@ -102,19 +102,19 @@ template_data_footer_wz:
     mode: horizontal
     cards: 
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
         - entity: light.wz_lampen_1_2
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
         - entity: light.wz_lampe_3_7
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
         - entity: fan.wz_ventilator
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
         - entity: fan.wz_luft
         - icon_height: 22
@@ -122,7 +122,7 @@ template_data_footer_wz:
         - double_tap_action: call-service
         - service: call-service
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
         - entity: switch.heizdecke
 
@@ -134,22 +134,22 @@ template_data_header_sz:
     mode: horizontal
     cards: 
     - type: custom:decluttering-card
-      template: template_bar_header_button
+      template: template_bar_string_button
       variables: 
         - name: Hell
         - entity: scene.sz_hell
     - type: custom:decluttering-card
-      template: template_bar_header_button
+      template: template_bar_string_button
       variables: 
         - name: Normal
         - entity: scene.sz_normal
     - type: custom:decluttering-card
-      template: template_bar_header_button
+      template: template_bar_string_button
       variables: 
         - name: Indirekt
         - entity: scene.sz_indirekt
     - type: custom:decluttering-card
-      template: template_bar_header_button
+      template: template_bar_string_button
       variables: 
         - name: Aus
         - entity: scene.sz_aus
@@ -160,19 +160,19 @@ template_data_footer_sz:
     mode: horizontal
     cards: 
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
         - entity: light.sz_lampe
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
         - entity: light.sz_stehlampe
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
         - entity: fan.sz_ventilator
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
         - entity: fan.sz_luft
         - icon_height: 22
@@ -180,7 +180,7 @@ template_data_footer_sz:
         - double_tap_action: call-service
         - service: call-service
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
         - entity: switch.bett
 
@@ -192,22 +192,22 @@ template_data_header_k:
     mode: horizontal
     cards: 
     - type: custom:decluttering-card
-      template: template_bar_header_button
+      template: template_bar_string_button
       variables: 
         - name: Küche
         - entity: scene.k_normal
     - type: custom:decluttering-card
-      template: template_bar_header_button
+      template: template_bar_string_button
       variables: 
         - name: Aus
         - entity: scene.k_aus
     - type: custom:decluttering-card
-      template: template_bar_header_button
+      template: template_bar_string_button
       variables: 
         - name: Gang
         - entity: scene.g_indirekt
     - type: custom:decluttering-card
-      template: template_bar_header_button
+      template: template_bar_string_button
       variables: 
         - name: Aus
         - entity: scene.g_aus
@@ -218,24 +218,27 @@ template_data_footer_k:
     mode: horizontal
     cards: 
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
         - entity: light.k_lampe
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
         - entity: light.g_beleuchtung
+    # - type: custom:decluttering-card
+    #   template: template_bar_icon_button
+    #   variables: 
+    #     - entity: humidifier.luftbefeuchter
+    #     - icon_height: 25
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
-        - entity: humidifier.luftbefeuchter
-        - icon_height: 25
-    
+        - entity: switch.wz_luftung
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
-        - entity: switch.luftung
+        - entity: switch.sz_luftung
     - type: custom:decluttering-card
-      template: template_bar_footer_button
+      template: template_bar_icon_button
       variables: 
         - entity: switch.sofa
