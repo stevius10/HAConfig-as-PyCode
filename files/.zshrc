@@ -32,7 +32,7 @@ file_copy-to-extern() {
 }
 alias cpd='file_copy-to-desktop'
 
-# Shell
+# Terminal
 
 setopt AUTO_CD
 setopt CORRECT
@@ -54,13 +54,13 @@ PROMPT='%F{white}%~ %F{reset}'
 
 ### Homeassistant
 
+export PATH=$HOME/bin:/usr/local/bin:$PATH
 export ZSH=$HOME/.oh-my-zsh
-ZSH_THEME="robbyrussell"
 
-HYPHEN_INSENSITIVE="true"
-DISABLE_AUTO_UPDATE="false"
-COMPLETION_WAITING_DOTS="true"
-DISABLE_UNTRACKED_FILES_DIRTY="true"
+# Terminal
+
+ZSH_THEME="robbyrussell"
+ENABLE_CORRECTION="true"
 HIST_STAMPS="dd.mm.yyyy"
 plugins=(
     extract
@@ -69,12 +69,16 @@ plugins=(
     nmap
     rsync
 )
+
 source $ZSH/oh-my-zsh.sh
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-export LANG=de_DE.UTF-8
+# User
+
 export EDITOR='vim'
-# export SSH_KEY_PATH="~/.storage/rsa_id"
+export LANG=en_US.UTF-8
+export MANPATH="/usr/local/man:$MANPATH"
+# export SSH_KEY_PATH="~/.ssh/rsa_id"
 
 source <(ha completion zsh) && compdef _ha ha
