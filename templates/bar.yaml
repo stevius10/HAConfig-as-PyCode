@@ -46,13 +46,13 @@ template_bar_button:
     icon_height: '[[icon_height]]px'
     tap_action:
       action: '[[action]]'
-      data: '[[service]]'
+      service: '[[service]]'
     hold_action:
       action: '[[hold_action]]'
       data: '[[service]]'
     double_tap_action:
       action: '[[double_tap_action]]'
-      data: '[[service]]'
+      service: '[[service]]'
   default:
     - action: toggle
     - hold_action: more-info
@@ -118,9 +118,6 @@ template_data_footer_wz:
       variables: 
         - entity: fan.wz_luft
         - icon_height: 22
-        - action: call-service
-        - double_tap_action: call-service
-        - service: call-service
     - type: custom:decluttering-card
       template: template_bar_icon_button
       variables: 
@@ -176,9 +173,6 @@ template_data_footer_sz:
       variables: 
         - entity: fan.sz_luft
         - icon_height: 22
-        - action: call-service
-        - double_tap_action: call-service
-        - service: call-service
     - type: custom:decluttering-card
       template: template_bar_icon_button
       variables: 
@@ -231,13 +225,25 @@ template_data_footer_k:
     #     - entity: humidifier.luftbefeuchter
     #     - icon_height: 25
     - type: custom:decluttering-card
-      template: template_bar_icon_button
+      template: template_bar_button
       variables: 
         - entity: switch.wz_luftung
+        - show_name: false
+        - show_icon: true
+        - name: ''
+        - hold_action: call-service
+        - double_tap_action: call-service
+        - service: script.script_air_cleaner_helper_air
     - type: custom:decluttering-card
-      template: template_bar_icon_button
+      template: template_bar_button
       variables: 
         - entity: switch.sz_luftung
+        - show_name: false
+        - show_icon: true
+        - name: ''
+        - hold_action: call-service
+        - double_tap_action: call-service
+        - service: script.script_air_cleaner_helper_air
     - type: custom:decluttering-card
       template: template_bar_icon_button
       variables: 

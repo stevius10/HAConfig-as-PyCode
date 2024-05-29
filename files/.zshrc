@@ -28,9 +28,9 @@ alias git-reset='git reset HEAD'
 # Functions 
 
 file_copy-to-extern() {
-    cp $1 /share/Extern
+    cp "$1" /share/Extern
 }
-alias cpd='file_copy-to-desktop'
+alias cpe='file_copy-to-extern'
 
 # Terminal
 

@@ -20,28 +20,11 @@ google_assistant:
         expose: true
       switch.sofa: 
         expose: true
+      switch.wz_luftung: 
+        expose: true
       switch.sz_luftung: 
         expose: true
       fan.wz_ventilator:
         expose: false
-
-      # light.browser_mod_iphone_screen:
-      #   expose: false
-      # light.browser_mod_ipad_screen: 
-      #   expose: false
-  
-      # switch.zigbee2mqtt_bridge_permit_join:
-      #   expose: false
-        
-      # switch.adguard_home_abfrageprotokoll:
-      #   expose: false
-      # switch.adguard_home_filterung:
-      #   expose: false
-      # switch.adguard_home_schutz:
-      #   expose: false
-      # switch.adguard_home_kindersicherung:
-      #   expose: false
-      # switch.adguard_home_sichere_suche:
-      #   expose: false
-      # switch.adguard_home_sicheres_surfen:
-      #   expose: false
+      fan.sz_ventilator:
+        expose: false

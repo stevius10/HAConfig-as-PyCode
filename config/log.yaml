@@ -8,12 +8,8 @@ logger:
     androidtv: critical
     miio.miioprotocol: critical
     pychromecast.socket_client: critical
-    homeassistant.helpers.entity_registry: fatal # removed when fixed
     
   filters:
-    homeassistant:
-      - "Error doing job: Future exception was never retrieved" # Tado
-      - "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))" # Tado
     custom_components.pyscript:
       - "Unloaded"
     custom_components.pyscript.global_ctx:
@@ -26,6 +22,7 @@ logger:
       - "update_available"
     homeassistant.components.openweathermap: 
       - "timeouted"
+      - "SSLError"
     homeassistant.components.hassio:
       - "/addons"
       - "stat"
@@ -34,8 +31,6 @@ logger:
       - "500"
     homeassistant.helpers.entity:
       - "Remote end closed connection without response"
-    homeassistant.util.logging:
-      - "HomeAssistant NOT_RUNNING"
     aiohttp.server: 
       - "Error handling request"
     habluetooth.scanner:
@@ -43,8 +38,8 @@ logger:
     pyvesync.helpers:
       - "No response"
     root:
-      - "BEGIN:VEVENT" #caldav
-      - "Ical data was modified to avoid compatibility issues" # caldav
+      - "BEGIN:VEVENT" # caldav
+      - "avoid compatibility issues" # caldav
 
 logbook:  
   exclude:
