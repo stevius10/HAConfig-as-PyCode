@@ -77,7 +77,7 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 # User
 
 export EDITOR='vim'
-export LANG=en_US.UTF-8
+export LANG=de_DE.UTF-8
 export MANPATH="/usr/local/man:$MANPATH"
 # export SSH_KEY_PATH="~/.ssh/rsa_id"
 
