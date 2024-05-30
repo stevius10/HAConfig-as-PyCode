@@ -215,15 +215,20 @@ template_data_footer_k:
       template: template_bar_icon_button
       variables: 
         - entity: light.k_lampe
+        - icon_height: 23
     - type: custom:decluttering-card
       template: template_bar_icon_button
       variables: 
         - entity: light.g_beleuchtung
-    # - type: custom:decluttering-card
-    #   template: template_bar_icon_button
-    #   variables: 
-    #     - entity: humidifier.luftbefeuchter
-    #     - icon_height: 25
+    - type: custom:decluttering-card
+      template: template_bar_icon_button
+      variables: 
+        - entity: humidifier.luftbefeuchter
+        - icon_height: 27
+    - type: custom:decluttering-card
+      template: template_bar_icon_button
+      variables: 
+        - entity: switch.sofa
     - type: custom:decluttering-card
       template: template_bar_button
       variables: 
@@ -231,7 +236,6 @@ template_data_footer_k:
         - show_name: false
         - show_icon: true
         - name: ''
-        - hold_action: call-service
         - double_tap_action: call-service
         - service: script.script_air_cleaner_helper_air
     - type: custom:decluttering-card
@@ -241,10 +245,5 @@ template_data_footer_k:
         - show_name: false
         - show_icon: true
         - name: ''
-        - hold_action: call-service
         - double_tap_action: call-service
         - service: script.script_air_cleaner_helper_air
-    - type: custom:decluttering-card
-      template: template_bar_icon_button
-      variables: 
-        - entity: switch.sofa
