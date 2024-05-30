@@ -4,7 +4,7 @@ from utils import *
 group = SCRIPT_AIR_CLEANER_GROUP
 entities = SCRIPT_AIR_CLEANER_ENTITIES
 sensors = SCRIPT_AIR_CLEANER_SENSOR
-helper = SCRIPT_AIR_CLEANER_HELPER
+helpers = SCRIPT_AIR_CLEANER_HELPER
 
 clean_mode_percentage = SCRIPT_AIR_CLEANER_CLEAN_MODE_PERCENTAGE
 sleep_mode_percentage = SCRIPT_AIR_CLEANER_SLEEP_MODE_PERCENTAGE
@@ -90,7 +90,7 @@ def script_air_cleaner_get_clean_percentage(entity, ns=None, ctx=None):
   return percentage
 
 @service # without check 
-def script_air_cleaner_helper_air(entity=helper, check=False):
+def script_air_cleaner_helper_air(entity=entities, helper=helpers, check=False):
   if (check == False) or (sum([int(state.get(item.replace("fan", "sensor"))) for item in entity]) > helper_pm_minimum):
     for item in helper:
-      homeassistant.turn_on(entity_id=entity)
+      homeassistant.turn_on(entity_id=item)

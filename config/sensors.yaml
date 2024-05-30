@@ -255,35 +255,36 @@ command_line:
       scan_interval: 3600
       
   - sensor: 
-      name: V-Wetter-Pollenflug
-      command: "python3 /config/config/.sensors/v-pollenflug.py"
-      scan_interval: 86400
-      
-  - sensor: 
       name: V-Friedrichsheim
       command: "python3 /config/config/.sensors/v-friedrichsheim.py"
-      scan_interval: 86400
+      scan_interval: 5400
   
   - sensor: 
       name: V-Neukölln
       command: "python3 /config/config/.sensors/v-neukolln.py"
-      scan_interval: 86400
+      scan_interval: 5400
   
   - sensor: 
       name: V-InBerlinWohnen
       command: "python3 /config/config/.sensors/v-ibw.py"
-      scan_interval: 86400
+      scan_interval: 5400
   
   - sensor: 
       name: V-WBM
       command: "python3 /config/config/.sensors/v-wbm.py"
-      scan_interval: 86400
+      scan_interval: 5400
   
   - sensor: 
       name: V-Gewobag
       command: "python3 /config/config/.sensors/v-gewobag.py"
+      scan_interval: 5400
+
+      
+  - sensor: 
+      name: V-Wetter-Pollenflug
+      command: "python3 /config/config/.sensors/v-pollenflug.py"
       scan_interval: 86400
-  
+      
   # - platform: qbittorrent
   #   url: "http://192.168.178.100:8081"
   #   username: steven

@@ -1,8 +1,12 @@
-import hashlib, requests
+import requests
+from hashlib import sha256
 
-response = requests.get('https://www.gwneukoelln.de/wohnungen/wohnungsangebote/', verify=False)
+def scrape_neukolln():
+  request_url = 'https://www.gwneukoelln.de/wohnungen/wohnungsangebote/'
+  response = requests.get(request_url, verify=False)
+  if "keine passenden Wohnungen" not in response.text:
+    return sha256(response.content).hexdigest()
+  return None
 
-if "keine passenden Wohnungen" not in response.text:
-	print(hashlib.sha256(response.content).hexdigest())
-else: 
-	print()
+if __name__ == "__main__":
+  print(scrape_neukolln())

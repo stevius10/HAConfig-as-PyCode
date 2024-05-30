@@ -1,27 +1,32 @@
-import hashlib, requests, json
+import requests
+import json
 from bs4 import BeautifulSoup
 
-items = []; 
+def scrape_ibw():
+  items = []
+  request_url = 'https://inberlinwohnen.de/wp-content/themes/ibw/skript/wohnungsfinder.php'
+  request_headers = {
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    'Accept': '*/*',
+    'X-Requested-With': 'XMLHttpRequest'
+  }
+  request_data = {
+    'q': 'wf-save-srch',
+    'save': 'false',
+    'qm_min': '50',
+    'miete_max': '600',
+    'rooms_min': '2',
+    'bez[]': ['01_00', '02_00', '03_00', '04_00', '02_00'],
+    'wbs': 0
+  }
+  response = requests.post(request_url, headers=request_headers, data=request_data, verify=False).text
+  content = BeautifulSoup(json.loads(response)['searchresults'], 'html.parser')
+  items_website = content.find_all(class_='_tb_left')
+  for item in items_website:
+    item_text = item.get_text().replace(' ', ' ')
+    detail, address = item_text.split('|')
+    items.append(f"{address} ({detail})")
+  return items
 
-requestUrl = 'https://inberlinwohnen.de/wp-content/themes/ibw/skript/wohnungsfinder.php'
-requestHeaders = { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'Accept': '*/*', 'X-Requested-With': 'XMLHttpRequest' }
-requestData = { 'q': 'wf-save-srch', 'save': 'false', 'qm_min': '50', 'miete_max': '600', 'rooms_min': '2','bez[]': [ '01_00', '02_00', '03_00', '04_00','02_00' ],'wbs': 0 }
-responseWebsite = requests.post(requestUrl, headers=None, data=requestData, verify=False).text
-contentWebsite = BeautifulSoup(json.loads(responseWebsite)['searchresults'], 'html.parser')
-
-# print(contentWebsite)
-itemsWebsite = contentWebsite.find_all(class_='_tb_left')
-if itemsWebsite is not None: 
-	
-	for itemWebsite in itemsWebsite: 
-		
-		if itemWebsite is not None: 
-			
-			item =  itemWebsite.get_text() if itemWebsite else None
-			item = item.replace('  ', ' ')
-			detail, address = item.split('|')
-					
-			item = "{} ({})".format(address, detail)
-			items.append(item)
-	
-print(', '.join(map(str, items)))
+if __name__ == "__main__":
+  print(', '.join(scrape_ibw())[:254])

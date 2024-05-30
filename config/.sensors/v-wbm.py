@@ -1,36 +1,24 @@
-import hashlib, requests
+import requests
 from bs4 import BeautifulSoup
 
-items = []
+def scrape_wbm():
+  items = []
+  request_url = 'https://www.wbm.de/wohnungen-berlin/angebote/'
+  response = requests.get(request_url, verify=False)
+  parser = BeautifulSoup(response.content, 'html.parser')
+  content = parser.find(id='content')
+  if content:
+    items_website = content.find_all(class_='immo-element')
+    for item in items_website:
+      address = item.find(class_='address').get_text() if item.find(class_='address') else None
+      area = item.find(class_='area').get_text().lower() if item.find(class_='area') else None
+      rent = item.find(class_='main-property-rent').get_text() if item.find(class_='main-property-rent') else None
+      size = item.find(class_='main-property-size').get_text() if item.find(class_='main-property-size') else None
+      rooms = item.find(class_='main-property-rooms').get_text() if item.find(class_='main-property-rooms') else None
+      details = item.find(class_='check-property-list').get_text() if item.find(class_='check-property-list') else None
+      if address and 'WBS' not in details and any(a in area for a in ['friedrichshain', 'kreuzberg', 'schöneberg', 'neukölln']):
+        items.append(f"{address} ({rooms}/{size}, {rent})")
+  return items
 
-requestUrl = 'https://www.wbm.de/wohnungen-berlin/angebote/'
-responseWebsite = requests.get(requestUrl,  verify=False)
-parserWebsite = BeautifulSoup(responseWebsite.content, 'html.parser')
-
-contentWebsite = parserWebsite.find(id='content')
-
-if contentWebsite is not None: 
-	# print(contentWebsite)
-	
-	itemsWebsite = contentWebsite.find_all(class_='immo-element')
-	# print(itemsWebsite)
-
-	for itemWebsite in itemsWebsite: 
-		
-		if itemWebsite is not None: 
-			
-			area_list = ['friedrichshain', 'kreuzberg', 'schöneberg', 'neukölln']
-			
-			tmp = itemWebsite.find(class_='address'); address = tmp.get_text() if tmp else None 
-			tmp = itemWebsite.find(class_='area'); area = tmp.get_text().lower() if tmp else None 
-			tmp = itemWebsite.find(class_='main-property-rent'); rent =  tmp.get_text() if tmp else None
-			tmp = itemWebsite.find(class_='main-property-size'); size =  tmp.get_text() if tmp else None
-			tmp = itemWebsite.find(class_='main-property-rooms'); rooms =  tmp.get_text() if tmp else None
-			tmp = itemWebsite.find(class_='check-property-list'); details =  tmp.get_text() if tmp else None
-			
-			# TODO: Falls kein WBS erf.
-			if (address is not None) and ('WBS' not in details) and (any(a in area for a in area_list)): 
-				item = "{} ({}/{}, {})".format(address, rooms, size, rent)
-				items.append(item)
-
-print(', '.join(map(str, items))[:254])
+if __name__ == "__main__":
+  print(', '.join(scrape_wbm())[:254])
