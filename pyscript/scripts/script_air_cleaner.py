@@ -62,14 +62,13 @@ def script_air_cleaner_sleep(entity=entities, var_name=None, value=STATE_ON, ns=
     for item in entity:
       script_air_cleaner_sleep(entity=item)
   else: 
-    entity_state = state.get(entity)
-    if entity_state: 
-      if entity_state.supported_features > 1:
-        fan.set_preset_mode(entity_id=entity, preset_mode= SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
-      else:
-        fan.turn_on(entity_id=entity)
-        fan.set_percentage(entity_id=entity, percentage=sleep_mode_percentage)
-
+    entity_feature = state.get(entity_state.supported_features) if state.get(entity) else None
+    if entity_feature == 9:
+      fan.set_preset_mode(entity_id=entity, preset_mode=SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
+    elif entity_feature == 1:
+      fan.turn_on(entity_id=entity)
+      fan.set_percentage(entity_id=entity, percentage=sleep_mode_percentage)
+      
   script_air_cleaner_turn_off(helper)
 
 # Helper
