@@ -22,6 +22,10 @@ LOG_TRUNCATE_IO_RETRY = 3
 LOG_LOGGER_SYS = "py"
 LOG_LOGGING_LEVEL = "info"
 
+# Notifications
+
+DEFAULT_NOTIFICATION_TARGET = "mobile"
+
 # Paths
 
 PATH_DIR_CONFIG = "/config"

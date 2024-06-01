@@ -14,6 +14,10 @@ STATE_HA_TIMER_STOPPED = "idle"
 
 NOTIFICATION_ID_CHANGE_DETECTION = "changedetection"
 
+# Shortcuts
+
+SHORTCUT_HOUSING_NAME = "Notification-Monitor"
+
 # Services
 
 SERVICE_HA_TURN_OFF = "homeassistant.turn_off"
