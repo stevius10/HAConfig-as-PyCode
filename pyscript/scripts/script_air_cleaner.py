@@ -17,7 +17,7 @@ wait_active_delay = SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY
 @task_unique("script_air_cleaner_threshold_on", kill_me=True)
 @state_trigger(expr(sensors, SCRIPT_AIR_CLEANER_THRESHOLD_START, comparator=">"), watch=sensors)
 @state_active(f"{EXPR_STATE_SEASON_POLLEN} and not {EXPR_STATE_OPEN_WINDOW}")
-@time_active(EXPR_TIME_ACTIVE)
+@time_active(EXPR_TIME_AVTIVE_THRESHOLDS)
 @log_context
 def script_air_cleaner_threshold_on(var_name=None, value=None, ns=None, ctx=None):
   if state.get(var_name) != STATE_ON:
@@ -28,7 +28,7 @@ def script_air_cleaner_threshold_on(var_name=None, value=None, ns=None, ctx=None
 @task_unique("script_air_cleaner_threshold_off", kill_me=True)
 @state_trigger(expr(sensors, SCRIPT_AIR_CLEANER_THRESHOLD_STOP, comparator="<"), watch=sensors)
 @state_active(f"{EXPR_STATE_SEASON_POLLEN} and {group} == STATE_ON")
-@time_active(EXPR_TIME_ACTIVE)
+@time_active(EXPR_TIME_AVTIVE_THRESHOLDS)
 def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=None, **kwargs):
   if state.get(var_name) == STATE_ON:
     script_air_cleaner_turn_off(var_name)
