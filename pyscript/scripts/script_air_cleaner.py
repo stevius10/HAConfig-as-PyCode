@@ -21,7 +21,7 @@ wait_active_delay = SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY
 @log_context
 def script_air_cleaner_threshold_on(var_name=None, value=None, ns=None, ctx=None):
   if state.get(var_name) != STATE_ON:
-    script_air_cleaner_sleep(var_name)
+    script_air_cleaner_sleep()
     log(f"{var_name} with {value}pm2,5 above threshold {SCRIPT_AIR_CLEANER_THRESHOLD_START}", ns, ctx, "threshold:on")
   task.sleep(retrigger_delay)
 
@@ -62,7 +62,7 @@ def script_air_cleaner_sleep(entity=entities, var_name=None, value=STATE_ON, ns=
     for item in entity:
       script_air_cleaner_sleep(entity=item)
   else:
-    supported_features = int(state.get(entity).supported_features) if state.get(entity) else None
+    supported_features = int(state.get(f"{entity}.supported_features")) if state.get(entity) else None
     if supported_features == 9: fan.set_preset_mode(entity_id=entity, preset_mode=SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
     elif supported_features == 1:
       fan.turn_on(entity_id=entity)
