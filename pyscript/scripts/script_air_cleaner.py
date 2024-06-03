@@ -32,7 +32,7 @@ def script_air_cleaner_threshold_on(var_name=None, value=None, ns=None, ctx=None
 def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=None, **kwargs):
   if state.get(var_name) == STATE_ON:
     script_air_cleaner_turn_off(var_name)
-    script_air_cleaner_turn_off(helper)
+    script_air_cleaner_turn_off(helpers)
     log(f"{var_name} with {value} PM 2,5 below threshold {SCRIPT_AIR_CLEANER_THRESHOLD_STOP}", ns, ctx, "threshold:off")
   task.sleep(retrigger_delay)
 
@@ -61,15 +61,13 @@ def script_air_cleaner_sleep(entity=entities, var_name=None, value=STATE_ON, ns=
   if isinstance(entity, list): 
     for item in entity:
       script_air_cleaner_sleep(entity=item)
-  else: 
-    entity_feature = int(state.get(entity.supported_features)) if state.get(entity) else None
-    if entity_feature == 9:
-      fan.set_preset_mode(entity_id=entity, preset_mode=SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
-    elif entity_feature == 1:
+  else:
+    supported_features = int(state.get(entity).supported_features) if state.get(entity) else None
+    if supported_features == 9: fan.set_preset_mode(entity_id=entity, preset_mode=SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
+    elif supported_features == 1:
       fan.turn_on(entity_id=entity)
       fan.set_percentage(entity_id=entity, percentage=sleep_mode_percentage)
-      
-  script_air_cleaner_turn_off(helper)
+  script_air_cleaner_turn_off(helpers)
 
 # Helper
 
