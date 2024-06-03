@@ -1,10 +1,10 @@
 DEVICES = {
   "home": [
-    {"id": "ipad_pro_2024", "default": True},
-    {"id": "ipad_pro_2021", "default": False}
+    {"id": "dev24", "default": False},
+    {"id": "dev21", "default": True}
   ],
   "mobile": [
-    {"id": "iphone_privat", "default": True},
-    {"id": "iphone_arbeit", "default": False}
+    {"id": "dev12", "default": False},
+    {"id": "dev13", "default": False}
   ]
 }

@@ -24,7 +24,7 @@ LOG_LOGGING_LEVEL = "info"
 
 # Notifications
 
-DEFAULT_NOTIFICATION_TARGET = "mobile"
+DEFAULT_NOTIFICATION_TARGET = "home"
 
 # Paths
 
