@@ -1,9 +1,11 @@
 from constants import *
+from utils import *
+import json
 
 default_notification_target = DEFAULT_NOTIFICATION_TARGET
 
 @service
-def notify(message, data={}, target=default_notification_target, default=True):
+def notify(message, data=None, target=default_notification_target, default=True):
   devices = DEVICES.get(target) if target else [d for dt in DEVICES.values() for d in dt]
 
   if default:
@@ -11,11 +13,14 @@ def notify(message, data={}, target=default_notification_target, default=True):
 
   for device in devices:
     service.call("notify", f"mobile_app_{device['id']}", message=message, data=data)
-
+    
 @service
-def shortcut(device_id, message, shortcut, **kwargs):
-  data = {"message": message, "data": {"shortcut": {"name": shortcut}}}
+def shortcut(message, shortcut, input=None, target=default_notification_target, **kwargs):
+
+  data = { "shortcut": { "name": shortcut, "input": input } }
+
   for key, value in kwargs.items():
     if isinstance(value, str):
-      data["data"]["shortcut"][key] = value
-  notify(message, data, device=device_id)
+      data["shortcut"][key] = value
+  
+  notify(message=message, data=data, target=target)

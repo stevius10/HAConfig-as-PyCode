@@ -16,7 +16,8 @@ NOTIFICATION_ID_CHANGE_DETECTION = "changedetection"
 
 # Shortcuts
 
-SHORTCUT_HOUSING_NAME = "Notification-Monitor"
+SHORTCUT_HOUSING_NAME = "SC-HA-Notify-Housing"
+SHORTCUT_HOUSING_PARAMETER_URL = "url"
 
 # Services
 
