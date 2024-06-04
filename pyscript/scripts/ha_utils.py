@@ -6,7 +6,7 @@ default_notification_target = DEFAULT_NOTIFICATION_TARGET
 
 @service
 def notify(message, data=None, target=default_notification_target, default=True):
-  devices = DEVICES.get(target) if target else [d for dt in DEVICES.values() for d in dt]
+  devices = DEVICES.get(target) if target else [target for targets in DEVICES.values() for target in targets]
 
   if default:
     devices = [device for device in devices if device.get("default")]

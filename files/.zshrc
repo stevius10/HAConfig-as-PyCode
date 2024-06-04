@@ -79,6 +79,5 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 export EDITOR='vim'
 export LANG=de_DE.UTF-8
 export MANPATH="/usr/local/man:$MANPATH"
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
 
 source <(ha completion zsh) && compdef _ha ha
