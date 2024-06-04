@@ -15,7 +15,7 @@ def expr(entity, expression="", comparator="==", defined=True, logs=LOG_ENABLED)
 
   if expression is not None:
     if any([isinstance(expression, (int, float)), '>' in comparator, '<' in comparator]):
-      entity = "int({})".format(entity)
+      entity = "int({})".format(entity) if entity.isalnum() else 0
     elif expression in [True, False]: expression = str(expression)
     elif isinstance(expression, str): expression = f"'{expression}'"
     expression = f"{comparator} {expression}"
