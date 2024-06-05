@@ -20,6 +20,8 @@ logger:
     homeassistant.components: 
       - "io.robbie.HomeAssistant"
       - "update_available"
+    homeassistant.components.command_line.utils: 
+      - "Timeout for command: python3"
     homeassistant.components.openweathermap: 
       - "timeouted"
       - "SSLError"

@@ -85,6 +85,6 @@ def script_air_cleaner_helper_air(entity=[entity["fan"] for entity in entities.v
   if isinstance(entity, list):
     for item in entity:
       script_air_cleaner_helper_air(item)
-  if (check == False) or sum(int(state.get(entities[item.split(".")[1]]["sensor"])) for item in entity if state.get(entities["sensor"]) is not None):
+  if (check == False) or (sum([int(state.get(entities[item.split(".")[1]]["sensor"])) for item in entity if state.get(entities[item.split(".")[1]]["sensor"]) is not None]) > helper_pm_minimum):
     for item in helper:
       homeassistant.turn_on(entity_id=item)
