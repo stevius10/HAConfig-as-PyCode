@@ -4,7 +4,8 @@ logger:
     py: info
     custom_components.pyscript: info
     custom_components.tapo.coordinators: critical
-    custom_components.xiaomi_miot: critical
+    # custom_components.xiaomi_miot: critical
+    custom_components.xiaomi_miot.humidifier: critical
     androidtv: critical
     miio.miioprotocol: critical
     pychromecast.socket_client: critical
@@ -15,33 +16,35 @@ logger:
     custom_components.pyscript.global_ctx:
       - "Loaded"
       - "Reloaded"
-    custom_components.hacs:
-      - "https://api.github.com/rate_limit"
-    homeassistant.components: 
-      - "io.robbie.HomeAssistant"
-      - "update_available"
+    # custom_components.hacs:
+      # revalidate - "https://api.github.com/rate_limit"
+    # homeassistant.components: 
+      # revalidate - "io.robbie.HomeAssistant"
+      # revalidate - "update_available"
     homeassistant.components.command_line.utils: 
       - "Timeout for command: python3"
-    homeassistant.components.openweathermap: 
-      - "timeouted"
-      - "SSLError"
-    homeassistant.components.hassio:
-      - "/addons"
-      - "stat"
-    homeassistant.components.google_assistant.http:
-      - "404"
-      - "500"
-    homeassistant.helpers.entity:
-      - "Remote end closed connection without response"
-    aiohttp.server: 
-      - "Error handling request"
+    # homeassistant.components.openweathermap: 
+      # revalidate - "timeouted"
+      # revalidate - "SSLError"
+    # homeassistant.components.hassio:
+      # revalidate - "/addons"
+      # revalidate - "stat"
+    # homeassistant.components.google_assistant.http:
+      # revalidate - "404"
+      # revalidate - "500"
+    # homeassistant.helpers.entity:
+      # revalidate - "Remote end closed connection without response"
+    # aiohttp.server: 
+      # revalidate - "Error handling request"
     habluetooth.scanner:
       - "org.bluez.Error.InProgress"
-    pyvesync.helpers:
-      - "No response"
-    root:
-      - "BEGIN:VEVENT" # caldav
-      - "avoid compatibility issues" # caldav
+    py.warnings: 
+      - "SyntaxWarning" # caldav
+    # pyvesync.helpers:
+      # revalidate - "No response"
+    # root:
+      # revalidate - "BEGIN:VEVENT" # caldav
+      # revalidate - "avoid compatibility issues" # caldav
 
 logbook:  
   exclude:
