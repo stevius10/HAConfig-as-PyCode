@@ -5,7 +5,7 @@ logger:
     custom_components.pyscript: info
     custom_components.tapo.coordinators: critical
     # custom_components.xiaomi_miot: critical
-    custom_components.xiaomi_miot.humidifier: critical
+    # custom_components.xiaomi_miot.humidifier: critical
     androidtv: critical
     miio.miioprotocol: critical
     pychromecast.socket_client: critical
@@ -23,6 +23,8 @@ logger:
       # revalidate - "update_available"
     homeassistant.components.command_line.utils: 
       - "Timeout for command: python3"
+    custom_components.xiaomi_miot:
+      - "MiioException"
     # homeassistant.components.openweathermap: 
       # revalidate - "timeouted"
       # revalidate - "SSLError"
