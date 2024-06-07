@@ -1,5 +1,5 @@
 from config import *
-from utils import *
+from log import *
 
 from events import EVENT_FOLDER_WATCHER
 

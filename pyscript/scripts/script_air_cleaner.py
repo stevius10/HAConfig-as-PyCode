@@ -1,5 +1,6 @@
 from constants import *
-from utils import *
+from log import *
+from utils import expr
 
 entities = SCRIPT_AIR_CLEANER_ENTITIES
 

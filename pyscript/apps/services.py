@@ -1,5 +1,5 @@
 from constants import *
-from utils import *
+from log import *
 
 trigger = []
 
