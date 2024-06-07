@@ -1,4 +1,3 @@
-from config import *
 from log import *
 
 from events import EVENT_FOLDER_WATCHER
@@ -60,21 +59,6 @@ async def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_l
       log(f"{logfile}.{log_archive_suffix} reseized from {len(archive)} to {len(logs_trunc)}", ns, ctx, "truncated:archive")
 
   return { "log": log_read(logfile), "file": logfile }
-
-@log_context
-@service
-def log_state(expression, level=LOG_LOGGING_LEVEL, ns=None, ctx=None):
-  @state_trigger(expression)
-  def log_state(trigger_type=None, var_name=None, value=None, old_value=None):  
-    if old_value not in STATES_HA_UNDEFINED:
-      log(f"[{var_name}] {trigger_type}: {value} ({old_value})", level="debug")
-  if LOG_DEBUG:
-    log_state_trigger.append(log_state)
-
-  info = get_trigger_expression(expression)
-  try: info += f" ({state.get(entity)})" if state.get(entity) not in STATES_HA_UNDEFINED else ""
-  except: pass
-  log(f"{info}", ns, ctx, "observe")
 
 # Utils
 

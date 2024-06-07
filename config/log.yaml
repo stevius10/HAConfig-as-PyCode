@@ -2,6 +2,7 @@ logger:
   default: error
   logs:
     custom_components.pyscript: info
+    pychromecast.socket_client: critical
 
   filters:
     custom_components.pyscript:
@@ -12,6 +13,8 @@ logger:
 
     homeassistant.components.command_line.utils: 
       - "Timeout for command: python3"
+    homeassistant.components.google_assistant.http: 
+      - "googleapis.com"
     custom_components.xiaomi_miot.fan:
       - "MiioException"
     custom_components.xiaomi_miot.humidifier:

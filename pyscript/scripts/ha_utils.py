@@ -1,6 +1,4 @@
 from constants import *
-from utils import *
-import json
 
 default_notification_target = DEFAULT_NOTIFICATION_TARGET
 

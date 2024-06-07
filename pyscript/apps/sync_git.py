@@ -1,33 +1,10 @@
 from constants import *
-from log import *
+from log import Logfile
 
 import subprocess
 import requests
 
 logfile  = Logfile(pyscript.get_global_ctx())
-
-def create_or_update_pull_request(repo_owner, repo_name, base_branch, head_branch, title, body):
-  access_token  =  SERVICE_GIT_GITHUB_TOKEN
-  headers  = {
-    "Authorization": f"token {access_token}",
-    "Accept": "application/vnd.github.v3+json"
-  }
-  url  = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls"
-  payload  = {
-    "title": title,
-    "body": body,
-    "base": base_branch,
-    "head": head_branch
-  }
-  response  = task.executor(requests.get, url, json=payload, headers=headers)
-  if response.status_code == 201:
-      return response.json()["html_url"]
-  elif response.status_code == 422:
-      pull_request_url  = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{head_branch}"
-      response  = requests.patch(pull_request_url, json=payload, headers=headers)
-      if response.status_code == 200:
-          return response.json()["html_url"]
-  return None
 
 @service(supports_response="optional")
 @time_trigger(SERVICE_GIT_CRON)
@@ -68,11 +45,5 @@ def service_git_sync(
       logfile.log([command, result.stdout, result.stderr])
     except subprocess.CalledProcessError as e:
       logfile.log([e, command, result.stdout, result.stderr])
-
-  # pull_request_url  = create_or_update_pull_request(repo_owner, repo_name, base_branch, branch_name, pull_request_title, pull_request_body)
-  # if pull_request_url:
-  #   logfile.log(f"Pull request created or updated: {pull_request_url}")
-  # else:
-  #   logfile.log("Failed to create or update pull request.")
 
   return logfile.finished()

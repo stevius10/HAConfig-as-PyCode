@@ -1,4 +1,3 @@
-from constants import *
 from log import *
 
 trigger = []

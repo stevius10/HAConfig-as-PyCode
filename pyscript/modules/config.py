@@ -1,13 +1,6 @@
 from secrets import SYSTEM_FILES
 
-import sys
-
 # Log
-
-LOG_ENABLED = False
-
-LOG_DEBUG = False
-LOG_DEBUG_DEVICES = []
 
 LOG_HA_FILE = "home-assistant.log"
 LOG_HA_SIZE = 28
