@@ -1,4 +1,4 @@
-from entities import CONFIG_CONTROL_ENTITIES
+from constants.entities import CONFIG_CONTROL_ENTITIES
 from utils import expr
 
 trigger = []

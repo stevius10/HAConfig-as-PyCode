@@ -1,6 +1,7 @@
-from config import *
+from constants.config import *
+from constants.events import EVENT_SYSTEM_STARTED
 
-from events import EVENT_SYSTEM_STARTED
+from log import *
 
 import shutil
 import sys

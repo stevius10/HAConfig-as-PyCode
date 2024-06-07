@@ -1,4 +1,4 @@
-from mapping import STATES_UNDEFINED
+from constants.mappings import STATES_UNDEFINED
 
 def expr(entity, expression="", comparator="==", defined=True): 
   

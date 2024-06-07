@@ -1,4 +1,4 @@
-from entities import *
+from constants.entities import *
 
 @service
 def script_off(away=False):

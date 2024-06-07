@@ -9,7 +9,8 @@
 !pyscript
 !pyscript/**/*
 pyscript/logs/**/*
-pyscript/modules/secrets.py
+pyscript/modules/constants/secrets.py
+pyscript/python/__pycache__/**/*
 pyscript/snippets/**/*
 
 !scripts

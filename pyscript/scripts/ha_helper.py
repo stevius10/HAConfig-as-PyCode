@@ -1,6 +1,6 @@
-from log import *
+from constants.events import EVENT_FOLDER_WATCHER
 
-from events import EVENT_FOLDER_WATCHER
+from log import *
 
 import aiofiles
 

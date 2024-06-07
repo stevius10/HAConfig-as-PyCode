@@ -1,6 +1,12 @@
-from constants import *
+from constants.entities import *
+from constants.events import *
+from constants.expressions import *
+from constants.mappings import *
+from constants.settings import *
+
 from log import *
 from utils import expr
+
 
 entities = SCRIPT_AIR_CLEANER_ENTITIES
 

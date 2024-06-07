@@ -1,5 +1,5 @@
-from entities import AUTO_ENTITIES
-from mapping import SERVICE_HA_TURN_OFF
+from constants.entities import AUTO_ENTITIES
+from constants.mappings import SERVICE_HA_TURN_OFF
 from utils import *
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED

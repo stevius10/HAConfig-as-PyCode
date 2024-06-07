@@ -1,5 +1,5 @@
-from constants import *
-from log import Logfile
+from constants.secrets import *
+from logfile import Logfile
 
 import subprocess
 import requests

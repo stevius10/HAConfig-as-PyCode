@@ -1,42 +1,4 @@
-from constants import *
-import logging
-import os
-from pathlib import Path
-import datetime
-
-class Logfile:
-  def __init__(self, ctx):
-    self.ctx = ctx
-    self.name = ctx.split(".")[1]
-    self.logger = logging.getLogger(self.name)
-    self.logs = []
-    self.logfile = os.path.join(PATH_DIR_PY_LOG, self.name) + ".log"
-    handler = logging.FileHandler(self.logfile, mode='w+')
-    handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
-    self.logger.addHandler(handler)
-    self.logger.setLevel(logging.DEBUG)
-    self.logger.propagate = False
-    #await self.truncate()
-    self.log("# {}".format(datetime.datetime.now()))
-    
-  def log(self, message=None):
-    if isinstance(message, str):
-      if message is not None: # re.search('[a-zA-Z]', message): 
-        self.logger.info(message)
-        self.logs.append(message)
-    elif isinstance(message, list): 
-      for msg in message:
-        self.log(msg.replace("\n", ""))
-      self.log(" ")
-    elif message == " ":
-        self.logger.info('\n')
-  
-  def finished(self):
-    logs = "\n".join(self.logs)
-    log(f"{logs.replace("\n", " ")}", ctx=self.ctx, ns=self.name)
-    self.log(message=logs)
-    return { "service": {self.name}, "logs": logs }
-
+from constants.config import *
 
 # System Log 
 

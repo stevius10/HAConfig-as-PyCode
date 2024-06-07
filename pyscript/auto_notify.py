@@ -1,9 +1,9 @@
-from constants import (
-  AUTO_NOTIFY_SENSORS_HOUSING, DEFAULT_NOTIFICATION_TARGET, 
-  SHORTCUT_HOUSING_NAME, SHORTCUT_HOUSING_PARAMETER_URL, 
-  EXPR_TIME_GENERAL_WORKTIME, EXPR_TIME_UPDATE_SENSORS_HOUSING,
-  AUTO_NOTIFY_SCRAPE_HOUSING_DELAY_RANDOM_MIN, AUTO_NOTIFY_SCRAPE_HOUSING_DELAY_RANDOM_MAX
-)
+from constants.config import *
+from constants.devices import *
+from constants.entities import *
+from constants.expressions import *
+from constants.mappings import *
+from constants.settings import *
 
 from utils import expr
 

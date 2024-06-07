@@ -1,9 +1,10 @@
+from constants.config import *
+
 from log import *
 
 trigger = []
 
 def services_auto_factory(entity, cron): 
-  @service() # (service_name=entity.split(".")[1])
   @time_trigger(cron)
   @log_context
   def service_auto(entity=entity, ns=None, ctx=None):

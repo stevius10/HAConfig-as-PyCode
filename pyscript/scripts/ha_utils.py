@@ -1,4 +1,6 @@
-from constants import *
+from constants.config import *
+from constants.devices import *
+from constants.mappings import *
 
 default_notification_target = DEFAULT_NOTIFICATION_TARGET
 

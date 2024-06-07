@@ -1,7 +1,6 @@
 # TODO: Refactor
 
-from constants import *
-from mapping import NOTIFICATION_ID_CHANGE_DETECTION
+from comstants.mapping import NOTIFICATION_ID_CHANGE_DETECTION
 
 from homeassistant.const import EVENT_CALL_SERVICE
 

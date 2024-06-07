@@ -1,4 +1,4 @@
-from secrets import SYSTEM_FILES
+from constants.secrets import SYSTEM_FILES
 
 # Log
 
