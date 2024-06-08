@@ -47,5 +47,5 @@ class Logfile:
 
   def async close(self):
     if self.history:
-      history = "\n".join(str(item) for item in self.history)
+      self.history = "\n".join(str(item) for item in self.history)
       return { "service": self.name, "logs": self.history }
