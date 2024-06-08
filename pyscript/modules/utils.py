@@ -29,7 +29,6 @@ def expressions(entities, expression=None, comparator="==", defined=True, operat
     result = f" {operator} ".join([expr(entity, expression, defined=defined, comparator=comparator) for entity in entities])
   else: 
     result = f" {operator} ".join([f"({expr(entity, expression=None, defined=defined)})" for entity in entities])
-    log(result)
   return result
 
 # System Logging
