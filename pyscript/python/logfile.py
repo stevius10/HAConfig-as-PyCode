@@ -36,11 +36,11 @@ class Logfile:
     if isinstance(message, str):
       if message:
         self._logger.info(message)
+        if isinstance(self.history, list): # file logger returns for service call
+          self.history.append(msg)
     elif isinstance(message, list):
       for msg in message:
         self.log(msg)
-        if self.history == []: # file logger returns for service call
-          self.history.append(msg)
 
   def truncate(self):
     call_func("pyscript.log_truncate", logfile=self.logfile, blocking=True)
