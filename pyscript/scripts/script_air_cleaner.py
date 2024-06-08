@@ -4,8 +4,7 @@ from constants.expressions import *
 from constants.mappings import *
 from constants.settings import *
 
-from log import *
-from utils import expr
+from utils import *
 
 
 entities = SCRIPT_AIR_CLEANER_ENTITIES

@@ -1,7 +1,7 @@
 from constants.config import *
 from constants.events import EVENT_SYSTEM_STARTED
 
-from log import *
+from utils import *
 
 import shutil
 import sys

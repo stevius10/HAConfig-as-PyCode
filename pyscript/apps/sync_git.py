@@ -2,12 +2,8 @@ from constants.expressions import *
 from constants.secrets import *
 from constants.settings import *
 
-from logfile import Logfile
-
 import subprocess
 import requests
-
-logfile  = Logfile(pyscript.get_global_ctx())
 
 @service(supports_response="optional")
 @time_trigger(EXPR_TIME_SERVICE_GIT_CRON)
@@ -24,6 +20,9 @@ def service_git_sync(
   pull_request_title = SERVICE_GIT_GITHUB_PR_TITLE,
   pull_request_body = SERVICE_GIT_GITHUB_PR_BODY
 ):
+  
+  from logfile import Logfile # runtime level due sys path config
+  logfile  = Logfile(pyscript.get_global_ctx())
   
   commands  = [
       f"git config --local include.path '{config_path}'",
@@ -49,4 +48,4 @@ def service_git_sync(
     except subprocess.CalledProcessError as e:
       logfile.log([e, command, result.stdout, result.stderr])
 
-  return logfile.finished()
+  return logfile.close()
