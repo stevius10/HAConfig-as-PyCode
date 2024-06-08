@@ -48,4 +48,4 @@ class Logfile:
   def close(self):
     if self.history:
       history = "\n".join(self.history)
-      return {"service": {self.name}, "logs": self.history}
+      return {"service": self.name, "logs": self.history}
