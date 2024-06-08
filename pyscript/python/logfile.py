@@ -1,4 +1,4 @@
-PATH_DIR_PY_LOG = "config/pyscript/logs/" # TODO: from constants.config import *
+PATH_DIR_PY_LOG = "/config/pyscript/logs/" # TODO: from constants.config import *
 
 import logging
 from pathlib import Path
@@ -52,4 +52,4 @@ class Logfile:
             
   def close(self):
     if self.history:
-      history = "\n".join(self.history
+      history = "\n".join(self.history)

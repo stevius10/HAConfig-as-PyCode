@@ -1,3 +1,4 @@
+from constants.expressions import EXPR_TIME_SERVICE_FILEBACKUP_CRON
 from constants.secrets import SYSTEM_FILES
 
 # Log
@@ -34,11 +35,7 @@ PATH_DOCKER_LOG_PY_HA = f"pyscript/logs/{LOG_HA_FILE}"
 
 # Services
 
-SERVICE_AUTO_CRON_FILEBACKUP = "cron(0 1 * * *)"
-SERVICE_GIT_CRON = "cron(15 1 * * *)"
-SERVICE_GOOGLE_DRIVE_CRON = "cron(30 1 * * *)"
-
-SERVICES_AUTO = { 'shell_command.filebackup': SERVICE_AUTO_CRON_FILEBACKUP }
+SERVICES_AUTO = { 'shell_command.filebackup': EXPR_TIME_SERVICE_FILEBACKUP_CRON }
 
 # System
 

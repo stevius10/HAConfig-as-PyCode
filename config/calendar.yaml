@@ -4,14 +4,13 @@ calendar:
     password: !secret acc_apple_icloud_password
     url: https://caldav.icloud.com
     calendars:
-    - Privat
-    - Daten und Zeiträume
+    - "Privat"
+    - "Daten und Zeiträume"
+    - "TV-Aktenzeichen XY"
+    - "Misc"
 
-ics_calendar:
-  calendars:
-  - name: "aktenzeichen"
-    url: "http://i.cal.to/ical/2188/zdf/aktenzeichen-xy-ungeloest/02c6eb54.8cd0681b-6db20df7.ics"
-    include_all_day: True
-  - name: "pokemon"
-    url: "https://github.com/othyn/go-calendar/releases/latest/download/gocal__community_day.ics"
-    include_all_day: True
+# ics_calendar:
+#   calendars:
+#   - name: "aktenzeichen"
+#     url: "http://i.cal.to/ical/2188/zdf/aktenzeichen-xy-ungeloest/02c6eb54.8cd0681b-6db20df7.ics"
+#     include_all_day: True

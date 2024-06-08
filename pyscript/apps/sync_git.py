@@ -1,4 +1,7 @@
+from constants.expressions import *
 from constants.secrets import *
+from constants.settings import *
+
 from logfile import Logfile
 
 import subprocess
@@ -7,7 +10,7 @@ import requests
 logfile  = Logfile(pyscript.get_global_ctx())
 
 @service(supports_response="optional")
-@time_trigger(SERVICE_GIT_CRON)
+@time_trigger(EXPR_TIME_SERVICE_GIT_CRON)
 def service_git_sync(
   repo_url = SERVICE_GIT_REPO_URL,
   repo_owner = SERVICE_GIT_GITHUB_USER,
