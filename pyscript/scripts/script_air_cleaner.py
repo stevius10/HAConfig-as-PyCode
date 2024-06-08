@@ -61,9 +61,10 @@ def script_air_cleaner_sleep(entity=[entity["fan"] for entity in entities.values
     for item in entity:
       script_air_cleaner_sleep(entity=item)
   else:
-    supported_features = int(str(state.get(f"{entity}.supported_features"))) if state.get(entity) else None
-    if supported_features == 9: fan.set_preset_mode(entity_id=entity, preset_mode=SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
-    elif supported_features == 1:
+    supported_features = str(state.get(f"{entity}.supported_features")) if state.get(entity) else None
+    if supported_features == "9": # without cast int
+      fan.set_preset_mode(entity_id=entity, preset_mode=SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
+    elif supported_features == "1": # without cast str
       fan.turn_on(entity_id=entity)
       fan.set_percentage(entity_id=entity, percentage=sleep_mode_percentage)
   script_air_cleaner_turn_off([entity["luftung"] for entity in entities.values()])

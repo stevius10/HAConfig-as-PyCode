@@ -48,4 +48,4 @@ def service_git_sync(
     except subprocess.CalledProcessError as e:
       logfile.log([e, command, result.stdout, result.stderr])
 
-  return logfile.close()
+  # return logfile.close()

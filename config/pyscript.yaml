@@ -2,8 +2,8 @@ pyscript:
   allow_all_imports: true
   hass_is_global: true
   apps:
-    logfile: 
-      - name: logfile
+    debug: 
+      - name: debug
     services: 
       - name: services
     sync_git: 

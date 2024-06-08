@@ -18,7 +18,7 @@ def expr(entity, expression="", comparator="==", defined=True):
     expression = f"{comparator} {expression}"
   else:
     expression = ""
-  
+
   return f"{entity} {expression} {statement_condition_defined}"
   
 def expressions(entities, expression=None, comparator="==", defined=True, operator='or'):  
@@ -29,8 +29,8 @@ def expressions(entities, expression=None, comparator="==", defined=True, operat
 
     result = f" {operator} ".join([expr(entity, expression, defined=defined, comparator=comparator) for entity in entities])
   else: 
-    result = f" {operator} ".join([expr(entity, expression=None, defined=defined) for entity in entities])
-  log(result)
+    result = f" {operator} ".join([f"({expr(entity, expression=None, defined=defined)})" for entity in entities])
+    log(result)
   return result
 
 # System Logging
@@ -39,7 +39,7 @@ def log(msg="", ns=None, ctx=None, title="", level=LOG_LOGGING_LEVEL):
   if not isinstance(msg, str) and hasattr(msg, "get_name"): ns += msg.get_name()
   if not isinstance(msg, str) and hasattr(msg, "func_name"): ns += msg.get("func_name")
   if ns is None: ns = LOG_LOGGER_SYS
-  if ctx is None: ctx=pyscript.get_global_ctx()
+  # if ctx is None: ctx=pyscript.get_global_ctx()
   @ctx_call
   def ctx_debug(ctx=ctx):
     def debug(ctx): 

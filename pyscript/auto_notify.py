@@ -16,7 +16,8 @@ default_notification_target = DEFAULT_NOTIFICATION_TARGET
 
 @state_trigger(expr([str(key) for key in sensors.keys()]))
 def notify_housing(target=default_notification_target, default=True, var_name=None, value=None, old_value=None):
-  pyscript.shortcut(message=f"{var_name}: {value}", shortcut=SHORTCUT_HOUSING_NAME, input=sensors.get(var_name).get(SHORTCUT_HOUSING_PARAMETER_URL))
+  if value not in STATES_UNDEFINED:
+    pyscript.shortcut(message=f"{var_name}: {value}", shortcut=SHORTCUT_HOUSING_NAME, input=sensors.get(var_name).get(SHORTCUT_HOUSING_PARAMETER_URL))
 
 # Helper
 

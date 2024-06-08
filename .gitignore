@@ -9,9 +9,9 @@
 !pyscript
 !pyscript/**/*
 pyscript/logs/**/*
-pyscript/modules/constants/secrets.py
-pyscript/python/__pycache__/**/*
 pyscript/snippets/**/*
+pyscript/apps/debug.py
+pyscript/modules/constants/secrets.py
 
 !scripts
 !scripts/**/*
@@ -26,4 +26,6 @@ www/community/*
 !README.md
 !.gitignore
 
-*.log
+**/__pycache__/
+
+**/*.log
