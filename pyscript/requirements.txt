@@ -1,4 +1,3 @@
 asyncio
 aiofiles
-concurrent_log_handler
 requests

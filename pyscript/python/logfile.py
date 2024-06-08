@@ -45,7 +45,7 @@ class Logfile:
   def truncate(self):
     call_func("pyscript.log_truncate", logfile=self.logfile, blocking=True)
 
-  def close(self):
+  def async close(self):
     if self.history:
       history = "\n".join(str(item) for item in self.history)
-      return {"service": self.name, "logs": self.history}
+      return { "service": self.name, "logs": self.history }

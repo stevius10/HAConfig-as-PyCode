@@ -26,7 +26,6 @@ def expressions(entities, expression=None, comparator="==", defined=True, operat
     if isinstance(expression, int):
       for i in range(len(entities)):
         entities[i] = f"{entities[i]}"
-
     result = f" {operator} ".join([expr(entity, expression, defined=defined, comparator=comparator) for entity in entities])
   else: 
     result = f" {operator} ".join([f"({expr(entity, expression=None, defined=defined)})" for entity in entities])
@@ -51,7 +50,7 @@ def log(msg="", ns=None, ctx=None, title="", level=LOG_LOGGING_LEVEL):
     ns += msg.get("func_name")
   message = ": ".join([f"{ctx.replace('.', '/')}.py", msg]) if ctx else msg
   if title: message = f"[{title}] {message}"
-  system_log.write(message=msg, logger=ns, level=level)
+  system_log.write(message=str(msg), logger=ns, level=level)
 
 def call_func(func, **kwargs):
   if service.has_service(func.split(".")[0], func.split(".")[1]):
