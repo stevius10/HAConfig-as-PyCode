@@ -2,9 +2,12 @@ from constants.config import *
 from constants.devices import *
 from constants.mappings import *
 
+from utils import *
+
 default_notification_target = DEFAULT_NOTIFICATION_TARGET
 
 @service
+@logged
 def notify(message, data=None, target=default_notification_target, default=True):
   devices = DEVICES.get(target) if target else [target for targets in DEVICES.values() for target in targets]
 
@@ -15,6 +18,7 @@ def notify(message, data=None, target=default_notification_target, default=True)
     service.call("notify", f"mobile_app_{device['id']}", message=message, data=data)
     
 @service
+@logged
 def shortcut(message, shortcut, input=None, target=default_notification_target, **kwargs):
 
   data = { "shortcut": { "name": shortcut, "input": input } }

@@ -1,5 +1,7 @@
 from constants.entities import *
 
+from utils import *
+
 @service
 def script_off(away=False):
   script_off_air()
@@ -11,10 +13,12 @@ def script_off(away=False):
   script_off_tv()
 
 @service
+@logged
 def script_off_away():
   script_off(away=True)
 
 @service
+@logged
 def script_off_air(entity=None):
   if entity == None:
     script_off_air(entity=ENTITIES_AIR)
@@ -25,6 +29,7 @@ def script_off_air(entity=None):
     turn_off(entity=entity)
     
 @service
+@logged
 def script_off_heating(entity=None, away=False):
   if entity == None:
     script_off_heating(entity=ENTITIES_HEATING, away=away)
@@ -36,6 +41,7 @@ def script_off_heating(entity=None, away=False):
       script_off_heating(entity=item, away=away)
 
 @service
+@logged
 def script_off_media(entity=None):
   if entity == None:
     script_off_media(entity=ENTITIES_MEDIA)
@@ -44,6 +50,7 @@ def script_off_media(entity=None):
       turn_off(entity=item)
 
 @service
+@logged
 def script_off_lights(entity=None, away=False):
   if entity == None:
     script_off_lights(entity=ENTITIES_LIGHT)
@@ -60,6 +67,7 @@ def script_off_lights(entity=None, away=False):
     turn_off(entity[-1])
 
 @service
+@logged
 def script_off_services(entity=None):
   if entity == None:
     script_off_switches(entity=ENTITIES_SWITCHES)
@@ -68,6 +76,7 @@ def script_off_services(entity=None):
       turn_off(entity=item)
       
 @service
+@logged
 def script_off_switches(entity=None):
   if entity == None:
     script_off_switches(entity=ENTITIES_SWITCHES)
@@ -76,6 +85,7 @@ def script_off_switches(entity=None):
       turn_off(entity=item)
       
 @service
+@logged
 def script_off_tv(entity=None):
   if entity == None:
     script_off_tv(entity=ENTITIES_TV)
@@ -92,5 +102,6 @@ def script_off_tv(entity=None):
 # Helper
 
 @service
+@logged
 def turn_off(entity):
   homeassistant.turn_off(entity_id=entity)

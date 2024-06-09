@@ -39,11 +39,11 @@ class Logfile:
         self.history.append(message)
     elif isinstance(message, list):
       for msg in message:
-        self.log(msg)
-    else:
-      self._logger.info(str(message))
+        if msg: self.log(str(msg))
 
   def close(self):
-    return {"asdf": "t"}
     if self.history:
-      history = "\n".join(str(item) 
+      self.history = "\n".join(str(item) for item in self.history)
+      return { "service": self.name, "logs": self.history }
+    else:
+      return {}

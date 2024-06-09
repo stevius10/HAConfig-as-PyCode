@@ -13,6 +13,7 @@ from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 
 @time_trigger
 @event_trigger(EVENT_HOMEASSISTANT_STARTED)
+@logged
 def event_system_started(delay=SYSTEM_CONFIG_EVENT_STARTED_DELAY): 
   task.sleep(delay)
   event.fire(EVENT_SYSTEM_STARTED)
@@ -20,6 +21,7 @@ def event_system_started(delay=SYSTEM_CONFIG_EVENT_STARTED_DELAY):
 # Setup
 
 @event_trigger(EVENT_SYSTEM_STARTED)
+@logged
 def ha_setup():
   ha_setup_environment()
   ha_setup_files()

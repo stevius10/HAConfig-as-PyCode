@@ -19,7 +19,7 @@ wait_active_delay = SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY
 @state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_START, comparator=">"), watch=[entity["sensor"] for entity in entities.values()])
 @state_active(f"{EXPR_STATE_AIR_THRESHOLD_SEASON} and not {EXPR_STATE_OPEN_WINDOW}")
 @time_active(EXPR_STATE_AIR_THRESHOLD_TIME)
-@log_context
+@logged
 def script_air_cleaner_threshold_on(var_name=None, value=None, ns=None, ctx=None):
   entity = entities[var_name.split(".")[1]]["fan"]
   if state.get(entity) != STATE_ON:
@@ -31,6 +31,7 @@ def script_air_cleaner_threshold_on(var_name=None, value=None, ns=None, ctx=None
 @state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_STOP, comparator="<"), watch=[entity["sensor"] for entity in entities.values()])
 @state_active(f"{EXPR_STATE_AIR_THRESHOLD_SEASON} and {[entity['fan'] for entity in entities.values()]} == STATE_ON")
 @time_active(EXPR_STATE_AIR_THRESHOLD_TIME)
+@logged
 def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=None, **kwargs):
   entity = entities[var_name.split(".")[1]]["fan"]
   if state.get(var_name) == STATE_ON:
@@ -41,6 +42,7 @@ def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=Non
 @event_trigger(EVENT_NEVER)
 @task_unique("-".join([entity["fan"] for entity in entities.values()]), kill_me=False)
 @service
+@logged
 def script_air_cleaner_clean(entity=[entity["fan"] for entity in entities.values()]):
   fan.turn_on(entity_id=entity)
   if isinstance(entity, list):
@@ -55,6 +57,7 @@ def script_air_cleaner_clean(entity=[entity["fan"] for entity in entities.values
 @state_trigger(expr([entity['percentage'] for entity in entities.values()], sleep_mode_percentage, comparator='>'), state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN)
 @task_unique("-".join([entity["fan"] for entity in entities.values()]), kill_me=False)
 @service
+@logged
 def script_air_cleaner_sleep(entity=[entity["fan"] for entity in entities.values()], var_name=None, value=STATE_ON, ns=None, ctx=None):
   if value == STATE_OFF: return
   if isinstance(entity, list):
@@ -77,7 +80,7 @@ def script_air_cleaner_turn_off(entity=[entity["fan"] for entity in entities.val
   else:
     pyscript.script_off_air(entity=entity)
 
-@log_context
+@logged
 def script_air_cleaner_get_clean_percentage(entity, ns=None, ctx=None):
   for key, value in entities.items():
     if value["fan"] == entity:
@@ -88,6 +91,7 @@ def script_air_cleaner_get_clean_percentage(entity, ns=None, ctx=None):
   return percentage
 
 @service
+@logged
 def script_air_cleaner_helper_air(entity=[entity["fan"] for entity in entities.values()], helper=[entity["luftung"] for entity in entities.values()], check=False):
   if isinstance(entity, list):
     for item in entity:

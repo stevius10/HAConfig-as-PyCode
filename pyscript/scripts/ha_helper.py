@@ -11,10 +11,10 @@ from datetime import datetime
 
 # Automations
 
-@log_context
 @service
 @task_unique("ha_log_truncate", kill_me=True)
 @event_trigger(EVENT_FOLDER_WATCHER)
+@logged
 async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder="", path="", ns=None, ctx=None, **kwargs):
   if trigger_type == "event" and event_type == EVENT_FOLDER_WATCHER:
     if kwargs.get('trigger_type') != "modified":
@@ -37,9 +37,9 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
 # Services
 
 @task_unique("log_truncate", kill_me=True)
-@log_context
 @service(supports_response="optional")
 @event_trigger(EVENT_HOMEASSISTANT_STARTED)
+@logged
 async def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_log_tail=LOG_HA_SIZE_TAIL, size_archive_entries=0, log_archive_suffix=LOG_ARCHIVE_SUFFIX, ns=None, ctx=None):
   logs_trunc = []
   logs_truncated = []
@@ -63,7 +63,7 @@ async def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_l
 
 # Utils
 
-@log_context
+@logged
 async def log_read(logfile, ns=None, ctx=None):
   logs = []
   for _ in range(LOG_TRUNCATE_IO_RETRY):
@@ -76,7 +76,7 @@ async def log_read(logfile, ns=None, ctx=None):
       log(f"{logfile} could not be read ({e})", "failed")
   return []
 
-@log_context
+@logged
 async def log_write(logfile, lines, mode='w+', ns=None, ctx=None):
   for _ in range(LOG_TRUNCATE_IO_RETRY):
     try:

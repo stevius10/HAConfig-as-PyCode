@@ -1,11 +1,13 @@
 from constants.entities import CONFIG_CONTROL_ENTITIES
-from utils import expr
+
+from utils import *
 
 trigger = []
 
 def on_press_factory(entity): 
 
   @state_trigger(expr(entity, expression=['on-press', 'off-press', 'up-press', 'down-press', 'single-press', 'double-press', 'long-press'], comparator="in", defined=False))
+  @logged
   def on_press(var_name=None, value=None):
     action = CONFIG_CONTROL_ENTITIES.get(entity).get(value.split("-")[0])
     scene.turn_on(entity_id=action)
