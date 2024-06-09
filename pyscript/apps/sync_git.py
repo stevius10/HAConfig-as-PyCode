@@ -21,7 +21,7 @@ def service_git_sync(
 def git_sync(name, config_path, key_path, branch, message):
   
   from logfile import Logfile # req. sys setup 
-  logfile  = Logfile(name)
+  logfile = Logfile(ctx=name)
   
   commands  = [
       f"git config --local include.path '{config_path}'", f"eval $(ssh-agent); ssh-add {key_path}", 
