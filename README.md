@@ -52,10 +52,6 @@ The `/pyscript/modules` directory contains reusable Python modules that encapsul
 
 ### Customization
 
-- **Customized Shell**: The project includes a customized shell environment with an optimized configuration for the Zsh shell, located in **[`files/.zshrc`](files/.zshrc)**.
-
-- **Backup and Synchronization**: Automated backup and synchronization of the Home Assistant configuration and data.
-
 - **User Interface**: The project includes various custom templates for the Home Assistant Lovelace UI. These are implemented through the **[`templates/`](templates/)** directory and external data integration.
 
     -  **[`templates/badges.yaml`](templates/badges.yaml)**: Defines badge cards for displaying system status, backup information, air quality, and providing quick access to common actions like turning everything off.
@@ -66,6 +62,10 @@ The `/pyscript/modules` directory contains reusable Python modules that encapsul
     -  **[`templates/clima.yaml`](templates/clima.yaml)**: Implements a custom thermostat card with temperature graphs and trend indicators.
     -  **[`templates/weather.yaml`](templates/weather.yaml)**: Includes a weather forecast card and a custom weather display.
 
+- **Backup and Synchronization**: Automated backup and synchronization of the Home Assistant configuration and data.
+
 - **External Data**: The project integrates external data from various sources through sensors defined in the **[`config/.sensors/`](config/.sensors/)** directory:
 
     -  **Housing Offers**: Scrapes and delivers housing offers and real estate listings from various companies in Berlin. The data is delivered via notifications to trigger mobile services.
+
+- **Customized Shell**: The project includes a customized shell environment with an optimized configuration for the Zsh shell, located in **[`files/.zshrc`](files/.zshrc)**.
