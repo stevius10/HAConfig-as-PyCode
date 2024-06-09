@@ -30,25 +30,27 @@ For service-based purposes:
 - **[`services.py`](pyscript/apps/services.py)**: Implements a service factory that generates periodically executed services based on provided cron expressions, e.g., `filebackup.sh` for automated backup of Home Assistant configuration and data.
 - **[`sync_git.py`](pyscript/apps/sync_git.py)**: Enables automatic synchronization of the configuration to this Git repository.
 
+### Modules
+
+The `/pyscript/modules` directory contains reusable Python modules that encapsulate various functionalities used throughout the project, independent of Home Assistant capabilities.
+
+- **[`constants.py`](pyscript/modules/constants.py)**
+    - **[`config.py`](pyscript/modules/constants/config.py)**: Centralizes configuration settings used across the project, promoting code organization and maintainability.
+    - **[`devices.py`](pyscript/modules/constants/devices.py)**: Manages device-specific configurations and mappings.
+    - **[`entities.py`](pyscript/modules/constants/entities.py)**: Describes the default desired state for entities and conditions for default behavior, such as timeouts.
+    - **[`events.py`](pyscript/modules/constants/events.py)**: Defines event constants used throughout the project.
+    - **[`expressions.py`](pyscript/modules/constants/expressions.py)**: Contains expressions for various automation scenarios.
+    - **[`mappings.py`](pyscript/modules/constants/mappings.py)**: Provides naming and mappings to entities and device capabilities.
+    - **[`settings.py`](pyscript/modules/constants/settings.py)**: Contains settings or configuration values specific to application and service logic.
+
+- **[`utils.py`](pyscript/modules/utils.py)**: Contains central functions for generating expressions and implements project-wide logging functions
+
 ### Native Python
 
 Native Python is used within this project to handle privileged and I/O tasks that could potentially interfere with PyScript's main loop handling of asynchronous tasks.
 
 - **[`filesystem.py`](pyscript/python/filesystem.py)**: Provides file system operations for tasks that require privileges beyond the PyScript sandbox.
 - **[`logfile.py`](pyscript/python/logfile.py)**: Manages structured logging operations, differentiating between a file logger for application or service logs and a debug logger for debugging purposes, implemented using a singleton pattern for project-wide accessibility.
-
-### Modules
-
-The `/pyscript/modules` directory contains reusable Python modules that encapsulate various functionalities used throughout the project, independent of Home Assistant capabilities:
-
-- **[`config.py`](pyscript/modules/constants/config.py)**: Centralizes configuration settings used across the project, promoting code organization and maintainability.
-- **[`devices.py`](pyscript/modules/constants/devices.py)**: Manages device-specific configurations and mappings.
-- **[`entities.py`](pyscript/modules/constants/entities.py)**: Describes the default desired state for entities and conditions for default behavior, such as timeouts.
-- **[`events.py`](pyscript/modules/constants/events.py)**: Defines event constants used throughout the project.
-- **[`expressions.py`](pyscript/modules/constants/expressions.py)**: Contains expressions for various automation scenarios.
-- **[`mappings.py`](pyscript/modules/constants/mappings.py)**: Provides naming and mappings to entities and device capabilities.
-- **[`settings.py`](pyscript/modules/constants/settings.py)**: Contains settings or configuration values specific to application and service logic.
-- **[`utils.py`](pyscript/modules/utils.py)**: Contains utility functions that do not rely on home automation capabilities.
 
 ### Customization
 
