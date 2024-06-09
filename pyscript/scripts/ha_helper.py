@@ -30,6 +30,7 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
 
 @task_unique("log_truncate", kill_me=True)
 @event_trigger(EVENT_HOMEASSISTANT_STOP)
+@debugged
 async def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_log_tail=LOG_HA_SIZE_TAIL, size_archive_entries=0, log_archive_suffix=LOG_ARCHIVE_SUFFIX, ns=None, ctx=None):
   logs_trunc = []
   logs_truncated = []

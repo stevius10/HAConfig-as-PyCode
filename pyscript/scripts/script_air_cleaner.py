@@ -51,13 +51,14 @@ def script_air_cleaner_clean(entity=[entity["fan"] for entity in entities.values
     fan.set_percentage(entity_id=entity, percentage=script_air_cleaner_get_clean_percentage(entity))
 
 @state_trigger(expr([entity["fan"] for entity in entities.values()], STATE_ON)) # reset mode on turn on
-@state_trigger(expr([entity['percentage'] for entity in entities.values()], sleep_mode_percentage, comparator='>'), state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN)
+@state_trigger(expr([entity['percentage'] for entity in entities.values()], sleep_mode_percentage, comparator='>'), state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN, watch=[entity['percentage'] for entity in entities.values()])
 @task_unique("-".join([entity["fan"] for entity in entities.values()]), kill_me=False)
 @service
 @logged
 def script_air_cleaner_sleep(entity=[entity["fan"] for entity in entities.values()], var_name=None, value=STATE_ON, ns=None, ctx=None):
   if value == STATE_OFF: return
   if isinstance(entity, list):
+    script_air_cleaner_turn_off([entity["luftung"] for entity in entities.values()])
     for item in entity:
       script_air_cleaner_sleep(entity=item)
   else:
@@ -67,9 +68,9 @@ def script_air_cleaner_sleep(entity=[entity["fan"] for entity in entities.values
     elif supported_features == "1": # without cast str
       fan.turn_on(entity_id=entity)
       fan.set_percentage(entity_id=entity, percentage=sleep_mode_percentage)
-  script_air_cleaner_turn_off([entity["luftung"] for entity in entities.values()])
 
 @service
+@logged
 def script_air_cleaner_turn_off(entity=[entity["fan"] for entity in entities.values()]):
   if isinstance(entity, list):
     for item in entity:
@@ -77,7 +78,6 @@ def script_air_cleaner_turn_off(entity=[entity["fan"] for entity in entities.val
   else:
     pyscript.script_off_air(entity=entity)
 
-@logged
 def script_air_cleaner_get_clean_percentage(entity, ns=None, ctx=None):
   for key, value in entities.items():
     if value["fan"] == entity:
@@ -87,7 +87,7 @@ def script_air_cleaner_get_clean_percentage(entity, ns=None, ctx=None):
   return percentage
 
 @service
-@logged
+@debugged
 def script_air_cleaner_helper_air(entity=[entity["fan"] for entity in entities.values()], helper=[entity["luftung"] for entity in entities.values()], check=False):
   if isinstance(entity, list):
     for item in entity:

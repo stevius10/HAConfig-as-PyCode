@@ -9,7 +9,6 @@ def script_off(away=False):
   script_off_heating(away=away)
   script_off_lights(away=away)
   script_off_media()
-  script_off_services()
   script_off_switches()
   script_off_tv()
 
@@ -17,6 +16,7 @@ def script_off(away=False):
 def script_off_away():
   script_off(away=True)
 
+@service
 def script_off_air(entity=None):
   if entity == None:
     script_off_air(entity=ENTITIES_AIR)

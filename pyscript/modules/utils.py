@@ -1,6 +1,8 @@
 from constants.config import LOG_LOGGER_SYS, LOG_LOGGING_LEVEL
 from constants.mappings import STATES_UNDEFINED
 
+import importlib
+
 # Expressions
 
 def expr(entity, expression="", comparator="==", defined=True): 
@@ -8,7 +10,7 @@ def expr(entity, expression="", comparator="==", defined=True):
   if isinstance(entity, list) or isinstance(entity, dict):
     return expressions(entities=entity, expression=expression, defined=defined, comparator=comparator)
 
-  statement_condition_defined = f"and str(entity) not in {STATES_UNDEFINED}" if defined else ""
+  statement_condition_defined = f"and str({entity}) not in {STATES_UNDEFINED}" if defined else ""
 
   if expression is not None:
     if any([isinstance(expression, (int, float)), '>' in comparator, '<' in comparator]):
@@ -18,7 +20,7 @@ def expr(entity, expression="", comparator="==", defined=True):
     expression = f"{comparator} {expression}"
   else:
     expression = ""
-  log( f"{entity} {expression} {statement_condition_defined}")
+    
   return f"{entity} {expression} {statement_condition_defined}"
 
 def expressions(entities, expression=None, comparator="==", defined=True, operator='or'):  
@@ -38,7 +40,11 @@ def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL):
     logger += "".join([getattr(msg, attr, "") for attr in ("get_name", "func_name")])
   if title: message = f"[{title}] {message}"
   system_log.write(message=msg, logger=logger, level=level)
-  
+
+def debug(msg=""):
+    logfile = importlib.import_module("logfile") # except: pass # on purpose: avoid validate before sys.path appended
+    logfile.Logfile.debug(msg)
+
 def logged(func):
   def wrapper(*args, **kwargs):
     result = func(*args, **kwargs)
@@ -50,5 +56,16 @@ def logged(func):
     if kwargs.get('trigger_type') != 'state' or (kwargs.get('trigger_type') == 'state' and 
       kwargs.get('value') not in STATES_UNDEFINED and kwargs.get('old_value') not in STATES_UNDEFINED):
       log(msg=f"{func.name}{f'({parameter_args})' if parameter_args else ''}{f'({parameter_kwargs})' if parameter_kwargs else ''}{f'({result})' if result else ''}")
+    return result
+  return wrapper
+
+def debugged(func):
+  def wrapper(*args, **kwargs):
+    result = func(*args, **kwargs)
+    if "context" in kwargs: del kwargs['context']
+    parameter_args = ', '.join([str(arg) for arg in args if arg is not None]) if args else None
+    parameter_kwargs = ', '.join([f'{k}={v}' for k, v in kwargs.items() if v is not None]) if kwargs else None
+    result = str(result) if result is not None else ''
+    debug(msg=f"{func.name}{f'({parameter_args})' if parameter_args else ''}{f'({parameter_kwargs})' if parameter_kwargs else ''}{f'({result})' if result else ''}")
     return result
   return wrapper
