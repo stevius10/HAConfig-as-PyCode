@@ -1,12 +1,14 @@
 # HAConfig-as-PyCode
 
-HAConfig-as-PyCode is an event-driven, programmatic Home Assistant configuration project that utilizes Python for improved reusability, encapsulation, and modular expandability. The project employs a hybrid approach, combining declarative data structures for entity description with imperative logic for event-driven processing, offering an alternative to Home Assistant's default YAML-based declaration.
+HAConfig-as-PyCode is an event-driven, programmatic Home Assistant configuration project that utilizes Python for improved reusability, encapsulation, and modular expandability. 
+offering an alternative automation approach more focused on developers compared to Home Assistant's default YAML-based configuration.
 
 ![Desktop](www/overview-desktop.png)
 
 ## Implementation
 
-The core functionality of HAConfig-as-PyCode is built around an event-driven architecture, integrating Python scripts with PyScript and Home Assistant's built-in automation capabilities. The architecture leverages an MQTT broker for event-driven communication to ensure scalability and efficiency.
+HAConfig-as-PyCode is built around an event-driven architecture integrating Python using PyScript and Home Assistant's built-in automation capabilities. This project takes a hybrid approach, combining declarative data structures for desired state configuration with imperative logic to process these data structures in an event-driven manner leveraging an MQTT broker 
+
 
 ### Main Home Automation
 
