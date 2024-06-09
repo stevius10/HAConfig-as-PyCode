@@ -9,7 +9,6 @@ class Logfile:
   _logger = None
 
   def __init__(self, ctx=None):
-    self.name = None
     if ctx is not None:
       self._logger = self._get_file_logger(ctx)
     else:
@@ -58,8 +57,8 @@ class Logfile:
         if msg: logger.info(message)
 
   def close(self):
-    if self.history:
-      self.history = "\n".join(str(item) for item in self.history)
-      return {"service": self.name, "logs": self.history}
-    else:
-      return {}
+    if hasattr(self, 'history'):
+      if self.history:
+        self.history = "\n".join(str(item) for item in self.history)
+        return {"service": self.name, "logs": self.history}
+    return {}
