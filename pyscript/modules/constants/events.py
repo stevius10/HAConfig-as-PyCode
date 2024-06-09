@@ -1,9 +1,9 @@
 EVENTS = [
-    "event_folder_watcher",
-    "event_never",
-    "event_system_pyscript_reloaded",
-    "event_system_started"
+    "folder_watcher",
+    "never",
+    "system_pyscript_reloaded",
+    "system_started"
 ]
 
-event_constants = {event.upper(): event.lower() for event in EVENTS}
+event_constants = {f"EVENT_{event.upper()}": event.lower() for event in EVENTS}
 globals().update(event_constants)

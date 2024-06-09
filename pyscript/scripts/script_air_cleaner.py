@@ -6,7 +6,6 @@ from constants.settings import *
 
 from utils import *
 
-
 entities = SCRIPT_AIR_CLEANER_ENTITIES
 
 clean_mode_percentage = SCRIPT_AIR_CLEANER_CLEAN_MODE_PERCENTAGE
@@ -24,7 +23,6 @@ def script_air_cleaner_threshold_on(var_name=None, value=None, ns=None, ctx=None
   entity = entities[var_name.split(".")[1]]["fan"]
   if state.get(entity) != STATE_ON:
     script_air_cleaner_sleep(entity) 
-    log(f"{entity} with {var_name} got {value} PM 2,5 above threshold {SCRIPT_AIR_CLEANER_THRESHOLD_START}", ns, ctx, "threshold:on")
   task.sleep(retrigger_delay)
 
 @task_unique("script_air_cleaner_threshold_off", kill_me=True)  
@@ -36,7 +34,6 @@ def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=Non
   entity = entities[var_name.split(".")[1]]["fan"]
   if state.get(var_name) == STATE_ON:
     script_air_cleaner_turn_off(entity)
-    log(f"{entity} with {var_name} got {value} PM 2,5 below threshold {SCRIPT_AIR_CLEANER_THRESHOLD_STOP}", ns, ctx, "threshold:off")
   task.sleep(retrigger_delay)
 
 @event_trigger(EVENT_NEVER)
@@ -87,7 +84,6 @@ def script_air_cleaner_get_clean_percentage(entity, ns=None, ctx=None):
       pm = state.get(value["sensor"])
       break
   percentage = max(clean_mode_percentage, min(100, (int(pm) * 10)))
-  log(f"{percentage}% at {pm} pm2,5", ns, ctx, entity)
   return percentage
 
 @service

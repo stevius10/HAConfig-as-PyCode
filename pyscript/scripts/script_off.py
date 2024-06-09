@@ -3,6 +3,7 @@ from constants.entities import *
 from utils import *
 
 @service
+@logged
 def script_off(away=False):
   script_off_air()
   script_off_heating(away=away)
@@ -13,12 +14,9 @@ def script_off(away=False):
   script_off_tv()
 
 @service
-@logged
 def script_off_away():
   script_off(away=True)
 
-@service
-@logged
 def script_off_air(entity=None):
   if entity == None:
     script_off_air(entity=ENTITIES_AIR)
@@ -28,8 +26,6 @@ def script_off_air(entity=None):
   elif isinstance(entity, str):
     turn_off(entity=entity)
     
-@service
-@logged
 def script_off_heating(entity=None, away=False):
   if entity == None:
     script_off_heating(entity=ENTITIES_HEATING, away=away)
@@ -40,8 +36,6 @@ def script_off_heating(entity=None, away=False):
     for item in entity:
       script_off_heating(entity=item, away=away)
 
-@service
-@logged
 def script_off_media(entity=None):
   if entity == None:
     script_off_media(entity=ENTITIES_MEDIA)
@@ -49,8 +43,6 @@ def script_off_media(entity=None):
     for item in entity:
       turn_off(entity=item)
 
-@service
-@logged
 def script_off_lights(entity=None, away=False):
   if entity == None:
     script_off_lights(entity=ENTITIES_LIGHT)
@@ -65,18 +57,7 @@ def script_off_lights(entity=None, away=False):
     if away:
       task.sleep(AUTO_CONFIG_OFF_AWAY_TRANSITION)
     turn_off(entity[-1])
-
-@service
-@logged
-def script_off_services(entity=None):
-  if entity == None:
-    script_off_switches(entity=ENTITIES_SWITCHES)
-  if isinstance(entity, list):
-    for item in entity:
-      turn_off(entity=item)
       
-@service
-@logged
 def script_off_switches(entity=None):
   if entity == None:
     script_off_switches(entity=ENTITIES_SWITCHES)
@@ -84,15 +65,12 @@ def script_off_switches(entity=None):
     for item in entity:
       turn_off(entity=item)
       
-@service
-@logged
 def script_off_tv(entity=None):
   if entity == None:
     script_off_tv(entity=ENTITIES_TV)
   if isinstance(entity, str):
     try: 
       turn_off(entity)
-      # adb.send_command(entity_id=entity, command="WAKEUP")
     except Exception: 
       webostv.command(entity_id=entity, command="system/turnOn")
   if isinstance(entity, list):
@@ -102,6 +80,5 @@ def script_off_tv(entity=None):
 # Helper
 
 @service
-@logged
 def turn_off(entity):
   homeassistant.turn_off(entity_id=entity)

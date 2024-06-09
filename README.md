@@ -43,7 +43,7 @@ The `/pyscript/modules` directory contains reusable Python modules that encapsul
     - **[`mappings.py`](pyscript/modules/constants/mappings.py)**: Provides naming and mappings to entities and device capabilities.
     - **[`settings.py`](pyscript/modules/constants/settings.py)**: Contains settings or configuration values specific to application and service logic.
 
-- **[`utils.py`](pyscript/modules/utils.py)**: Contains central functions for generating expressions and implements project-wide logging functions
+- **[`utils.py`](pyscript/modules/utils.py)**: Contains central functions for generating expressions and implements project-wide logging functionality
 
 ### Native Python
 

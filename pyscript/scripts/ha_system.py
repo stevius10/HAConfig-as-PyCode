@@ -47,10 +47,8 @@ def ha_setup_files(files=SYSTEM_FILES):
 def ha_setup_links(links=SYSTEM_LINKS):
   for source, target in links.items():
     tmp_target = f"{target}.tmp"
-    # shortcut to overwrite symlink
     os.symlink(source, tmp_target)
-    os.rename(tmp_target, target)
+    os.rename(tmp_target, target) # workaround to overwrite symlink
 
-# synchronous task for logging scope
-def ha_setup_logging():
+def ha_setup_logging(): # sync. task due logging scope
   logger.set_level(**{LOG_LOGGER_SYS: LOG_LOGGING_LEVEL})
