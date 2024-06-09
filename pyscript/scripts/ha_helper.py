@@ -1,7 +1,7 @@
-from config import *
-from utils import *
+from constants.config import *
+from constants.events import EVENT_FOLDER_WATCHER
 
-from events import EVENT_FOLDER_WATCHER
+from utils import *
 
 import aiofiles
 
@@ -11,35 +11,26 @@ from datetime import datetime
 
 # Automations
 
-@log_context
-@service
 @task_unique("ha_log_truncate", kill_me=True)
 @event_trigger(EVENT_FOLDER_WATCHER)
+@time_trigger
 async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder="", path="", ns=None, ctx=None, **kwargs):
   if trigger_type == "event" and event_type == EVENT_FOLDER_WATCHER:
-    if kwargs.get('trigger_type') != "modified":
-      return {}
-  if trigger_type == "time": 
+    if kwargs.get('trigger_type') != "modified": return {}
+    log_ha_size = LOG_HA_SIZE
+  else:
     system_log.clear()
     log_ha_size = 0
-  else:
-    log_ha_size = LOG_HA_SIZE
-  try: 
-    result = log_truncate(logfile=PATH_LOG_HA, size_log_entries=log_ha_size, size_archive_entries=LOG_ARCHIVE_SIZE)
-  except AttributeError:
-    pass
-  except Exception as e:
-    log(msg=e, level="error")
-  finally: 
-    task.sleep(LOG_TRUNCATE_BLOCK_DELAY)
-    return result
+    
+  try: result = log_truncate(logfile=PATH_LOG_HA, size_log_entries=log_ha_size, size_archive_entries=LOG_ARCHIVE_SIZE)
+  except Exception as e: pass
+  finally: task.sleep(LOG_TRUNCATE_BLOCK_DELAY)
 
 # Services
 
-@event_trigger(EVENT_HOMEASSISTANT_STOP)
 @task_unique("log_truncate", kill_me=True)
-@log_context
-@service(supports_response="optional")
+@event_trigger(EVENT_HOMEASSISTANT_STOP)
+@debugged
 async def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_log_tail=LOG_HA_SIZE_TAIL, size_archive_entries=0, log_archive_suffix=LOG_ARCHIVE_SUFFIX, ns=None, ctx=None):
   logs_trunc = []
   logs_truncated = []
@@ -59,26 +50,8 @@ async def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_l
       log_write(f"{logfile}.{log_archive_suffix}", logs_trunc[-size_archive_entries:])
       log(f"{logfile}.{log_archive_suffix} reseized from {len(archive)} to {len(logs_trunc)}", ns, ctx, "truncated:archive")
 
-  return { "log": log_read(logfile), "file": logfile }
-
-@log_context
-@service
-def log_state(expression, level=LOG_LOGGING_LEVEL, ns=None, ctx=None):
-  @state_trigger(expression)
-  def log_state(trigger_type=None, var_name=None, value=None, old_value=None):  
-    if old_value not in STATES_HA_UNDEFINED:
-      log(f"[{var_name}] {trigger_type}: {value} ({old_value})", level="debug")
-  if LOG_DEBUG:
-    log_state_trigger.append(log_state)
-
-  info = get_trigger_expression(expression)
-  try: info += f" ({state.get(entity)})" if state.get(entity) not in STATES_HA_UNDEFINED else ""
-  except: pass
-  log(f"{info}", ns, ctx, "observe")
-
 # Utils
 
-@log_context
 async def log_read(logfile, ns=None, ctx=None):
   logs = []
   for _ in range(LOG_TRUNCATE_IO_RETRY):
@@ -91,7 +64,6 @@ async def log_read(logfile, ns=None, ctx=None):
       log(f"{logfile} could not be read ({e})", "failed")
   return []
 
-@log_context
 async def log_write(logfile, lines, mode='w+', ns=None, ctx=None):
   for _ in range(LOG_TRUNCATE_IO_RETRY):
     try:

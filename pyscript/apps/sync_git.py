@@ -1,62 +1,32 @@
-from constants import *
-from utils import *
+from constants.expressions import *
+from constants.secrets import *
+from constants.settings import *
 
 import subprocess
 import requests
 
-logfile  = Logfile(pyscript.get_global_ctx())
-
-def create_or_update_pull_request(repo_owner, repo_name, base_branch, head_branch, title, body):
-  access_token  =  SERVICE_GIT_GITHUB_TOKEN
-  headers  = {
-    "Authorization": f"token {access_token}",
-    "Accept": "application/vnd.github.v3+json"
-  }
-  url  = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls"
-  payload  = {
-    "title": title,
-    "body": body,
-    "base": base_branch,
-    "head": head_branch
-  }
-  response  = task.executor(requests.get, url, json=payload, headers=headers)
-  if response.status_code == 201:
-      return response.json()["html_url"]
-  elif response.status_code == 422:
-      pull_request_url  = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{head_branch}"
-      response  = requests.patch(pull_request_url, json=payload, headers=headers)
-      if response.status_code == 200:
-          return response.json()["html_url"]
-  return None
+from utils import *
 
 @service(supports_response="optional")
-@time_trigger(SERVICE_GIT_CRON)
+@time_trigger(EXPR_TIME_SERVICE_GIT_CRON)
 def service_git_sync(
-  repo_url = SERVICE_GIT_REPO_URL,
-  repo_owner = SERVICE_GIT_GITHUB_USER,
-  repo_name = SERVICE_GIT_REPO_NAME,
-  base_branch = SERVICE_GIT_REPO_MAIN,
-  branch_name = SERVICE_GIT_REPO_BRANCH,
-  branch_target = SERVICE_GIT_REPO_TARGET,
-  key_path = SERVICE_GIT_SETTINGS_CREDENTIALS,
-  config_path = SERVICE_GIT_SETTINGS_CONFIG,
-  commit_message = SERVICE_GIT_REPO_MESSAGE,
-  pull_request_title = SERVICE_GIT_GITHUB_PR_TITLE,
-  pull_request_body = SERVICE_GIT_GITHUB_PR_BODY
+  key_path=SERVICE_GIT_SETTINGS_CREDENTIALS, 
+  config_path=SERVICE_GIT_SETTINGS_CONFIG,
+  branch = SERVICE_GIT_REPO_BRANCH, 
+  message = SERVICE_GIT_REPO_MESSAGE
 ):
+  return dict(git_sync(pyscript.get_global_ctx(), config_path, key_path, branch, message))
+ 
+@pyscript_executor
+def git_sync(name, config_path, key_path, branch, message):
+  
+  from logfile import Logfile # req. sys setup 
+  logfile = Logfile(ctx=name)
   
   commands  = [
-      f"git config --local include.path '{config_path}'",
-      f"eval $(ssh-agent); ssh-add {key_path}", 
-      
-      "git stash",
-      f"git pull origin {branch_name}",
-      f"git checkout {branch_name}",
-      "git stash apply",
-      
-      "git add .",
-      f"git commit -m '{commit_message}'", 
-      f"git push origin {branch_name}"
+      f"git config --local include.path '{config_path}'", f"eval $(ssh-agent); ssh-add {key_path}", 
+      "git stash", f"git pull origin {branch}", f"git checkout {branch}", "git stash apply",
+      "git add .", f"git commit -m '{message}'", f"git push origin {branch}"
   ]
 
   for command in commands:
@@ -68,11 +38,5 @@ def service_git_sync(
       logfile.log([command, result.stdout, result.stderr])
     except subprocess.CalledProcessError as e:
       logfile.log([e, command, result.stdout, result.stderr])
-
-  # pull_request_url  = create_or_update_pull_request(repo_owner, repo_name, base_branch, branch_name, pull_request_title, pull_request_body)
-  # if pull_request_url:
-  #   logfile.log(f"Pull request created or updated: {pull_request_url}")
-  # else:
-  #   logfile.log("Failed to create or update pull request.")
-
-  return logfile.finished()
+  
+  return logfile.close()

@@ -61,7 +61,6 @@ SCRIPT_AIR_CLEANER_ENTITIES = {
 
 AUTO_NOTIFY_SENSORS_HOUSING = { 
   "sensor.v_friedrichsheim": { "url": "https://www.friedrichsheim-eg.de/category/freie-wohnungen/" }, 
-  "sensor.v_bwv": { "url": "https://www.bwv-berlin.de/wohnungsangebote.html" }, 
   "sensor.v_neukolln": { "url": "https://www.gwneukoelln.de/wohnungen/wohnungsangebote/" }, 
   "sensor.v_wbm": { "url": "https://www.wbm.de/wohnungen-berlin/angebote-wbm/" }, 
   "sensor.v_gewobag": { "url": "https://www.wbm.de/wohnungen-berlin/angebote-wbm/" }, 

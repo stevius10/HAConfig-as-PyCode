@@ -1,58 +1,43 @@
 logger: 
   default: error
   logs:
-    py: info
     custom_components.pyscript: info
-    custom_components.tapo.coordinators: critical
-    # custom_components.xiaomi_miot: critical
-    custom_components.xiaomi_miot.humidifier: critical
-    androidtv: critical
-    miio.miioprotocol: critical
     pychromecast.socket_client: critical
-    
+
   filters:
     custom_components.pyscript:
       - "Unloaded"
     custom_components.pyscript.global_ctx:
       - "Loaded"
       - "Reloaded"
-    # custom_components.hacs:
-      # revalidate - "https://api.github.com/rate_limit"
-    # homeassistant.components: 
-      # revalidate - "io.robbie.HomeAssistant"
-      # revalidate - "update_available"
+
     homeassistant.components.command_line.utils: 
       - "Timeout for command: python3"
-    # homeassistant.components.openweathermap: 
-      # revalidate - "timeouted"
-      # revalidate - "SSLError"
-    # homeassistant.components.hassio:
-      # revalidate - "/addons"
-      # revalidate - "stat"
-    # homeassistant.components.google_assistant.http:
-      # revalidate - "404"
-      # revalidate - "500"
-    # homeassistant.helpers.entity:
-      # revalidate - "Remote end closed connection without response"
-    # aiohttp.server: 
-      # revalidate - "Error handling request"
+    homeassistant.components.google_assistant.http: 
+      - "googleapis.com"
+    custom_components.xiaomi_miot.fan:
+      - "MiioException"
+    custom_components.xiaomi_miot.humidifier:
+      - "MiioException"
     habluetooth.scanner:
       - "org.bluez.Error.InProgress"
-    py.warnings: 
-      - "SyntaxWarning" # caldav
-    # pyvesync.helpers:
-      # revalidate - "No response"
-    # root:
-      # revalidate - "BEGIN:VEVENT" # caldav
-      # revalidate - "avoid compatibility issues" # caldav
 
-logbook:  
-  exclude:
+recorder:
+  auto_purge: true
+  auto_repack: true
+  purge_keep_days: 1
+  commit_interval: 60
+  include:
     domains:
-      - sensor
-    entity_globs: 
-      - "sensor.*"
-      - "*.*browser_mod*"
+    - pyscript
+    entities:
+    - switch.bett
+    - switch.sofa
+    - switch.heizdecke
+    entity_globs:
+    - sensor.*temperature
+    - fritz_box_*_durchsatz
+    - sensor.system_monitor_*
 
 system_log:
   max_entries: 3
