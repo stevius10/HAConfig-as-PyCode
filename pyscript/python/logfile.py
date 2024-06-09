@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-PATH_DIR_PY_LOG = "/config/pyscript/logs/" # TODO: from constants.config import *
+PATH_DIR_PY_LOG = "/config/pyscript/logs/"  # TODO: from constants.config import *
 
 LOG_LOGFILE_FORMAT = "%(asctime)s: %(message)s"
 
@@ -36,16 +36,14 @@ class Logfile:
     if isinstance(message, str):
       if message:
         self._logger.info(message)
-        if isinstance(self.history, list): # file logger returns for service call
-          self.history.append(msg)
+        self.history.append(message)
     elif isinstance(message, list):
       for msg in message:
         self.log(msg)
+    else:
+      self._logger.info(str(message))
 
-  def truncate(self):
-    call_func("pyscript.log_truncate", logfile=self.logfile, blocking=True)
-
-  def async close(self):
+  def close(self):
+    return {"asdf": "t"}
     if self.history:
-      self.history = "\n".join(str(item) for item in self.history)
-      return { "service": self.name, "logs": self.history }
+      history = "\n".join(str(item) 

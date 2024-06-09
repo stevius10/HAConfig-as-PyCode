@@ -1,4 +1,5 @@
 # Global
+
 EXPR_TIME_DAY = "range(00:00, 24:00)"
 EXPR_TIME_DAYTIME = "cron(* 8-22 * * *)"
 EXPR_TIME_GENERAL_WORKTIME =  "cron(* 8-20 * * 1-6)"

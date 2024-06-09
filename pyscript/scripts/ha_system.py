@@ -21,7 +21,6 @@ def event_system_started(delay=SYSTEM_CONFIG_EVENT_STARTED_DELAY):
 
 @event_trigger(EVENT_SYSTEM_STARTED)
 def ha_setup():
-    
   ha_setup_environment()
   ha_setup_files()
   ha_setup_links()
@@ -38,8 +37,9 @@ def ha_setup_environment(variables=SYSTEM_ENVIRONMENT):
   
 @pyscript_executor
 def ha_setup_files(files=SYSTEM_FILES):
+  from filesystem import cp
   for file in files:
-    shutil.copy2(file, files[file])
+    cp(file, files[file])
 
 @pyscript_executor
 def ha_setup_links(links=SYSTEM_LINKS):
