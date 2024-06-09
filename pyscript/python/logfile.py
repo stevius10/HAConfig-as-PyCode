@@ -9,6 +9,7 @@ class Logfile:
   _logger = None
 
   def __init__(self, ctx=None):
+    self.name = "debug"
     if ctx is not None:
       self._logger = self._get_file_logger(ctx)
     else:
@@ -23,7 +24,7 @@ class Logfile:
   @classmethod
   def _get_debug_logger(cls):
     if cls._logger is None:
-      cls._logger = cls._create_logger(name="debug")
+      cls._logger = cls._create_logger(name=cls.name)
     return cls._logger
 
   @staticmethod
