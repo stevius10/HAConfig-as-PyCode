@@ -9,7 +9,6 @@ def services_auto_factory(entity, cron):
   @logged
   def service_auto(entity=entity, ns=None, ctx=None):
     result = service.call(entity.split(".")[0], entity.split(".")[1])
-    log(f"{result}", ns, ctx, title=f"{entity} called")
 
   trigger.append(service_auto)
 
