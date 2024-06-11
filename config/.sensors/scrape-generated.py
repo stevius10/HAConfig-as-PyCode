@@ -1,4 +1,7 @@
+# TODO: wip
+
 import requests
+import logging
 from bs4 import BeautifulSoup
 
 ANBIETER = {
@@ -88,8 +91,10 @@ ANBIETER = {
   }
 }
 
+logging.basicConfig(level=logging.ERROR, format='%(name)s - %(levelname)s - %(message)s')
+
 def scrape_website(request_url, content_id=None, content_class=None, item_tag=None, item_class=None, address_tag=None, address_class=None, additional_processing=None):
-  print(f"Starting scrape for {request_url}")
+  logging.info(f"Starting scrape for {request_url}")
   items = []
   try:
     headers = {
@@ -107,7 +112,7 @@ def scrape_website(request_url, content_id=None, content_class=None, item_tag=No
       content = parser
     
     if content:
-      print(f"Parsed content for {request_url}:\n{str(content)[:254]}")
+      logging.info(f"Parsed content for {request_url}:\n{str(content)[:254]}")
       items_website = content.find_all(item_tag, class_=item_class)
       for item in items_website:
         address = item.find(address_tag, class_=address_class).get_text().strip() if item.find(address_tag, class_=address_class) else None
@@ -116,7 +121,7 @@ def scrape_website(request_url, content_id=None, content_class=None, item_tag=No
             address = additional_processing(item, address)
           items.append(address)
     else:
-      print(f"No content found for {request_url}")
+      logging.info(f"No content found for {request_url}")
   except Exception as e:
     pass
   

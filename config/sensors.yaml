@@ -28,8 +28,8 @@ command_line:
       scan_interval: 5400
       
   - sensor: 
-      name: WIP-Scrape
-      command: "python3 /config/config/.sensors/wip-scrape.py"
+      name: WIP-Scrape-Generated
+      command: "python3 /config/config/.sensors/scrape-generated.py"
       scan_interval: 5400
 
 # Template based sensors
