@@ -2,7 +2,7 @@
 
 AUTO_ENTITIES = {
   "climate.k": { "default": "off", "func": "climate.turn_off" },
-  "media_player.schlafzimmer": { "default": "off", "delay": 7200 },
+  "media_player.schlafzimmer": { "default": "off", "delay": 4800 },
   "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
   "switch.bett": { "default": "off", "delay": 1800 },
   "switch.heizdecke": { "default": "off", "delay": 1800 }, 
@@ -47,24 +47,12 @@ SCRIPT_AIR_CLEANER_ENTITIES = {
     "fan": "fan.wz_luft",
     "sensor": "sensor.wz_luft",
     "luftung": "switch.wz_luftung",
-    "percentage": "fan.wz_luft.percentage"
   },
   "sz_luft": {
     "fan": "fan.sz_luft", 
     "sensor": "sensor.sz_luft",
     "luftung": "switch.sz_luftung",
-    "percentage": "fan.sz_luft.percentage"
   }
-}
-
-# Sensors
-
-AUTO_NOTIFY_SENSORS_HOUSING = { 
-  "sensor.v_friedrichsheim": { "url": "https://www.friedrichsheim-eg.de/category/freie-wohnungen/" }, 
-  "sensor.v_neukolln": { "url": "https://www.gwneukoelln.de/wohnungen/wohnungsangebote/" }, 
-  "sensor.v_wbm": { "url": "https://www.wbm.de/wohnungen-berlin/angebote-wbm/" }, 
-  "sensor.v_gewobag": { "url": "https://www.gewobag.de/fuer-mieter-und-mietinteressenten/mietangebote/?bezirke%5B%5D=charlottenburg-wilmersdorf-charlottenburg&bezirke%5B%5D=friedrichshain-kreuzberg&bezirke%5B%5D=friedrichshain-kreuzberg-friedrichshain&bezirke%5B%5D=friedrichshain-kreuzberg-kreuzberg&bezirke%5B%5D=mitte&bezirke%5B%5D=mitte-gesundbrunnen&bezirke%5B%5D=mitte-wedding&bezirke%5B%5D=neukoelln&bezirke%5B%5D=neukoelln-buckow&bezirke%5B%5D=neukoelln-rudow&bezirke%5B%5D=pankow-prenzlauer-berg&bezirke%5B%5D=tempelhof-schoeneberg-schoeneberg&nutzungsarten%5B%5D=wohnung&gesamtmiete_von=&gesamtmiete_bis=700&gesamtflaeche_von=50&gesamtflaeche_bis=&zimmer_von=2&zimmer_bis=&sort-by=recent" }, 
-  "sensor.v_inberlinwohnen": { "url": "https://www.gewobag.de/fuer-mieter-und-mietinteressenten/mietangebote/?bezirke%5B%5D=charlottenburg-wilmersdorf-charlottenburg&bezirke%5B%5D=friedrichshain-kreuzberg&bezirke%5B%5D=friedrichshain-kreuzberg-friedrichshain&bezirke%5B%5D=friedrichshain-kreuzberg-kreuzberg&bezirke%5B%5D=mitte&bezirke%5B%5D=mitte-gesundbrunnen&bezirke%5B%5D=mitte-wedding&bezirke%5B%5D=neukoelln&bezirke%5B%5D=neukoelln-buckow&bezirke%5B%5D=neukoelln-rudow&bezirke%5B%5D=pankow-prenzlauer-berg&bezirke%5B%5D=tempelhof-schoeneberg-schoeneberg&nutzungsarten%5B%5D=wohnung&gesamtmiete_von=&gesamtmiete_bis=700&gesamtflaeche_von=50&gesamtflaeche_bis=&zimmer_von=2&zimmer_bis=&sort-by=recent" }
 }
 
 # Cluster

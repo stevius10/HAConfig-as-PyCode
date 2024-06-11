@@ -1,6 +1,5 @@
 from constants.config import *
 from constants.devices import *
-from constants.entities import *
 from constants.expressions import *
 from constants.mappings import *
 from constants.settings import *
@@ -9,7 +8,7 @@ from utils import *
 
 import random
 
-sensors = AUTO_NOTIFY_SENSORS_HOUSING
+sensors = AUTO_NOTIFY_SCRAPE_HOUSING_SENSORS
 default_notification_target = DEFAULT_NOTIFICATION_TARGET
 
 # Automation
