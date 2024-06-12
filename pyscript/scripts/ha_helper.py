@@ -16,11 +16,13 @@ from datetime import datetime
 @time_trigger
 async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder="", path="", ns=None, ctx=None, **kwargs):
   if trigger_type == "event" and event_type == EVENT_FOLDER_WATCHER:
-    if kwargs.get('trigger_type') != "modified": return {}
+    if kwargs.get('trigger_type') != "modified": return
     log_ha_size = LOG_HA_SIZE
-  else:
+  elif trigger_type == "time":
     system_log.clear()
     log_ha_size = 0
+  else:
+    return
     
   try: result = log_truncate(logfile=PATH_LOG_HA, size_log_entries=log_ha_size, size_archive_entries=LOG_ARCHIVE_SIZE)
   except Exception as e: pass

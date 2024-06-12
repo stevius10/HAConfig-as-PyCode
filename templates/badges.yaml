@@ -25,7 +25,7 @@ badge_backup:
   card_mod:
     style: | 
       :host { 
-        {% if 'd' not in states('sensor.v_last_backup') %}
+        {% if 'd' not in states('sensor.v_cli_lastbackup') %}
           --label-badge-red: var(--info-color)
         {% else %}
           --label-badge-red: var(--error-color); 

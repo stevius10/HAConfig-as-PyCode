@@ -3,41 +3,10 @@
 command_line:
 
   - sensor: 
-      name: V-Last-Backup
-      command: "bash /config/config/.sensors/v-lastbackup.sh"
+      name: V-CLI-Lastbackup
+      unique_id: v_cli_lastbackup
+      command: "bash /config/resources/sensors/v-cli-lastbackup.sh"
       scan_interval: 3600
-  
-  # Housing 
-  
-  - sensor: 
-      name: Scrape-Friedrichsheim
-      command: "python3 /config/pyscript/modules/scrape.py scrape_friedrichsheim /config/pyscript/modules/constants/settings.py"
-      scan_interval: 5400
-  
-  - sensor: 
-      name: Scrape-InBerlinWohnen
-      command: "python3 /config/pyscript/modules/scrape.py scrape_inberlinwohnen /config/pyscript/modules/constants/settings.py"
-      scan_interval: 5400
-  
-  - sensor: 
-      name: Scrape-WBM
-      command: "python3 /config/pyscript/modules/scrape.py scrape_wbm /config/pyscript/modules/constants/settings.py"
-      scan_interval: 5400
-  
-  - sensor: 
-      name: Scrape-Gewobag
-      command: "python3 /config/pyscript/modules/scrape.py scrape_gewobag /config/pyscript/modules/constants/settings.py"
-      scan_interval: 5400
-
-  - sensor: 
-      name: Scrape-Degewo
-      command: "python3 /config/pyscript/modules/scrape.py scrape_degewo /config/pyscript/modules/constants/settings.py"
-      scan_interval: 5400
-
-  - sensor: 
-      name: Scrape-Howoge
-      command: "python3 /config/pyscript/modules/scrape.py scrape_howoge /config/pyscript/modules/constants/settings.py"
-      scan_interval: 5400
       
 # Template based sensors
 

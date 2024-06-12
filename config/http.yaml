@@ -7,4 +7,4 @@ http:
     - ::1
     - ::1/128
     - "fe80::/10"
-    - !secret ha_http_external
+    - !secret ha_config_http_trusted_proxies_external

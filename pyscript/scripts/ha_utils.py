@@ -4,11 +4,9 @@ from constants.mappings import *
 
 from utils import *
 
-default_notification_target = DEFAULT_NOTIFICATION_TARGET
-
 @service
 @logged
-def notify(message, data=None, target=default_notification_target, default=True):
+def notify(message, data=None, target=DEFAULT_NOTIFICATION_TARGET, default=True):
   devices = DEVICES.get(target) if target else [target for targets in DEVICES.values() for target in targets]
 
   if default:
@@ -19,7 +17,7 @@ def notify(message, data=None, target=default_notification_target, default=True)
     
 @service
 @logged
-def shortcut(message, shortcut, input=None, target=default_notification_target, **kwargs):
+def shortcut(message, shortcut, input=None, target=DEFAULT_NOTIFICATION_TARGET, **kwargs):
 
   data = { "shortcut": { "name": shortcut, "input": input } }
 

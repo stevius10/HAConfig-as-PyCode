@@ -4,8 +4,8 @@ from constants.secrets import SYSTEM_FILES
 # Log
 
 LOG_HA_FILE = "home-assistant.log"
-LOG_HA_SIZE = 25
-LOG_HA_SIZE_TAIL = 7
+LOG_HA_SIZE = 35
+LOG_HA_SIZE_TAIL = 8
 
 LOG_ARCHIVE_SIZE = LOG_HA_SIZE * 100
 LOG_ARCHIVE_SUFFIX = "1"
@@ -42,7 +42,7 @@ SERVICES_AUTO = { 'shell_command.filebackup': EXPR_TIME_SERVICE_FILEBACKUP_CRON 
 
 # System
 
-SYSTEM_CONFIG_EVENT_STARTED_DELAY = 3
+SYSTEM_CONFIG_EVENT_STARTED_DELAY = 5
 
 # Setup 
 
