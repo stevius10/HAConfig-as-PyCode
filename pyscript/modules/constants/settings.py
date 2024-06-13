@@ -18,7 +18,7 @@ SERVICE_SCRAPE_HOUSING_FILTER_AREA = 50
 SERVICE_SCRAPE_HOUSING_FILTER_RENT = 700
 SERVICE_SCRAPE_HOUSING_FILTER_ROOMS = 2
 SERVICE_SCRAPE_HOUSING_SENSOR_LENGTH = 254
-SERVICE_SCRAPE_HOUSING_SENSOR_PREFIX = "pyscript.v_scrape"
+SERVICE_SCRAPE_HOUSING_SENSOR_PREFIX = "v_scrape"
 SERVICE_SCRAPE_HOUSING_PROVIDERS = {
   "degewo": { "url": f"https://immosuche.degewo.de/de/search?size=10&page=1&property_type_id=1&categories%5B%5D=1&lat=&lon=&area=&address%5Bstreet%5D=&address%5Bcity%5D=&address%5Bzipcode%5D=&address%5Bdistrict%5D=&district=33%2C+46%2C+28%2C+29%2C+60&property_number=&price_switch=true&price_radio={SERVICE_SCRAPE_HOUSING_FILTER_RENT}-warm&price_from=&price_to=&qm_radio=SERVICE_SCRAPE_HOUSING_FILTER_AREA&qm_from={SERVICE_SCRAPE_HOUSING_FILTER_ROOMS}&qm_to=&rooms_radio=custom&rooms_from=&rooms_to=&wbs_required=&order=rent_total_without_vat_asc",
     "structure": { "item": ".properties-container .row", "address_selector": ".property-title", "area_selector": ".property-city", "rent_selector": ".property-rent", "size_selector": ".property-area", "rooms_selector": ".property-rooms", "details_selector": ".property-info" } },

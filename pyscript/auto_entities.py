@@ -26,16 +26,14 @@ def timeout_factory(entity, default, delay=0):
   entity_persistence = f"pyscript.{entity_name}"
   state.persist(entity_persistence)
   
-  @event_trigger(EVENT_SYSTEM_STARTED)
+  @event_trigger(EVENT_SYSTEM_STARTED) # wait for import
+  def restart_timer():
+    if state.get(entity_persistence) is not None: 
+      start_timer(delay=state.get(entity_persistence))
+
   @state_trigger(expr(entity, expression=default, comparator="!=", defined=True), state_check_now=True)
-  @debugged
   def start_timer(delay=delay, trigger_type=None, var_name=None):
     if state.get(entity) != default and state.get(entity) not in STATES_UNDEFINED:
-      if trigger_type == "event": 
-        persisted = state.get(entity_persistence)
-        if persisted: delay = persisted
-      elif "delay" in entities.get(entity): 
-        timer.cancel(entity_id=entity_timer)
       timer.start(entity_id=entity_timer, duration=delay)
   trigger.append(start_timer)
 

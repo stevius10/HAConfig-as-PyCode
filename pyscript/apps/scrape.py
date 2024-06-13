@@ -1,16 +1,23 @@
+from constants.events import *
 from constants.expressions import *
 from constants.settings import *
 
 from utils import *
 
 import json
+import random
 import requests
 from bs4 import BeautifulSoup
+
+trigger = []
+
+housing_provider = SERVICE_SCRAPE_HOUSING_PROVIDERS
 
 def fetch(url, method="GET", headers=None, data=None, verify=False):
   response = requests.request(method, url, headers=headers, data=data, verify=verify)
   return BeautifulSoup(response.content, 'html.parser')
 
+@logged
 def extract(content, item, address_selector, area_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None):
   apartments = []
   
@@ -27,26 +34,26 @@ def extract(content, item, address_selector, area_selector, rent_selector, size_
 
   return apartments
 
-def set_sensor(provider, apartments):
-  state.set(f"{SERVICE_SCRAPE_HOUSING_SENSOR_PREFIX}_{provider}", ', '.join(apartments[SERVICE_SCRAPE_HOUSING_SENSOR_LENGTH]))
-  
-def scrape_housing_factory(provider):
+@logged
+def set_sensor(entity, provider, apartments):
+  state.set(entity, ', '.join(apartments[:SERVICE_SCRAPE_HOUSING_SENSOR_LENGTH]))
+
+def scrape_housing_factory(entity, provider):
 
   @time_trigger(EXPR_TIME_UPDATE_SENSORS_HOUSING)
   @time_active(EXPR_TIME_GENERAL_WORKTIME)
-  @logged
   @service
-  def scrape_housing(provider):
+  def scrape_housing(entity, provider):
     task.sleep(random.randint(SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
       
-    url = SERVICE_SCRAPE_HOUSING_PROVIDERS[provider]["url"]
-    if SERVICE_SCRAPE_HOUSING_PROVIDERS[provider].get("request_headers") and SERVICE_SCRAPE_HOUSING_PROVIDERS[provider].get("request_data"):
-      response = requests.post(url, headers=HOUSING_PROVIDERS[provider].get("request_headers"), data=HOUSING_PROVIDERS[provider].get("request_data"), verify=False).text
+    url = housing_provider[provider]["url"]
+    if housing_provider[provider].get("request_headers") and housing_provider[provider].get("request_data"):
+      response = requests.post(url, headers=housing_provider[provider].get("request_headers"), data=housing_provider[provider].get("request_data"), verify=False).text
       content = BeautifulSoup(json.loads(response)['searchresults'], 'html.parser')
     else: 
       content = fetch(url)
     
-    structure = SERVICE_SCRAPE_HOUSING_PROVIDERS[provider]["structure"]
+    structure = housing_provider[provider]["structure"]
     item = structure["item"]
     address_selector = structure["address_selector"]
     area_selector = structure["area_selector"]
@@ -55,10 +62,15 @@ def scrape_housing_factory(provider):
     rooms_selector = structure["rooms_selector"]
     details_selector = structure["details_selector"]
   
-    set_sensor(provider, extract(
+    set_sensor(entity, provider, extract(
       content, item, address_selector, area_selector, rent_selector, size_selector, rooms_selector, details_selector 
     ))
+    
+    trigger.append(scrape_housing)
 
-for provider in SERVICE_SCRAPE_HOUSING_PROVIDERS.keys():
-  state.persist(f"pyscript.{provider}")
-  apartments = scrape_housing_factory(provider)
+for provider in housing_provider.keys():
+  entity = f"pyscript.{SERVICE_SCRAPE_HOUSING_SENSOR_PREFIX}_{provider}"
+  state.persist(entity)
+  log(f"scrape: {entity} {provider}")
+  scrape_housing_factory(entity, provider)
+event.fire(EVENT_HOUSING_INITIALIZED)

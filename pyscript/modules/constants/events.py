@@ -1,5 +1,6 @@
 EVENTS = [
     "folder_watcher",
+    "housing_initialized",
     "never",
     "system_pyscript_reloaded",
     "system_started"

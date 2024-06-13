@@ -4,8 +4,8 @@ pyscript:
   apps:
     app: 
       - name: app
-    scraper: 
-      - name: scraper
+    scrape: 
+      - name: scrape
     services: 
       - name: services
     sync_git: 

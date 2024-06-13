@@ -30,7 +30,7 @@ def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=Non
   task.sleep(SCRIPT_AIR_CLEANER_THRESHOLD_RETRIGGER_DELAY)
 
 @event_trigger(EVENT_NEVER) # required for service
-@task_unique("".join([entity["fan"] for entity in entities.values()]), kill_me=False)
+@task_unique("-".join([entity["fan"] for entity in entities.values()]), kill_me=False)
 @service
 def script_air_cleaner_clean(entity=[entity["fan"] for entity in entities.values()]):
   fan.turn_on(entity_id=entity)
@@ -39,14 +39,16 @@ def script_air_cleaner_clean(entity=[entity["fan"] for entity in entities.values
     fan.set_percentage(entity_id=item, percentage=script_air_cleaner_get_clean_percentage(item.split(".")[1]))
 
 @state_trigger(expr([entity["fan"] for entity in entities.values()], STATE_ON)) # reset on turn on
-@state_trigger(expr(f"{SCRIPT_AIR_CLEANER_GROUP}.percentage", SCRIPT_AIR_CLEANER_SLEEP_MODE_PERCENTAGE, comparator='>'), state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN)
-@task_unique(SCRIPT_AIR_CLEANER_GROUP, kill_me=False)
+@state_trigger(expr([f"'{entity['fan']}.percentage'" for entity in entities.values()], \
+  SCRIPT_AIR_CLEANER_SLEEP_MODE_PERCENTAGE, comparator='>').replace("'", ""), # workaround prevent pyscript to interpret \
+  state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN, watch=[f"{entity['fan']}.percentage" for entity in entities.values()])
 @logged
 @service
 def script_air_cleaner_sleep(entity=[entity["fan"] for entity in entities.values()], var_name=None, value=None):
   if var_name or not isinstance(entity, list):
     if var_name: entity = ".".join(var_name.split(".")[:2])
-    supported_features = str(state.get("f{entity}.supported_features"))
+    log(entity)
+    supported_features = str(state.get("f{entity}.supported_features")) if state.get(entity) else 0
     if supported_features == "9": # int without str(state.get())
       fan.set_preset_mode(entity_id=entity, preset_mode=SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
     elif supported_features == "1":
