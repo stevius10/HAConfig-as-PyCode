@@ -62,4 +62,3 @@ def scrape_housing_factory(provider):
 for provider in SERVICE_SCRAPE_HOUSING_PROVIDERS.keys():
   state.persist(f"pyscript.{provider}")
   apartments = scrape_housing_factory(provider)
-  

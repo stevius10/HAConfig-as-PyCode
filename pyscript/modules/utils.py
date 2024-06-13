@@ -3,33 +3,6 @@ from constants.mappings import STATES_UNDEFINED
 
 import importlib
 
-# Expressions
-
-def expr(entity, expression="", comparator="==", defined=True): 
-  
-  if isinstance(entity, list) or isinstance(entity, dict):
-    return expressions(entities=entity, expression=expression, defined=defined, comparator=comparator)
-
-  statement_condition_defined = f"and {entity} not in {STATES_UNDEFINED}" if defined else ""
-
-  if expression is not None:
-    if any([isinstance(expression, (int, float)), '>' in comparator, '<' in comparator]):
-      entity = "int({entity})" if entity.isalnum() else 0 # TODO
-    elif expression in [True, False]: expression = str(expression)
-    elif isinstance(expression, str): expression = f"'{expression}'"
-    expression = f"{comparator} {expression}"
-  else:
-    expression = ""
-    
-  return f"{entity} {expression} {statement_condition_defined}"
-
-def expressions(entities, expression=None, comparator="==", defined=True, operator='or'):  
-  if expression:
-    if isinstance(expression, int):
-      return f" {operator} ".join([expr(entity, expression, defined=defined, comparator=comparator) for entity in entities])
-  else: 
-    return f" {operator} ".join([f"{expr(entity, expression=None, defined=defined)}" for entity in entities])
-
 '''
 # Expressions
 
@@ -102,3 +75,32 @@ def debugged(func):
     debug(msg=f"{func.name}{f'({parameter_args})' if parameter_args else ''}{f'({parameter_kwargs})' if parameter_kwargs else ''}{f'({result})' if result else ''}")
     return result
   return wrapper
+
+# Expressions
+
+@logged
+def expr(entity, expression="", comparator="==", defined=True): 
+  
+  if isinstance(entity, list) or isinstance(entity, dict):
+    return expressions(entities=entity, expression=expression, defined=defined, comparator=comparator)
+
+  statement_condition_defined = f"and {entity} not in {STATES_UNDEFINED}" if defined else ""
+
+  if expression is not None:
+    if any([isinstance(expression, (int, float)), '>' in comparator, '<' in comparator]):
+      entity = "int({entity})" if entity.isalnum() else 0 # TODO
+    elif expression in [True, False]: expression = str(expression)
+    elif isinstance(expression, str): expression = f"'{expression}'"
+    expression = f"{comparator} {expression}"
+  else:
+    expression = ""
+    
+  return f"{entity} {expression} {statement_condition_defined}"
+
+@logged
+def expressions(entities, expression=None, comparator="==", defined=True, operator='or'):  
+  if expression:
+    if isinstance(expression, int):
+      result = f" {operator} ".join([f"({expr(entity, expression, defined=defined, comparator=comparator)})" for entity in entities])
+    result = f" {operator} ".join([f"({expr(entity, expression=expression, defined=defined)})" for entity in entities])
+  return result
