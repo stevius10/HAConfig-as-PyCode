@@ -48,7 +48,7 @@ def script_air_cleaner_sleep(entity=[entity["fan"] for entity in entities.values
   if var_name or not isinstance(entity, list):
     if var_name: entity = ".".join(var_name.split(".")[:2])
     log(entity)
-    supported_features = str(state.get("f{entity}.supported_features")) if state.get(entity) else 0
+    supported_features = str(state.get('f"{entity}.supported_features"')) if state.get(entity) else 0
     if supported_features == "9": # int without str(state.get())
       fan.set_preset_mode(entity_id=entity, preset_mode=SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
     elif supported_features == "1":

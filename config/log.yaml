@@ -10,7 +10,8 @@ logger:
     custom_components.pyscript.global_ctx:
       - "Loaded"
       - "Reloaded"
-
+    custom_components.pyscript.trigger:
+      - "will never trigger"
     homeassistant.components.command_line.utils: 
       - "Timeout for command: python3"
     homeassistant.components.google_assistant.http: 
