@@ -7,7 +7,7 @@ trigger = []
 def services_auto_factory(entity, cron): 
   @time_trigger(cron)
   @logged
-  def service_auto(entity=entity, ns=None, ctx=None):
+  def service_auto(entity=entity):
     result = service.call(entity.split(".")[0], entity.split(".")[1])
 
   trigger.append(service_auto)

@@ -27,7 +27,7 @@ recorder:
   auto_purge: true
   auto_repack: true
   purge_keep_days: 1
-  commit_interval: 60
+  commit_interval: 45
   include:
     domains:
     - pyscript

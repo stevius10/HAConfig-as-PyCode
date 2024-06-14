@@ -26,3 +26,12 @@ def shortcut(message, shortcut, input=None, target=DEFAULT_NOTIFICATION_TARGET, 
       data["shortcut"][key] = value
   
   notify(message=message, data=data, target=target)
+
+@service
+@logged
+def entity_persistence(entity, prefix="", state=None):
+  entity = f"pyscript.{prefix}_{entity}"
+  if state: 
+    state.set(f"pyscript.{prefix}_{entity}", state)
+  state.persist(f"pyscript.{prefix}_{entity}")
+  return entity

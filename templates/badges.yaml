@@ -20,7 +20,7 @@ badge_webfilter:
 
 badge_backup:
   &badge_backup
-  entity: sensor.v_last_backup
+  entity: sensor.v_cli_lastbackup
   name: Sicherung
   card_mod:
     style: | 

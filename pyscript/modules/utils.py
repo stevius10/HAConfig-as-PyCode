@@ -5,32 +5,28 @@ import importlib
 
 # Expressions
 
-def expr(entity, expression="", comparator="==", defined=True): 
-  
-  if isinstance(entity, list) or isinstance(entity, dict):
-    return exprs(entities=entity, expression=expression, defined=defined, comparator=comparator)
+def expr(entity, expression="", comparator="==", defined=True, operator='or'):
+    if isinstance(entity, (list, dict)):
+        items = [f"({expr(item, expression, comparator, defined)})" for item in entity]
+        return f" {operator} ".join(items)
 
-  statement_condition_defined = f"and {entity} not in {STATES_UNDEFINED}" if defined else ""
-
-  if expression is not None:
-    if isinstance(expression, (int, float)) or comparator in ['<', '>']:
-      entity = "int({})".format(entity)
-    if expression in [True, False]: expression = str(expression)
-    elif isinstance(expression, str): expression = f"'{expression}'"
-    expression = f"{comparator} {expression}"
-  else:
-    expression = ""
+    conditions = []
     
-  return f"{entity} {expression} {statement_condition_defined}"
-
-def exprs(entities, expression=None, comparator="==", defined=True, operator='or'):  
-  if expression:
-    if isinstance(expression, int):
-      expressions = f" {operator} ".join([f"({expr(entity, expression, defined=defined, comparator=comparator)})" for entity in entities])
-    else: 
-      expressions = f" {operator} ".join([f"({expr(entity, expression=expression, defined=defined)})" for entity in entities])
-  return expressions
-
+    if defined:
+        conditions.append(f"{entity} is not None")
+        states_undefined_str = ", ".join([f'\"{state}\"' for state in STATES_UNDEFINED])
+        conditions.append(f"{entity} not in [{states_undefined_str}]")
+        
+    if expression:
+        if isinstance(expression, (int, float)) or comparator in ['<', '>']:
+            conditions.append(f"int({entity}) {comparator} {expression}")
+        elif isinstance(expression, str):
+            conditions.append(f"{entity} {comparator} \'{expression}\'")
+        else:
+            conditions.append(f"{entity} {comparator} {expression}")
+            
+    return " and ".join(conditions)
+  
 # Logging
 
 def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL):
@@ -49,12 +45,12 @@ def logged(func):
     if "context" in kwargs: del kwargs['context']
     parameter_args = ', '.join([str(arg) for arg in args if arg is not None]) if args else None
     parameter_kwargs = ', '.join([f'{k}={v}' for k, v in kwargs.items() if v is not None]) if kwargs else None
-    logged = str(logged) if logged else ''
+    logged_result = str(logged_result) if logged_result else ''
     
     if kwargs.get('trigger_type') != 'state' or (kwargs.get('trigger_type') == 'state' and 
       kwargs.get('value') not in STATES_UNDEFINED and kwargs.get('old_value') not in STATES_UNDEFINED):
       log(msg=f"{func.name}{f'({parameter_args})' if parameter_args else ''}{f'({parameter_kwargs})' if parameter_kwargs else ''}{f': {logged}' if logged else ''}")
-    return logged
+    return logged_result
   return wrapper
 
 def debugged(func):
@@ -67,3 +63,18 @@ def debugged(func):
     debug(msg=f"{func.name}{f'({parameter_args})' if parameter_args else ''}{f'({parameter_kwargs})' if parameter_kwargs else ''}{f': {debugged})' if debugged else ''}")
     return debugged
   return wrapper
+
+# Utility
+
+def log_data(*args, **kwargs):
+  data = {}
+  for arg in args:
+    data[f'var_{len(data)}'] = arg
+  for key, value in kwargs.items():
+    if isinstance(value, object):
+      try: data[key] = vars(value)
+      except TypeError: data[key] = str(value)
+    else: data[key] = value
+  if kwargs.pop('text', log_data.func_name):
+    data = ": ".join
+  log(msg=data, title=kwargs.pop('text', log_data.func_name))

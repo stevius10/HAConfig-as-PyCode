@@ -41,14 +41,15 @@ def script_air_cleaner_clean(entity=[entity["fan"] for entity in entities.values
 @state_trigger(expr([entity["fan"] for entity in entities.values()], STATE_ON)) # reset on turn on
 @state_trigger(expr([f"'{entity['fan']}.percentage'" for entity in entities.values()], \
   SCRIPT_AIR_CLEANER_SLEEP_MODE_PERCENTAGE, comparator='>').replace("'", ""), # workaround prevent pyscript to interpret \
-  state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN, watch=[f"{entity['fan']}.percentage" for entity in entities.values()])
+  state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN, state_check_now=True, \
+  watch=[f"{entity['fan']}.percentage" for entity in entities.values()])
 @logged
 @service
 def script_air_cleaner_sleep(entity=[entity["fan"] for entity in entities.values()], var_name=None, value=None):
   if var_name or not isinstance(entity, list):
     if var_name: entity = ".".join(var_name.split(".")[:2])
     log(entity)
-    supported_features = str(state.get('f"{entity}.supported_features"')) if state.get(entity) else 0
+    supported_features = str(state.get(f"{entity}.supported_features")) if state.get(entity) else 0
     if supported_features == "9": # int without str(state.get())
       fan.set_preset_mode(entity_id=entity, preset_mode=SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)
     elif supported_features == "1":

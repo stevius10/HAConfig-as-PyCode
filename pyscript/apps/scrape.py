@@ -29,19 +29,16 @@ def extract(content, item, address_selector, area_selector, rent_selector, size_
     size = element.select_one(size_selector).get_text().strip() if size_selector and element.select_one(size_selector) else None
     rooms = element.select_one(rooms_selector).get_text().strip() if rooms_selector and element.select_one(rooms_selector) else None
     details = element.select_one(details_selector).get_text() if details_selector and element.select_one(details_selector) else None
-
     apartments.append({"address": address, "area": area, "rent": rent, "size": size, "rooms": rooms, "details": details })
 
   return apartments
 
 @logged
 def set_sensor(entity_persistence, provider, apartments):
-  state.set(entity_persistence, ', '.join(apartments[:SERVICE_SCRAPE_HOUSING_SENSOR_LENGTH]))
-  
+  pyscript.entity_persistence(name=provider, prefix={SERVICE_SCRAPE_HOUSING_SENSOR_PREFIX}, state=', '.join(apartments[:SERVICE_SCRAPE_HOUSING_SENSOR_LENGTH]))
+
 def scrape_housing_factory(provider):
-  entity_persistence = f"pyscript.{SERVICE_SCRAPE_HOUSING_SENSOR_PREFIX}_{provider}"
-  state.persist(entity_persistence)
-  
+
   @time_trigger(EXPR_TIME_UPDATE_SENSORS_HOUSING)
   @time_active(EXPR_TIME_GENERAL_WORKTIME)
   @service
@@ -68,8 +65,10 @@ def scrape_housing_factory(provider):
       content, item, address_selector, area_selector, rent_selector, size_selector, rooms_selector, details_selector 
     ))
     
-    trigger.append(scrape_housing)
+  trigger.append(scrape_housing)
 
 for provider in housing_provider.keys():
+  service.call(domain="pyscript", name="entity_persistence", entity=provider, prefix=SERVICE_SCRAPE_HOUSING_SENSOR_PREFIX)
   scrape_housing_factory(provider)
+  
 event.fire(EVENT_HOUSING_INITIALIZED)
