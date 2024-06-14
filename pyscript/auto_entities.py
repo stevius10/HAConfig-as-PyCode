@@ -24,8 +24,7 @@ def default_factory(entity, func):
 def timeout_factory(entity, default, delay=0):
   entity_name = entity.split(".")[1]
   entity_timer = f"timer.{entity_name}"
-  entity_persistence = f"pyscript.{entity_name}"
-  state.persist(entity_persistence)
+  service.call(domain="pyscript", name="entity_persistence", entity=entity_name)
   
   @state_trigger(expr(entity, expression=default, comparator="!=", defined=True), state_check_now=True)
   def start_timer(delay=delay, trigger_type=None, var_name=None):
@@ -54,10 +53,9 @@ def timeout_factory(entity, default, delay=0):
 
   @event_trigger(EVENT_HOMEASSISTANT_STOP)
   def timer_persist():
-    entity_timer_state = state.get(entity_timer)
-    if entity_timer_state and entity_timer_state is not "idle":
-      state.set(entity_persistence, state.get(f"{entity_timer}.remaining"))
-      state.persist(entity_persistence) # not needed
+    if state.get(entity_timer) and state.get(entity_timer) is not "idle":
+      service.call(domain="pyscript", name="entity_persistence", entity=entity_name, state=state.get(f"{entity_timer}.remaining"))
+
 # Initialization
 
 for entity in entities:
