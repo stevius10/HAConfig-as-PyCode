@@ -45,7 +45,7 @@ def scrape_housing_factory(provider):
   @time_trigger('startup')
   @time_trigger('shutdown')
   def scrape_housing_init():
-    state.persist(entity)
+    state.persist(entity, default_value="none")
 
   @time_trigger(EXPR_TIME_UPDATE_SENSORS_HOUSING)
   @time_active(EXPR_TIME_GENERAL_WORKTIME)

@@ -45,20 +45,20 @@ def timeout_factory(entity, default, delay=0):
   # Handle system based events 
 
   @time_trigger('startup')
-  @time_trigger('shutdown')
-  def init_timer():
-    state.persist(entity_persisted)
-
-  @event_trigger(EVENT_SYSTEM_STARTED) # wait for import
-  def restart_timer():
-    if state.get(entity_persistence) is not None: 
+  def timer_init():
+    default_value = "0:00:00"
+    state.persist(entity_persisted, default_value=default_value)
+    if state.get(entity_persisted) is not default_value:
       start_timer(delay=state.get(entity_persisted))
+      state.set(entity_persisted, default_value)
 
   @time_trigger('shutdown')
   def timer_persist():
     if entity_persisted is not None and state.get(entity_timer) and state.get(entity_timer) is not "idle":
-      state.set(entity_persisted, state.get(entity_timer))
-
+      timer.pause(entity_id=entity_timer)
+      state.set(entity_persisted, state.getattr(entity_timer).get('remaining'))
+      state.persist(entity_persisted)
+          
 # Initialization
 
 for entity in entities:
