@@ -46,16 +46,18 @@ def timeout_factory(entity, default, delay=0):
 
   @time_trigger('startup')
   def timer_init():
-    default_value = "0:00:00"
+    default_value = "idle"
     state.persist(entity_persisted, default_value=default_value)
     if state.get(entity_persisted) is not default_value:
       start_timer(delay=state.get(entity_persisted))
-      state.set(entity_persisted, default_value)
+      log(f"timer '{entity_timer}' restored with duration {state.getattr(entity_timer).get('remaining')}")
+    state.set(entity_persisted, default_value)
 
   @time_trigger('shutdown')
   def timer_persist():
     if entity_persisted is not None and state.get(entity_timer) and state.get(entity_timer) is not "idle":
       timer.pause(entity_id=entity_timer)
+      task.sleep(0.5)
       state.set(entity_persisted, state.getattr(entity_timer).get('remaining'))
       state.persist(entity_persisted)
           
