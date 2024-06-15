@@ -4,8 +4,8 @@ from constants.mappings import *
 
 from utils import *
 
-@service
 @logged
+@service
 def notify(message, data=None, target=DEFAULT_NOTIFICATION_TARGET, default=True):
   devices = DEVICES.get(target) if target else [target for targets in DEVICES.values() for target in targets]
 
@@ -14,11 +14,11 @@ def notify(message, data=None, target=DEFAULT_NOTIFICATION_TARGET, default=True)
 
   for device in devices:
     service.call("notify", f"mobile_app_{device['id']}", message=message, data=data)
-    
-@service
-@logged
-def shortcut(message, shortcut, input=None, target=DEFAULT_NOTIFICATION_TARGET, **kwargs):
 
+@logged
+@service
+def shortcut(message, shortcut, input=None, target=DEFAULT_NOTIFICATION_TARGET, **kwargs):
+  
   data = { "shortcut": { "name": shortcut, "input": input } }
 
   for key, value in kwargs.items():
@@ -26,12 +26,3 @@ def shortcut(message, shortcut, input=None, target=DEFAULT_NOTIFICATION_TARGET, 
       data["shortcut"][key] = value
   
   notify(message=message, data=data, target=target)
-
-@service
-@logged
-def entity_persistence(entity, prefix="", state=None):
-  entity = f"pyscript.{prefix}_{entity}"
-  if state: 
-    state.set(f"pyscript.{prefix}_{entity}", state)
-  state.persist(f"pyscript.{prefix}_{entity}")
-  return entity

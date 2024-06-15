@@ -41,26 +41,24 @@ def debug(msg=""):
 
 def logged(func):
   def wrapper(*args, **kwargs):
-    logged = func(*args, **kwargs)
-    if "context" in kwargs: del kwargs['context']
-    parameter_args = ', '.join([str(arg) for arg in args if arg is not None]) if args else None
-    parameter_kwargs = ', '.join([f'{k}={v}' for k, v in kwargs.items() if v is not None]) if kwargs else None
-    logged_result = str(logged_result) if logged_result else ''
-    
-    if kwargs.get('trigger_type') != 'state' or (kwargs.get('trigger_type') == 'state' and 
-      kwargs.get('value') not in STATES_UNDEFINED and kwargs.get('old_value') not in STATES_UNDEFINED):
-      log(msg=f"{func.name}{f'({parameter_args})' if parameter_args else ''}{f'({parameter_kwargs})' if parameter_kwargs else ''}{f': {logged}' if logged else ''}")
+    logged_result = func(*args, **kwargs)
+    if "context" in kwargs: del kwargs["context"]
+    parameter_args = ", ".join([str(arg) for arg in args if arg is not None]) if args else None
+    parameter_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if v is not None]) if kwargs else None
+
+    if kwargs.get("trigger_type") != "state" or (kwargs.get("trigger_type") == "state" and 
+      kwargs.get("value") not in STATES_UNDEFINED and kwargs.get("old_value") not in STATES_UNDEFINED):
+      log(msg=f"{func.name}{f"({parameter_args})" if parameter_args else ""}{f"({parameter_kwargs})" if parameter_kwargs else ""}{f": {logged_result}" if logged_result else ""}")
     return logged_result
   return wrapper
 
 def debugged(func):
   def wrapper(*args, **kwargs):
-    debugged = func(*args, **kwargs)
-    if "context" in kwargs: del kwargs['context']
-    parameter_args = ', '.join([str(arg) for arg in args if arg is not None]) if args else None
-    parameter_kwargs = ', '.join([f'{k}={v}' for k, v in kwargs.items() if v is not None]) if kwargs else None
-    result = str(debugged) if debugged is not None else ''
-    debug(msg=f"{func.name}{f'({parameter_args})' if parameter_args else ''}{f'({parameter_kwargs})' if parameter_kwargs else ''}{f': {debugged})' if debugged else ''}")
+    debugged_result = func(*args, **kwargs)
+    if "context" in kwargs: del kwargs["context"]
+    parameter_args = ", ".join([str(arg) for arg in args if arg is not None]) if args else None
+    parameter_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if v is not None]) if kwargs else None
+    debug(msg=f"{func.name}{f"({parameter_args})" if parameter_args else ""}{f"({parameter_kwargs})" if parameter_kwargs else ""}{f": {debugged_func})" if debugged_result else ""}")
     return debugged
   return wrapper
 

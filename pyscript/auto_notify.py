@@ -15,7 +15,7 @@ trigger = []
 
 # Housing
   
-def get_housing(prefix=SERVICE_SCRAPE_HOUSING_SENSOR_PREFIX):
+def get_housing(prefix=PERSISTANCE_SCRAPE_HOUSING_SENSOR_PREFIX):
   sensors = []
   for name in state.names(domain="pyscript"):
     if prefix in name: sensors.append(name)

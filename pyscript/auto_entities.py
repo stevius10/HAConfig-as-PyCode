@@ -1,10 +1,8 @@
 from constants.entities import AUTO_ENTITIES
 from constants.events import EVENT_SYSTEM_STARTED
-from constants.mappings import SERVICE_HA_TURN_OFF
+from constants.mappings import PERSISTANCE_GENERAL_TIMER_PREFIX, SERVICE_HA_TURN_OFF
 
 from utils import *
-
-from homeassistant.const import EVENT_HOMEASSISTANT_STOP
 
 entities = AUTO_ENTITIES
 
@@ -24,8 +22,8 @@ def default_factory(entity, func):
 def timeout_factory(entity, default, delay=0):
   entity_name = entity.split(".")[1]
   entity_timer = f"timer.{entity_name}"
-  service.call(domain="pyscript", name="entity_persistence", entity=entity_name)
-  
+  entity_persisted = f"pyscript.{PERSISTANCE_GENERAL_TIMER_PREFIX}_{entity_name}"
+
   @state_trigger(expr(entity, expression=default, comparator="!=", defined=True), state_check_now=True)
   def start_timer(delay=delay, trigger_type=None, var_name=None):
     if state.get(entity) != default and state.get(entity) not in STATES_UNDEFINED:
@@ -45,16 +43,21 @@ def timeout_factory(entity, default, delay=0):
   trigger.append(timer_reset)
 
   # Handle system based events 
-  
+
+  @time_trigger('startup')
+  @time_trigger('shutdown')
+  def init_timer():
+    state.persist(entity_persisted)
+
   @event_trigger(EVENT_SYSTEM_STARTED) # wait for import
   def restart_timer():
     if state.get(entity_persistence) is not None: 
-      start_timer(delay=state.get(entity_persistence))
+      start_timer(delay=state.get(entity_persisted))
 
-  @event_trigger(EVENT_HOMEASSISTANT_STOP)
+  @time_trigger('shutdown')
   def timer_persist():
-    if state.get(entity_timer) and state.get(entity_timer) is not "idle":
-      service.call(domain="pyscript", name="entity_persistence", entity=entity_name, state=state.get(f"{entity_timer}.remaining"))
+    if entity_persisted is not None and state.get(entity_timer) and state.get(entity_timer) is not "idle":
+      state.set(entity_persisted, state.get(entity_timer))
 
 # Initialization
 

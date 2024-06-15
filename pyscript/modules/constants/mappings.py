@@ -10,6 +10,12 @@ STATE_HA_TIMER_STOPPED = "idle"
 
 NOTIFICATION_ID_CHANGE_DETECTION = "changedetection"
 
+# Persistance
+
+PERSISTANCE_GENERAL_TIMER_PREFIX = "timer"
+
+PERSISTANCE_SCRAPE_HOUSING_SENSOR_PREFIX = "v_scrape"
+
 # Shortcuts
 
 SHORTCUT_HOUSING_NAME = "SC-HA-Notify-Housing"
@@ -19,6 +25,7 @@ SHORTCUT_HOUSING_PARAMETER_URL = "url"
 
 SERVICE_HA_TURN_OFF = "homeassistant.turn_off"
 SERVICE_HA_SYSLOG_WRITE = "system_log.write"
+
 
 SERVICE_PY_LOG = "pyscript.log"
 

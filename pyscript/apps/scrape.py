@@ -1,5 +1,6 @@
 from constants.events import *
 from constants.expressions import *
+from constants.mappings import *
 from constants.settings import *
 
 from utils import *
@@ -13,9 +14,7 @@ trigger = []
 
 housing_provider = SERVICE_SCRAPE_HOUSING_PROVIDERS
 
-def fetch(url, method="GET", headers=None, data=None, verify=False):
-  response = requests.request(method, url, headers=headers, data=data, verify=verify)
-  return BeautifulSoup(response.content, 'html.parser')
+# Function
 
 @logged
 def extract(content, item, address_selector, area_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None):
@@ -33,42 +32,42 @@ def extract(content, item, address_selector, area_selector, rent_selector, size_
 
   return apartments
 
-@logged
-def set_sensor(entity_persistence, provider, apartments):
-  pyscript.entity_persistence(name=provider, prefix={SERVICE_SCRAPE_HOUSING_SENSOR_PREFIX}, state=', '.join(apartments[:SERVICE_SCRAPE_HOUSING_SENSOR_LENGTH]))
+def fetch(url, method="GET", headers=None, data=None, verify=False):
+  response = requests.request(method, url, headers=headers, data=data, verify=verify)
+  return BeautifulSoup(response.content, 'html.parser')
+  
+# Factory
 
 def scrape_housing_factory(provider):
+
+  entity = f"pyscript.{PERSISTANCE_SCRAPE_HOUSING_SENSOR_PREFIX}_{provider}"
+  
+  @time_trigger('startup')
+  @time_trigger('shutdown')
+  def scrape_housing_init():
+    state.persist(entity)
 
   @time_trigger(EXPR_TIME_UPDATE_SENSORS_HOUSING)
   @time_active(EXPR_TIME_GENERAL_WORKTIME)
   @service
-  def scrape_housing(entity, provider):
+  def scrape_housing():
     task.sleep(random.randint(SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
-      
-    url = housing_provider[provider]["url"]
-    if housing_provider[provider].get("request_headers") and housing_provider[provider].get("request_data"):
-      response = requests.post(url, headers=housing_provider[provider].get("request_headers"), data=housing_provider[provider].get("request_data"), verify=False).text
-      content = BeautifulSoup(json.loads(response)['searchresults'], 'html.parser')
-    else: 
-      content = fetch(url)
     
     structure = housing_provider[provider]["structure"]
-    item = structure["item"]
-    address_selector = structure["address_selector"]
-    area_selector = structure["area_selector"]
-    rent_selector = structure["rent_selector"]
-    size_selector = structure["size_selector"]
-    rooms_selector = structure["rooms_selector"]
-    details_selector = structure["details_selector"]
-  
-    set_sensor(entity_persistence, provider, extract(
-      content, item, address_selector, area_selector, rent_selector, size_selector, rooms_selector, details_selector 
-    ))
+    if housing_provider[provider].get("request_headers") and housing_provider[provider].get("request_data"):
+      response = requests.post(housing_provider[provider]["url"], headers=housing_provider[provider].get("request_headers"), data=housing_provider[provider].get("request_data"), verify=False).text
+      content = BeautifulSoup(json.loads(response)['searchresults'], 'html.parser')
+    else: content = fetch(url)
+
+    state.set(entity, extract(content, structure["item"], 
+      structure["address_selector"], structure["area_selector"], structure["rent_selector"], 
+      structure["size_selector"], structure["rooms_selector"], structure["details_selector"] ))
     
   trigger.append(scrape_housing)
 
+# Initialization
+
 for provider in housing_provider.keys():
-  service.call(domain="pyscript", name="entity_persistence", entity=provider, prefix=SERVICE_SCRAPE_HOUSING_SENSOR_PREFIX)
   scrape_housing_factory(provider)
-  
+
 event.fire(EVENT_HOUSING_INITIALIZED)
