@@ -11,7 +11,7 @@ trigger = []
 # Default 
 
 def default_factory(entity, func):
-  @state_trigger(expr(entity, entities.get(entity)['default'], comparator="!="), func)
+  @state_trigger(expr(entity, entities.get(entity)['default'], comparator="!="), func, state_hold=1)
   @debugged
   def default(func):
     service.call(func.split(".")[0], func.split(".")[1], entity_id=entity)
@@ -37,7 +37,7 @@ def timeout_factory(entity, default, delay=0):
     service.call("homeassistant", f"turn_{default}", entity_id=entity)
   trigger.append(timer_stop)
   
-  @state_trigger(expr(entity, expression=default, comparator="=="))
+  @state_trigger(expr(entity, expression=default, comparator="=="), state_hold=1)
   @debugged
   def timer_reset(var_name=None):
     timer.cancel(entity_id=entity_timer)
@@ -47,19 +47,26 @@ def timeout_factory(entity, default, delay=0):
 
   @time_trigger('startup')
   def timer_init():
-    default_value = "idle"
-    state.persist(entity_persisted, default_value=default_value)
-    if state.get(entity_persisted) != default_value:
+    default="None"
+    state.persist(entity_persisted, default_value=default)
+    homeassistant.update_entity(entity_id=entity_persisted)
+    log(state.get(entity_persisted))
+    if state.get(entity_persisted) != default:
       start_timer(delay=state.get(entity_persisted))
       log(f"timer '{entity_timer}' restored with duration {state.getattr(entity_timer).get('remaining')}")
-    state.set(entity_persisted, default_value)
+    #state.set(entity_persisted, default_value)
 
+  @event_trigger(EVENT_SYSTEM_STARTED)
+  def timer_restore():
+    timer_init()
+    
   @time_trigger('shutdown')
   def timer_persist():
     if entity_persisted is not None and state.get(entity_timer) and state.get(entity_timer) is not "idle":
       timer.pause(entity_id=entity_timer)
-      task.sleep(0.1)
+      homeassistant.update_entity(entity_id=entity_timer)
       state.set(entity_persisted, state.getattr(entity_timer).get('remaining'))
+      homeassistant.update_entity(entity_id=entity_persisted)
       state.persist(entity_persisted)
           
 # Initialization
