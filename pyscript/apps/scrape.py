@@ -17,7 +17,7 @@ housing_provider = SERVICE_SCRAPE_HOUSING_PROVIDERS
 # Function
 
 @logged
-def extract(content, item, address_selector, area_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None):
+def scrape(content, item, address_selector, area_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None):
   apartments = []
   
   elements = content.select(item)
@@ -31,10 +31,6 @@ def extract(content, item, address_selector, area_selector, rent_selector, size_
     apartments.append({"address": address, "area": area, "rent": rent, "size": size, "rooms": rooms, "details": details })
 
   return apartments
-
-def fetch(url, method="GET", headers=None, data=None, verify=False):
-  response = requests.request(method, url, headers=headers, data=data, verify=verify)
-  return BeautifulSoup(response.content, 'html.parser')
   
 # Factory
 
@@ -49,19 +45,24 @@ def scrape_housing_factory(provider):
 
   @time_trigger(EXPR_TIME_UPDATE_SENSORS_HOUSING)
   @time_active(EXPR_TIME_GENERAL_WORKTIME)
+  @logged
   @service
-  def scrape_housing():
+  def scrape_housing(provider=provider):
     task.sleep(random.randint(SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
     
     structure = housing_provider[provider]["structure"]
     if housing_provider[provider].get("request_headers") and housing_provider[provider].get("request_data"):
       response = requests.post(housing_provider[provider]["url"], headers=housing_provider[provider].get("request_headers"), data=housing_provider[provider].get("request_data"), verify=False).text
       content = BeautifulSoup(json.loads(response)['searchresults'], 'html.parser')
-    else: content = fetch(url)
+    else: 
+        response = requests.get(housing_provider[provider]["url"], verify=verify)
+        content = BeautifulSoup(response.content, 'html.parser')
 
-    state.set(entity, extract(content, structure["item"], 
+    state.set(entity, scrape(content, structure["item"], 
       structure["address_selector"], structure["area_selector"], structure["rent_selector"], 
       structure["size_selector"], structure["rooms_selector"], structure["details_selector"] ))
+    log(f"{entity} set to {state.get(entity)}", kwargs.get("context"))
+    log_data(state.getattr(entity))
     
   trigger.append(scrape_housing)
 

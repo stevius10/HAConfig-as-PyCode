@@ -22,7 +22,8 @@ def script_air_cleaner_threshold_on(var_name=None, value=None):
 @state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_STOP, comparator="<"), watch=[entity["sensor"] for entity in entities.values()])
 @state_active(f"{EXPR_STATE_AIR_THRESHOLD_SEASON} and {[entity['fan'] for entity in entities.values()]} == STATE_ON")
 @time_active(EXPR_STATE_AIR_THRESHOLD_TIME)
-@task_unique("script_air_cleaner_threshold_off", kill_me=True)  
+@task_unique("script_air_cleaner_threshold_off", kill_me=True) 
+@debugged
 def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=None, **kwargs):
   entity = entities[var_name.split(".")[1]]["fan"]
   if state.get(var_name) == STATE_ON:
@@ -32,6 +33,7 @@ def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=Non
 @event_trigger(EVENT_NEVER) # required for service
 @task_unique("-".join([entity["fan"] for entity in entities.values()]), kill_me=False)
 @service
+@logged
 def script_air_cleaner_clean(entity=[entity["fan"] for entity in entities.values()]):
   fan.turn_on(entity_id=entity)
   task.sleep(SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY)
@@ -43,12 +45,12 @@ def script_air_cleaner_clean(entity=[entity["fan"] for entity in entities.values
   SCRIPT_AIR_CLEANER_SLEEP_MODE_PERCENTAGE, comparator='>').replace("'", ""), # workaround prevent pyscript to interpret \
   state_hold=SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN, state_check_now=True, \
   watch=[f"{entity['fan']}.percentage" for entity in entities.values()])
-@logged
+@debugged
 @service
 def script_air_cleaner_sleep(entity=[entity["fan"] for entity in entities.values()], var_name=None, value=None):
-  if var_name or not isinstance(entity, list):
+  if var_name: entity = ".".join(var_name.split(".")[:2])
+  if state.get(entity) is STATE_ON and not isinstance(entity, list):
     if var_name: entity = ".".join(var_name.split(".")[:2])
-    log(entity)
     supported_features = str(state.get(f"{entity}.supported_features")) if state.get(entity) else 0
     if supported_features == "9": # int without str(state.get())
       fan.set_preset_mode(entity_id=entity, preset_mode=SCRIPT_AIR_CLEANER_PRESET_MODE_SLEEP)

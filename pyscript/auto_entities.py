@@ -25,13 +25,14 @@ def timeout_factory(entity, default, delay=0):
   entity_persisted = f"pyscript.{PERSISTANCE_GENERAL_TIMER_PREFIX}_{entity_name}"
 
   @state_trigger(expr(entity, expression=default, comparator="!=", defined=True), state_check_now=True)
+  @debugged
   def start_timer(delay=delay, trigger_type=None, var_name=None):
     if state.get(entity) != default and state.get(entity) not in STATES_UNDEFINED:
       timer.start(entity_id=entity_timer, duration=delay)
   trigger.append(start_timer)
 
   @event_trigger("timer.finished", f"entity_id == '{entity_timer}'")
-  @debugged
+  @logged
   def timer_stop(**kwargs):
     service.call("homeassistant", f"turn_{default}", entity_id=entity)
   trigger.append(timer_stop)
