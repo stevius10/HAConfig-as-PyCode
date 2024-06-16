@@ -2,14 +2,14 @@ from constants.config import LOG_LOGGER_SYS, LOG_LOGGING_LEVEL
 from constants.mappings import STATES_UNDEFINED
 
 import importlib
-
-
   
 # Logging
 
 def debug(msg=""):
-    logfile = importlib.import_module("logfile") # except: pass # on purpose: avoid validate before sys.path appended
-    logfile.Logfile.debug(msg)
+    try: 
+      logfile = importlib.import_module("logfile") 
+      logfile.Logfile.debug(msg)
+    except ModuleNotFoundError: pass # on purpose: avoid validate before sys.path appended
 
 def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL):
   if not isinstance(msg, str):
@@ -20,8 +20,7 @@ def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL):
 
 def debugged(func):
   def wrapper(*args, **kwargs):
-    #if "context" in kwargs:
-      #kwargs["context"] = func.name
+    if "context" in kwargs: kwargs["context"] = func.name
     debugged_result = func(*args, **kwargs)
     
     parameter_args = ", ".join([str(arg) for arg in args if arg is not None]) if args else None
