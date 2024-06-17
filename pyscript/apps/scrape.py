@@ -31,6 +31,16 @@ def scrape(content, item, address_selector, area_selector, rent_selector, size_s
     apartments.append({"address": address, "area": area, "rent": rent, "size": size, "rooms": rooms, "details": details })
 
   return apartments
+
+@pyscript_executor
+def fetch(provider, housing_provider):
+    if housing_provider[provider].get("request_headers") and housing_provider[provider].get("request_data"):
+        response = (requests.post(housing_provider[provider]["url"], headers=housing_provider[provider].get("request_headers"), data=housing_provider[provider].get("request_data"), verify=False)).text
+        content = BeautifulSoup(json.loads(response)['searchresults'], 'html.parser')
+    else:
+        response = requests.get(housing_provider[provider]["url"], verify=False)
+        content = BeautifulSoup(response.content, 'html.parser')
+    return content
   
 # Factory
 
@@ -51,13 +61,7 @@ def scrape_housing_factory(provider):
     task.sleep(random.randint(SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
     
     structure = housing_provider[provider]["structure"]
-    if housing_provider[provider].get("request_headers") and housing_provider[provider].get("request_data"):
-      response = requests.post(housing_provider[provider]["url"], headers=housing_provider[provider].get("request_headers"), data=housing_provider[provider].get("request_data"), verify=False).text
-      content = BeautifulSoup(json.loads(response)['searchresults'], 'html.parser')
-    else: 
-        response = requests.get(housing_provider[provider]["url"], verify=verify)
-        content = BeautifulSoup(response.content, 'html.parser')
-
+    context = fetch(provider, housing_provider)
     state.set(entity, scrape(content, structure["item"], 
       structure["address_selector"], structure["area_selector"], structure["rent_selector"], 
       structure["size_selector"], structure["rooms_selector"], structure["details_selector"] ))

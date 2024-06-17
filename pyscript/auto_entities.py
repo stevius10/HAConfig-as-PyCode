@@ -47,19 +47,21 @@ def timeout_factory(entity, default, delay=0):
 
   @time_trigger('startup')
   def timer_init():
-    default="None"
-    state.persist(entity_persisted, default_value=default)
+    state.persist(entity_persisted)
     homeassistant.update_entity(entity_id=entity_persisted)
     log(state.get(entity_persisted))
-    if state.get(entity_persisted) != default:
-      start_timer(delay=state.get(entity_persisted))
+    if state.get(entity_persisted):
+      start_timer(delay=str(state.get(entity_persisted)))
       log(f"timer '{entity_timer}' restored with duration {state.getattr(entity_timer).get('remaining')}")
-    #state.set(entity_persisted, default_value)
+    #
 
   @event_trigger(EVENT_SYSTEM_STARTED)
   def timer_restore():
-    timer_init()
-    
+    if state.get(entity_persisted):
+      start_timer(delay=str(state.get(entity_persisted)))
+      log(f"timer '{entity_timer}' restored with duration {state.getattr(entity_timer).get('remaining')}")
+    state.set(entity_persisted, "")
+
   @time_trigger('shutdown')
   def timer_persist():
     if entity_persisted is not None and state.get(entity_timer) and state.get(entity_timer) is not "idle":
