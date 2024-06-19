@@ -48,6 +48,11 @@ def scrape(content, item, address_selector, area_selector, rent_selector, size_s
       apartment_str = f"{apartment.get('address', '')}/{apartment.get('area', '')} ({apartment.get('rent', '')}, {apartment.get('rooms', '')}/{apartment.get('size', '')})"
       apartments.append(apartment_str)
       
+      from logfile import Logfile # req. sys setup 
+      Logfile(ctx=name).log(f"{apartment.get('address', '')},{apartment.get('area', '')},{apartment.get('rooms', '')},{apartment.get('size', '')},{apartment.get('rent', '')}")
+      
+      notify.send_message(entity_id=notify.history_housing, message=f"{apartment.get('address', '')},{apartment.get('area', '')},{apartment.get('rooms', '')},{apartment.get('size', '')},{apartment.get('rent', '')}")
+      
   return apartments
 
 @pyscript_executor
