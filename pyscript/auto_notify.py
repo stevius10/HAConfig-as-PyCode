@@ -17,12 +17,14 @@ trigger = []
   
 def get_housing(prefix=PERSISTANCE_SCRAPE_HOUSING_SENSOR_PREFIX):
   sensors = []
-  for name in state.names(domain="pyscript"):
-    if prefix in name: sensors.append(name)
-
+  for name in state.names():
+    if prefix in name: 
+      sensors.append(name)
+  return sensors 
+  
 @event_trigger(EVENT_HOUSING_INITIALIZED)
 def init_housing():
-  @state_trigger(expr(get_housing()))
+  @state_trigger(expr(entity=[get_housing()]))
   def notify_housing(target=DEFAULT_NOTIFICATION_TARGET, default=True, var_name=None, value=None, old_value=None):
     if value not in STATES_UNDEFINED:
       pyscript.shortcut(message=f"{var_name}: {value}", shortcut=SHORTCUT_HOUSING_NAME, input=sensors.get(var_name).get(SHORTCUT_HOUSING_PARAMETER_URL))

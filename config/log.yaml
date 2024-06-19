@@ -20,6 +20,8 @@ logger:
       - "MiioException"
     custom_components.xiaomi_miot.humidifier:
       - "MiioException"
+    aiohttp.server:
+      - "Error handling request"
     habluetooth.scanner:
       - "org.bluez.Error.InProgress"
 

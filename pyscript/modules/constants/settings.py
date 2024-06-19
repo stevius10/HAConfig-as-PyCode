@@ -12,8 +12,8 @@ SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN = 600
 SCRIPT_AIR_CLEANER_TIMEOUT_HELPER = 280
 SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY = 2
 
-SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN = 60
-SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX = 600
+SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN = 1 # 60
+SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX = 10 # 600
 SERVICE_SCRAPE_HOUSING_FILTER_AREA = 50
 SERVICE_SCRAPE_HOUSING_FILTER_RENT = 700
 SERVICE_SCRAPE_HOUSING_FILTER_ROOMS = 2
@@ -32,5 +32,5 @@ SERVICE_SCRAPE_HOUSING_PROVIDERS = {
     "request_headers": { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'Accept': '*/*', 'X-Requested-With': 'XMLHttpRequest' },
     "request_data": { 'q': 'wf-save-srch', 'save': 'false', 'qm_min': SERVICE_SCRAPE_HOUSING_FILTER_AREA, 'miete_max': SERVICE_SCRAPE_HOUSING_FILTER_RENT, 'rooms_min': SERVICE_SCRAPE_HOUSING_FILTER_ROOMS, 'bez[]': ['01_00', '02_00', '03_00', '04_00', '02_00'], 'wbs': 0 } },
   "wbm": { "url": "https://www.wbm.de/wohnungen-berlin/angebote/",
-    "structure": { "item": "#content .immo-element", "address_selector": ".address", "area_selector": ".area", "rent_selector": ".main-property-rent", "size_selector": ".main-property-size", "rooms_selector": ".main-property-rooms", "details_selector": ".check-property-list" } },
+    "structure": { "item": "#content .immo-element", "address_selector": ".address", "area_selector": ".area", "rent_selector": ".main-property-rent", "size_selector": ".main-property-size", "rooms_selector": ".main-property-rooms", "details_selector": ".check-property-list" } }
 }
