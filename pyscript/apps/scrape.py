@@ -25,10 +25,8 @@ def filter(apartment):
   if apartment["address"] is None:
     return None
   if apartment["rent"] is not None:
-    match = re.search(r'\d{3}', apartment["rent"])
-    if match:
-        if not (400 <= int(match.group(0)) <= 700): 
-          pass # return None
+    if not (400 < int(''.join(re.findall(r'\d', apartment["rent"])[:3])) < SERVICE_SCRAPE_HOUSING_FILTER_RENT):
+      return None
   return {k: v for k, v in apartment.items() if v is not None}
 
 def scrape(content, item, address_selector, area_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None):
@@ -53,7 +51,7 @@ def scrape(content, item, address_selector, area_selector, rent_selector, size_s
   return apartments
 
 @pyscript_executor
-def fetch(provider, housing_provider):
+def fetch(provider):
   if housing_provider[provider].get("request_headers") and housing_provider[provider].get("request_data"):
     response = (requests.post(housing_provider[provider]["url"], headers=housing_provider[provider].get("request_headers"), data=housing_provider[provider].get("request_data"), verify=False)).text
     content = BeautifulSoup(json.loads(response)['searchresults'], 'html.parser')
@@ -85,7 +83,7 @@ def scrape_housing_factory(provider):
       task.sleep(random.randint(SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
       
       structure = housing_provider[provider]["structure"]
-      apartments = scrape(fetch(provider, housing_provider), structure["item"], 
+      apartments = scrape(fetch(provider), structure["item"], 
         structure["address_selector"], structure["area_selector"], structure["rent_selector"],
         structure["size_selector"], structure["rooms_selector"], structure["details_selector"])
       

@@ -31,6 +31,8 @@ SERVICE_SCRAPE_HOUSING_PROVIDERS = {
     "structure": {"item": "._tb_left", "address_selector": "self::div", "area_selector": None, "rent_selector": None, "size_selector": None, "rooms_selector": None, "details_selector": None }, 
     "request_headers": { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'Accept': '*/*', 'X-Requested-With': 'XMLHttpRequest' },
     "request_data": { 'q': 'wf-save-srch', 'save': 'false', 'qm_min': SERVICE_SCRAPE_HOUSING_FILTER_AREA, 'miete_max': SERVICE_SCRAPE_HOUSING_FILTER_RENT, 'rooms_min': SERVICE_SCRAPE_HOUSING_FILTER_ROOMS, 'bez[]': ['01_00', '02_00', '03_00', '04_00', '02_00'], 'wbs': 0 } },
-  "wbm": { "url": "https://www.wbm.de/wohnungen-berlin/angebote/",
+
+  "wbm": { # approved 19.06.24
+    "url": "https://www.wbm.de/wohnungen-berlin/angebote/",
     "structure": { "item": "#content .immo-element", "address_selector": ".address", "area_selector": ".area", "rent_selector": ".main-property-rent", "size_selector": ".main-property-size", "rooms_selector": ".main-property-rooms", "details_selector": ".check-property-list" } }
 }
