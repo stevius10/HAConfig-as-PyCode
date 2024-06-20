@@ -18,40 +18,37 @@ housing_provider = SERVICE_SCRAPE_HOUSING_PROVIDERS
 
 # Function
 
-@logged
+@debugged
 def filter(apartment):
   if all([value is None for value in apartment.values()]):
     return None
   if apartment["address"] is None:
     return None
   if apartment["rent"] is not None:
-    if not (400 < int(''.join(re.findall(r'\d', apartment["rent"])[:3])) < SERVICE_SCRAPE_HOUSING_FILTER_RENT):
+    if re.findall(r'\d', apartment["rent"]) and not (400 < int(''.join(re.findall(r'\d', apartment["rent"])[:3])) < SERVICE_SCRAPE_HOUSING_FILTER_RENT):
       return None
   return {k: v for k, v in apartment.items() if v is not None}
 
-def scrape(content, item, address_selector, area_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None):
+def scrape(content, item, address_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None):
   apartments = []
-  
   elements = content.select(item)
+  
   for element in elements:
-    apartment = {
-      "address": element.select_one(address_selector).get_text().strip() if element.select_one(address_selector) else None,
-      "area": element.select_one(area_selector).get_text().strip() if element.select_one(area_selector) else None,  
-      "rent": element.select_one(rent_selector).get_text().strip() if element.select_one(rent_selector) else None,
-      "size": element.select_one(size_selector).get_text().strip() if size_selector and element.select_one(size_selector) else None,
-      "rooms": element.select_one(rooms_selector).get_text().strip() if rooms_selector and element.select_one(rooms_selector) else None,
-      "details": element.select_one(details_selector).get_text() if details_selector and element.select_one(details_selector) else None
-    }
-    
-    apartment = filter(apartment)
+    address = get_or_default(element, address_selector)
+    rent = get_or_default(element, rent_selector)
+    size = get_or_default(element, size_selector)
+    rooms = get_or_default(element, rooms_selector)
+    details = get_or_default(element, details_selector)
+    apartment = {}
+    apartment = filter({ "address": address, "rent": rent, "size": size, "rooms": rooms, "details": details })
     if apartment:
-      apartment_str = f"{apartment.get('address', '')}/{apartment.get('area', '')} ({apartment.get('rent', '')}, {apartment.get('rooms', '')}/{apartment.get('size', '')})"
+      apartment_str = f"{apartment.get('address', '')} ({apartment.get('rent', '')}, {apartment.get('rooms', '')}/{apartment.get('size', '')})"
       apartments.append(apartment_str)
       
       from logfile import Logfile # req. sys setup 
-      Logfile(ctx=name).log(f"{apartment.get('address', '')},{apartment.get('area', '')},{apartment.get('rooms', '')},{apartment.get('size', '')},{apartment.get('rent', '')}")
+      Logfile(ctx=pyscript.get_global_ctx()).log(f"{apartment.get('address', '')},{apartment.get('area', '')},{apartment.get('rooms', '')},{apartment.get('size', '')},{apartment.get('rent', '')}")
       
-      notify.send_message(entity_id=notify.history_housing, message=f"{apartment.get('address', '')},{apartment.get('area', '')},{apartment.get('rooms', '')},{apartment.get('size', '')},{apartment.get('rent', '')}")
+      notify.send_message(entity_id="notify.history_housing", message=f"{apartment.get('address', '')},{apartment.get('area', '')},{apartment.get('rooms', '')},{apartment.get('size', '')},{apartment.get('rent', '')}")
       
   return apartments
 
@@ -69,6 +66,10 @@ def fetch(provider):
 
 def get_entity(provider):
     return f"pyscript.{PERSISTANCE_SCRAPE_HOUSING_SENSOR_PREFIX}_{provider}"
+
+def get_or_default(element, selector, default=None):
+  item = element.select_one(selector) if selector and element else ""
+  return item.get_text().strip() if item else default
 
 # Factory
 
@@ -88,12 +89,13 @@ def scrape_housing_factory(provider):
       task.sleep(random.randint(SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
       
       structure = housing_provider[provider]["structure"]
-      apartments = scrape(fetch(provider), structure["item"], 
-        structure["address_selector"], structure["area_selector"], structure["rent_selector"],
+      apartments = scrape(fetch(provider), 
+        structure["item"], structure["address_selector"], structure["rent_selector"],
         structure["size_selector"], structure["rooms_selector"], structure["details_selector"])
       
       state.set(get_entity(provider), ", ".join(apartments)[:254])
       state.persist(get_entity(provider))
+      return ", ".join(apartments)[:254]
     else:
       for provider in housing_provider.keys():
         pyscript.scrape_housing(provider=provider, blocking=False, return_response=False)

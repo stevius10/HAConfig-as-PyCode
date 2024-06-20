@@ -15,12 +15,14 @@ from datetime import datetime
 @time_trigger('startup')
 @time_trigger('shutdown')
 @task_unique("ha_log_truncate", kill_me=True)
-async def ha_log_truncate(log_ha_size=None, trigger_type=None, event_type=None, file="", folder="", path="", **kwargs):
+async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder="", path="", **kwargs):
+  log_ha_size=None
   
-  if (trigger_type == "event" and event_type == EVENT_FOLDER_WATCHER and kwargs.get('trigger_type') == "modified"): 
+  if trigger_type == "event" and event_type == EVENT_FOLDER_WATCHER:
     log_ha_size = LOG_HA_SIZE
-  if trigger_type == "time":
+  if trigger_type == "time": 
     log_ha_size = 0; system_log.clear()
+    
   if log_ha_size:
     try: log_truncate(logfile=PATH_LOG_HA, size_log_entries=log_ha_size, size_archive_entries=LOG_ARCHIVE_SIZE)
     except Exception as e: log(str(e))
