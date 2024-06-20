@@ -24,7 +24,7 @@ def timeout_factory(entity, default, delay=0):
   entity_timer = f"timer.{entity_name}"
   entity_persisted = f"pyscript.{PERSISTANCE_GENERAL_TIMER_PREFIX}_{entity_name}"
 
-  @state_trigger(expr(entity, expression=default, comparator="!=", defined=True), state_check_now=True)
+  @state_trigger(expr(entity, expression=default, comparator="!=", defined=True), state_hold_false=1)
   @debugged
   def start_timer(delay=delay, trigger_type=None, var_name=None):
     if state.get(entity) != default and state.get(entity) not in STATES_UNDEFINED:
@@ -53,7 +53,6 @@ def timeout_factory(entity, default, delay=0):
     if state.get(entity_persisted):
       start_timer(delay=str(state.get(entity_persisted)))
       log(f"timer '{entity_timer}' restored with duration {state.getattr(entity_timer).get('remaining')}")
-    #
 
   @event_trigger(EVENT_SYSTEM_STARTED)
   def timer_restore():

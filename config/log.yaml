@@ -16,6 +16,8 @@ logger:
       - "Timeout for command: python3"
     homeassistant.components.google_assistant.http: 
       - "googleapis.com"
+    custom_components.tapo.coordinators:
+      - "Unexpected exception"
     custom_components.xiaomi_miot.fan:
       - "MiioException"
     custom_components.xiaomi_miot.humidifier:

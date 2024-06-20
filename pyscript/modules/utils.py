@@ -32,14 +32,14 @@ def debugged(func):
 
 def logged(func):
   def wrapper(*args, **kwargs):
-    if "context" in kwargs: kwargs["context"] = func.name
+    if "context" in kwargs: del kwargs["context"]
     logged_result = func(*args, **kwargs)
 
     parameter_args = ", ".join([str(arg) for arg in args if arg is not None]) if args else None
     parameter_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if v is not None]) if kwargs else None
     if kwargs.get("trigger_type") != "state" or ( kwargs.get("trigger_type") == "state" and 
       kwargs.get("value") not in STATES_UNDEFINED and kwargs.get("old_value") not in STATES_UNDEFINED):
-      log(msg=f"{func.name}{f"({parameter_args})" if parameter_args else ""}{f"({parameter_kwargs})" if parameter_kwargs else ""}{f": {logged_result}" if logged_result else ''}")
+      log(msg=f"{func.name}{f"({parameter_args})" if parameter_args else ""}{f"({parameter_kwargs})" if parameter_kwargs else ""}{f": {logged_result}" if logged_result else ''}", logger=f"{LOG_LOGGER_SYS}.{func.name}")
     return logged_result
   return wrapper
 

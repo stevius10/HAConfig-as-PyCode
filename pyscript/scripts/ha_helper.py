@@ -11,29 +11,26 @@ from datetime import datetime
 
 # Automations
 
-@task_unique("ha_log_truncate", kill_me=True)
 @event_trigger(EVENT_FOLDER_WATCHER)
-@time_trigger
-async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder="", path="", ns=None, ctx=None, **kwargs):
-  if trigger_type == "event" and event_type == EVENT_FOLDER_WATCHER:
-    if kwargs.get('trigger_type') != "modified": return
+@time_trigger('startup')
+@time_trigger('shutdown')
+@task_unique("ha_log_truncate", kill_me=True)
+async def ha_log_truncate(log_ha_size=None, trigger_type=None, event_type=None, file="", folder="", path="", **kwargs):
+  
+  if (trigger_type == "event" and event_type == EVENT_FOLDER_WATCHER and kwargs.get('trigger_type') == "modified"): 
     log_ha_size = LOG_HA_SIZE
-  elif trigger_type == "time":
-    system_log.clear()
-    log_ha_size = 0
-  else:
-    return
-    
-  try: result = log_truncate(logfile=PATH_LOG_HA, size_log_entries=log_ha_size, size_archive_entries=LOG_ARCHIVE_SIZE)
-  except Exception as e: pass
-  finally: task.sleep(LOG_TRUNCATE_BLOCK_DELAY)
+  if trigger_type == "time":
+    log_ha_size = 0; system_log.clear()
+  if log_ha_size:
+    try: log_truncate(logfile=PATH_LOG_HA, size_log_entries=log_ha_size, size_archive_entries=LOG_ARCHIVE_SIZE)
+    except Exception as e: log(str(e))
+    finally: task.sleep(LOG_TRUNCATE_BLOCK_DELAY)
 
 # Services
 
-@task_unique("log_truncate", kill_me=True)
-@event_trigger(EVENT_HOMEASSISTANT_STOP)
-@debugged
-async def log_truncate(logfile=PATH_LOG_HA, size_log_entries=LOG_HA_SIZE, size_log_tail=LOG_HA_SIZE_TAIL, size_archive_entries=0, log_archive_suffix=LOG_ARCHIVE_SUFFIX, ns=None, ctx=None):
+@logged
+@service
+async def log_truncate(logfile=PATH_LOG_HA, size_log_entries=0, size_log_tail=LOG_HA_SIZE_TAIL, size_archive_entries=0, log_archive_suffix=LOG_ARCHIVE_SUFFIX, ns=None, ctx=None):
   logs_trunc = []
   logs_truncated = []
 
@@ -63,7 +60,7 @@ async def log_read(logfile, ns=None, ctx=None):
       return logs
     except AttributeError: pass
     except Exception as e: 
-      log(f"{logfile} could not be read ({e})", "failed")
+      log(msg=f"{logfile} could not be read ({e})")
   return []
 
 async def log_write(logfile, lines, mode='w+', ns=None, ctx=None):
@@ -72,6 +69,6 @@ async def log_write(logfile, lines, mode='w+', ns=None, ctx=None):
       async with aiofiles.open(logfile, mode=mode) as l:
         l.writelines(lines)
     except AttributeError: pass
-    except: 
-      log(f"{logfile} could not be append: {lines} ({e})", "failed")
+    except Exception as e: 
+      log(msg=f"{logfile} could not be appended: {lines} ({e})")
   return []
