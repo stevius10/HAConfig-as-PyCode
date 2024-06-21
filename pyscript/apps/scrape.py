@@ -42,15 +42,17 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
     apartment = {}
     apartment = filter({ "address": address, "rent": rent, "size": size, "rooms": rooms, "details": details })
     if apartment:
-      apartment_str = f"{apartment.get('address', '')} ({apartment.get('rent', '')}, {apartment.get('rooms', '')}/{apartment.get('size', '')})"
-      apartments.append(apartment_str)
+      details = [detail for detail in [rent, rooms, size] if detail] 
+      apartment_format=f"{address} ({', '.join(details)})" if details else address
+      apartments.append(apartment_format)
+  apartments_format = ", ".join([apartment for apartment in apartments if apartment])[:254]
+  
+  from logfile import Logfile # req. sys setup 
+  Logfile(ctx=pyscript.get_global_ctx()).log(apartments_format)
       
-      from logfile import Logfile # req. sys setup 
-      Logfile(ctx=pyscript.get_global_ctx()).log(f"{apartment.get('address', '')},{apartment.get('area', '')},{apartment.get('rooms', '')},{apartment.get('size', '')},{apartment.get('rent', '')}")
+  notify.send_message(entity_id="notify.history_housing", message=apartments_format)
       
-      notify.send_message(entity_id="notify.history_housing", message=f"{apartment.get('address', '')},{apartment.get('area', '')},{apartment.get('rooms', '')},{apartment.get('size', '')},{apartment.get('rent', '')}")
-      
-  return apartments
+  return apartments_format
 
 @pyscript_executor
 def fetch(provider):

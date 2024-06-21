@@ -2,7 +2,7 @@
 
 AUTO_ENTITIES = {
   "climate.k": { "default": "off", "func": "climate.turn_off" },
-  "media_player.schlafzimmer": { "default": "off", "delay": 4800 },
+  "media_player.schlafzimmer": { "default": ["off", "paused"], "delay": 4800 },
   "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
   "switch.bett": { "default": "off", "delay": 1800 },
   "switch.heizdecke": { "default": "off", "delay": 1800 }, 

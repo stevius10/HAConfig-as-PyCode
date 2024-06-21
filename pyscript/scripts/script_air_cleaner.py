@@ -34,11 +34,14 @@ def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=Non
 @task_unique("-".join([entity["fan"] for entity in entities.values()]), kill_me=False)
 @service
 @logged
-def script_air_cleaner_clean(entity=[entity["fan"] for entity in entities.values()]):
+def script_air_cleaner_clean(conditioned=False, entity=[entity["fan"] for entity in entities.values()]):
   fan.turn_on(entity_id=entity)
   task.sleep(SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY)
   for item in entity: 
+    percentage=script_air_cleaner_get_clean_percentage(item.split(".")[1]) if conditioned else 100
     fan.set_percentage(entity_id=item, percentage=script_air_cleaner_get_clean_percentage(item.split(".")[1]))
+    if percentage > 66:
+      script_air_cleaner_helper_air(entity=item)
 
 @state_trigger(expr([entity["fan"] for entity in entities.values()], STATE_ON)) # reset
 @state_trigger(expr([f"'{entity['fan']}.percentage'" for entity in entities.values()], \
@@ -62,8 +65,6 @@ def script_air_cleaner_sleep(entity=[entity["fan"] for entity in entities.values
     for item in entity: 
       script_air_cleaner_sleep(entity=item, var_name=item)
 
-@logged
-@service
 def script_air_cleaner_turn_off(entity=[entity["fan"] for entity in entities.values()]):
   if isinstance(entity, list):
     for item in entity:
@@ -75,7 +76,6 @@ def script_air_cleaner_get_clean_percentage(name):
   return min(max(SCRIPT_AIR_CLEANER_CLEAN_MODE_PERCENTAGE, (int(state.get(entities[name].get("sensor"))) * 10)), 100)
 
 @debugged
-@service
 def script_air_cleaner_helper_air(entity=[entity["fan"] for entity in entities.values()], helper=[entity["luftung"] for entity in entities.values()], check=False):
   if (check == False) or (sum([int(state.get(entities[item.split(".")[1]]["sensor"])) for item in entity if state.get(entities[item.split(".")[1]]["sensor"]) is not None]) > SCRIPT_AIR_CLEANER_HELPER_PM_MINIMUM):
     homeassistant.turn_on(entity_id=helper)

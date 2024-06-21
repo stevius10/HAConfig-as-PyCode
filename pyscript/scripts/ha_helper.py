@@ -12,13 +12,11 @@ from datetime import datetime
 # Automations
 
 @event_trigger(EVENT_FOLDER_WATCHER)
-@time_trigger('startup')
-@time_trigger('shutdown')
+@time_trigger
 @task_unique("ha_log_truncate", kill_me=True)
 async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder="", path="", **kwargs):
   log_ha_size=None
-  
-  if trigger_type == "event" and event_type == EVENT_FOLDER_WATCHER:
+  if trigger_type == "event" and event_type == "modified": 
     log_ha_size = LOG_HA_SIZE
   if trigger_type == "time": 
     log_ha_size = 0; system_log.clear()
@@ -30,7 +28,6 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
 
 # Services
 
-@logged
 @service
 async def log_truncate(logfile=PATH_LOG_HA, size_log_entries=0, size_log_tail=LOG_HA_SIZE_TAIL, size_archive_entries=0, log_archive_suffix=LOG_ARCHIVE_SUFFIX, ns=None, ctx=None):
   logs_trunc = []

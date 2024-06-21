@@ -8,6 +8,11 @@ entities = AUTO_ENTITIES
 
 trigger = []
 
+@state_trigger(expr("media_player.schlafzimmer"))
+def sz_media(value=None, old_value=None):
+  log(f"Schlafzimmer: {value} (from {old_value})")
+
+
 # Default 
 
 def default_factory(entity, func):
@@ -34,7 +39,7 @@ def timeout_factory(entity, default, delay=0):
   @event_trigger("timer.finished", f"entity_id == '{entity_timer}'")
   @logged
   def timer_stop(**kwargs):
-    service.call("homeassistant", f"turn_{default}", entity_id=entity)
+    service.call("homeassistant", f"turn_{default[0] if isinstance(default, list) else default}", entity_id=entity)
   trigger.append(timer_stop)
   
   @state_trigger(expr(entity, expression=default, comparator="=="), state_hold=1)

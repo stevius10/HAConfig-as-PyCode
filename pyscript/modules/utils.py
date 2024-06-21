@@ -6,43 +6,35 @@ import importlib
 # Logging
 
 def debug(msg=""):
-    try: 
-      logfile = importlib.import_module("logfile") 
-      logfile.Logfile.debug(msg)
-    except ModuleNotFoundError: 
-      pass # on purpose: avoid validation before sys.path appended
+  try:
+    logfile = importlib.import_module("logfile")
+    logfile.Logfile.debug(msg)
+  except ModuleNotFoundError:
+    pass  # Avoid validation before sys.path appended
 
-def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL):
-  if not isinstance(msg, str):
-    logger += "".join([getattr(msg, attr, "") for attr in ("get_name", "func_name")])
-  if title: msg = f"[{title}] {msg}"
-  system_log.write(message=msg, logger=logger, level=level)
-  debug(msg)
+def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL, **kwargs):
+  if msg and isinstance(msg, str):
+    if title: msg = f"[{title}] {msg}"
+    system_log.write(message=msg, logger=logger, level=level)
+    debug(msg)
 
 def debugged(func):
   def wrapper(*args, **kwargs):
-    if "context" in kwargs: del kwargs["context"]
-    debugged_result = func(*args, **kwargs)
-    
-    parameter_args = ", ".join([str(arg) for arg in args if arg is not None]) if args else None
-    parameter_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if v is not None]) if kwargs else None
-    debug(msg=f"{func.name}{f'({parameter_args})' if parameter_args else ''}{f'({parameter_kwargs})' if parameter_kwargs else ''}{f': {debugged_result}' if debugged_result else ''}")
-    return debugged_result
+    if kwargs.get('context'): del kwargs['context']
+    debug(f"[{func.global_ctx_name}.{func.name}] {log_func_format(func, args, kwargs)}")
+    result = func(*args, **kwargs)
+    debug(f"[{func.global_ctx_name}.{func.name}] {log_func_format(func, args, kwargs, result)}")
+    return result
   return wrapper
 
 def logged(func):
   def wrapper(*args, **kwargs):
-    if "context" in kwargs: del kwargs["context"]
-    parameter_args = ", ".join([str(arg) for arg in args if arg is not None]) if args else None
-    parameter_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if v is not None]) if kwargs else None
-    log(msg=f"{func.name} {f'({parameter_args})' if parameter_args else ''}{f'({parameter_kwargs})' if parameter_kwargs else ''}", title="started", logger=f"{LOG_LOGGER_SYS}.{func.name}")
+    if kwargs.get('context'): del kwargs['context']
+    result = func(*args, **kwargs)
+    if kwargs.get("trigger_type") != "state" or (kwargs.get("trigger_type") == "state" and kwargs.get("value") not in STATES_UNDEFINED and kwargs.get("old_value") not in STATES_UNDEFINED):
+      log(log_func_format(func, args, kwargs, result), logger=f"{LOG_LOGGER_SYS}.{func.global_ctx_name}.{func.name}")
 
-    logged_result = func(*args, **kwargs)
-
-    if kwargs.get("trigger_type") != "state" or ( kwargs.get("trigger_type") == "state" and 
-      kwargs.get("value") not in STATES_UNDEFINED and kwargs.get("old_value") not in STATES_UNDEFINED):
-      log(msg=f"{func.name} {f'({parameter_args})' if parameter_args else ''}{f'({parameter_kwargs})' if parameter_kwargs else ''}" + (f": {logged_result}" if logged_result else ''), title="executed", logger=f"{LOG_LOGGER_SYS}.{func.name}")
-    return logged_result
+    return result
   return wrapper
 
 # Expressions
@@ -54,13 +46,17 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
     return f" {operator} ".join(items)
 
   conditions = []
-  
   if defined:
     conditions.append(f"{entity} is not None")
     states_undefined_str = ", ".join([f'\"{state}\"' for state in STATES_UNDEFINED])
     conditions.append(f"{entity} not in [{states_undefined_str}]")
       
   if expression:
+    if isinstance(expression, list):
+      if comparator is None or comparator == "==":
+        conditions.append(f"{entity} in {expression}")
+      else:
+        conditions.append(f"{entity} not in {expression}")
     if isinstance(expression, (int, float)) or comparator in ['<', '>']:
       conditions.append(f"int({entity}) {comparator} {expression}")
     elif isinstance(expression, str):
@@ -94,3 +90,9 @@ def logs(obj):
       return f"{type(obj).__name__}({', '.join(attrs)})"
     except TypeError:
       return str(obj)
+
+def log_func_format(func, args, kwargs, result=None):
+  log_func_format_args = ", ".join([str(arg) if arg else "" for arg in args]) if args else None
+  log_func_format_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if k is not "context"]) if kwargs else None
+  log_func_format_arg = ", ".join([str(arg) if arg is not None else "" for arg in [log_func_format_args, log_func_format_kwargs] if arg])
+  return f"{func.name}" + f"({log_func_format_arg})" + (f": \n-> {result}" if result else "")
