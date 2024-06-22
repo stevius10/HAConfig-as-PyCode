@@ -46,10 +46,9 @@ def timeout_factory(entity, default, delay=0):
   # Handle system based events 
 
   @time_trigger('startup')
-  def timer_init():
+  def timer_init(): # TODO: add not entity default if no timer
     state.persist(entity_persisted)
     homeassistant.update_entity(entity_id=entity_persisted)
-    log(state.get(entity_persisted))
     if state.get(entity_persisted):
       start_timer(delay=str(state.get(entity_persisted)))
       log(f"timer '{entity_timer}' restored with duration {state.getattr(entity_timer).get('remaining')}")

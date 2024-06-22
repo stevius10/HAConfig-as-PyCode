@@ -30,22 +30,24 @@ def ha_setup():
   ha_setup_files()
   ha_setup_links()
   ha_setup_logging()
-
   ha_setup_syslog()
 
 # Tasks
-  
+
+@debugged
 @pyscript_executor
 def ha_setup_environment(variables=SYSTEM_ENVIRONMENT):
   for variable in variables:
     os.environ[variable] = variables[variable]
-  
+
+@debugged
 @pyscript_executor
 def ha_setup_files(files=SYSTEM_FILES):
   from filesystem import cp
   for file in files:
     cp(file, files[file])
 
+@debugged
 @pyscript_executor
 def ha_setup_links(links=SYSTEM_LINKS):
   for source, target in links.items():
@@ -53,24 +55,18 @@ def ha_setup_links(links=SYSTEM_LINKS):
     os.symlink(source, tmp_target)
     os.rename(tmp_target, target) # workaround to overwrite symlink
 
+@debugged
 def ha_setup_logging(): # sync. task due logging scope
   logger.set_level(**{LOG_LOGGER_SYS: LOG_LOGGING_LEVEL})
- 
+
+@debugged
 def ha_setup_syslog():
   @callback
   @event_trigger("system_log_event", "message.find('Reloaded /config/pyscript/') != -1")
-  def on_script_reload(event):
+  def ha_setup_syslog_on_reload(event):
     global reload
-    
-    paths = re.search(r'Reloaded (/config/pyscript/.*\.py)', event['message'])
-    if paths: scripts.append(paths.group(1))
-    
-    if not reload:
-      reload = True
-      task.sleep(1)  
-    if reloaded:
-      summary = f"# {len(scripts)} reloaded\n"
-      summary += "\n".join(f"- {script.split('/')[-1]}" for script in reloaded_scripts)
-      log(summary)
+    if re.search(r'Reloaded (/config/pyscript/.*\.py)', event['message']): scripts.append(paths.group(1))
+    if not reload: reload = True; task.sleep(1)  
+    if reloaded: logs(f"# {len(scripts)} reloaded\n" + "\n".join(f"- {script.split('/')[-1]}" for script in reloaded_scripts))
     scripts.clear(); reload = False
-  trigger.append(on_script_reload)
+  trigger.append(ha_setup_syslog_on_reload)
