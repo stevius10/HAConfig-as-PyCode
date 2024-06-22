@@ -9,6 +9,8 @@ from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 
 from utils import *
 
+trigger = []
+
 # Event
 
 @time_trigger
@@ -28,6 +30,8 @@ def ha_setup():
   ha_setup_files()
   ha_setup_links()
   ha_setup_logging()
+
+  ha_setup_syslog()
 
 # Tasks
   
@@ -51,3 +55,22 @@ def ha_setup_links(links=SYSTEM_LINKS):
 
 def ha_setup_logging(): # sync. task due logging scope
   logger.set_level(**{LOG_LOGGER_SYS: LOG_LOGGING_LEVEL})
+ 
+def ha_setup_syslog():
+  @callback
+  @event_trigger("system_log_event", "message.find('Reloaded /config/pyscript/') != -1")
+  def on_script_reload(event):
+    global reload
+    
+    paths = re.search(r'Reloaded (/config/pyscript/.*\.py)', event['message'])
+    if paths: scripts.append(paths.group(1))
+    
+    if not reload:
+      reload = True
+      task.sleep(1)  
+    if reloaded:
+      summary = f"# {len(scripts)} reloaded\n"
+      summary += "\n".join(f"- {script.split('/')[-1]}" for script in reloaded_scripts)
+      log(summary)
+    scripts.clear(); reload = False
+  trigger.append(on_script_reload)
