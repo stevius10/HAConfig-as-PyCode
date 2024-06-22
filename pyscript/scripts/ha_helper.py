@@ -41,12 +41,10 @@ async def log_truncate(logfile=PATH_LOG_HA, size_log_entries=0, size_log_tail=LO
     logs_truncated = logs[-size_log_tail:]
     logs_truncated.extend(f"\n# {len(logs_truncated)} / {size_log_entries} at {datetime.now()}\n")
     log_write(logfile, logs_truncated)    
-    log(f"{logfile} truncated from {len(logs)} to {len(logs_trunc)}", ns, ctx, "truncated:log")
-    
+
     if archive is not None and len(archive) > 0: 
       logs_trunc.extend(archive)
       log_write(f"{logfile}.{log_archive_suffix}", logs_trunc[-size_archive_entries:])
-      log(f"{logfile}.{log_archive_suffix} reseized from {len(archive)} to {len(logs_trunc)}", ns, ctx, "truncated:archive")
 
 # Utils
 

@@ -9,13 +9,15 @@ logger:
       - "Unloaded"
     custom_components.pyscript.global_ctx:
       - "Loaded"
-      - "Reloaded"
+      # - "Reloaded"
     custom_components.pyscript.trigger:
       - "will never trigger"
     homeassistant.components.command_line.utils: 
       - "Timeout for command: python3"
     homeassistant.components.google_assistant.http: 
       - "googleapis.com"
+    homeassistant.helpers.script.websocket_api_script:
+      - "Service not found for call_service"
     custom_components.tapo.coordinators:
       - "Unexpected exception"
     custom_components.xiaomi_miot.fan:

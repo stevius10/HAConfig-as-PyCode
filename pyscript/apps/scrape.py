@@ -39,19 +39,14 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
     size = get_or_default(element, size_selector)
     rooms = get_or_default(element, rooms_selector)
     details = get_or_default(element, details_selector)
-    apartment = {}
     apartment = filter({ "address": address, "rent": rent, "size": size, "rooms": rooms, "details": details })
     if apartment:
       details = [detail for detail in [rent, rooms, size] if detail] 
-      apartment_format=f"{address} ({', '.join(details)})" if details else address
+      apartment_format = f"{address} ({', '.join(details)})" if details else address
       apartments.append(apartment_format)
-  apartments_format = ", ".join([apartment for apartment in apartments if apartment])[:254]
-  
-  from logfile import Logfile # req. sys setup 
-  Logfile(ctx=pyscript.get_global_ctx()).log(apartments_format)
       
-  notify.send_message(entity_id="notify.history_housing", message=apartments_format)
-      
+  apartments_format = ", ".join(apartments)
+
   return apartments_format
 
 @pyscript_executor
@@ -63,15 +58,6 @@ def fetch(provider):
     response = requests.get(housing_provider[provider]["url"], verify=False)
     content = BeautifulSoup(response.content, 'html.parser')
   return content
-
-# Helper
-
-def get_entity(provider):
-    return f"pyscript.{PERSISTANCE_SCRAPE_HOUSING_SENSOR_PREFIX}_{provider}"
-
-def get_or_default(element, selector, default=None):
-  item = element.select_one(selector) if selector and element else ""
-  return item.get_text().strip() if item else default
 
 # Factory
 
@@ -87,24 +73,29 @@ def scrape_housing_factory(provider):
   @logged
   @service
   def scrape_housing(provider=provider):
-    if provider: 
-      task.sleep(random.randint(SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
-      
-      structure = housing_provider[provider]["structure"]
-      apartments = scrape(fetch(provider), 
-        structure["item"], structure["address_selector"], structure["rent_selector"],
-        structure["size_selector"], structure["rooms_selector"], structure["details_selector"])
-      
-      state.set(get_entity(provider), ", ".join(apartments)[:254])
-      state.persist(get_entity(provider))
-      return ", ".join(apartments)[:254]
-    else:
-      for provider in housing_provider.keys():
-        pyscript.scrape_housing(provider=provider, blocking=False, return_response=False)
-  
+    task.sleep(random.randint(SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
+    
+    structure = housing_provider[provider]["structure"]
+    apartments = scrape(fetch(provider), 
+      structure["item"], structure["address_selector"], structure["rent_selector"],
+      structure["size_selector"], structure["rooms_selector"], structure["details_selector"])
+    
+    state.set(get_entity(provider), apartments[:254])
+    state.persist(get_entity(provider))
+    
+    apartments_result = f"{provider}: {str(apartments)}"
+    debug("{apartments_result} \n[{housing_provider.get(provider).get('url')}")
+    return apartments_result
+
   trigger.append(scrape_housing)
 
 # Initialization
+@logged
+@service
+def scrape_housings(housing_provider=housing_provider):
+  for provider in housing_provider.keys():
+    pyscript.scrape_housing(provider=provider, blocking=False, return_response=False)
+  return
 
 @event_trigger(EVENT_SYSTEM_STARTED)
 def init(): 
@@ -112,3 +103,12 @@ def init():
     scrape_housing_factory(provider)
 
   event.fire(EVENT_HOUSING_INITIALIZED)
+
+# Helper
+
+def get_entity(provider):
+    return f"pyscript.{PERSISTANCE_SCRAPE_HOUSING_SENSOR_PREFIX}_{provider}"
+
+def get_or_default(element, selector, default=None):
+  item = element.select_one(selector) if selector and element else ""
+  return item.get_text().strip() if item else default

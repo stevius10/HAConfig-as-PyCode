@@ -2,7 +2,9 @@ from constants.config import LOG_LOGGER_SYS, LOG_LOGGING_LEVEL
 from constants.mappings import STATES_UNDEFINED
 
 import importlib
-  
+import sys
+import traceback
+
 # Logging
 
 def debug(msg=""):
@@ -16,22 +18,29 @@ def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL, **kwar
   if msg and isinstance(msg, str):
     if title: msg = f"[{title}] {msg}"
     system_log.write(message=msg, logger=logger, level=level)
-    debug(msg)
 
 def debugged(func):
   def wrapper(*args, **kwargs):
-    if kwargs.get('context'): del kwargs['context']
     debug(f"[{func.global_ctx_name}.{func.name}] {log_func_format(func, args, kwargs)}")
-    result = func(*args, **kwargs)
-    debug(f"[{func.global_ctx_name}.{func.name}] {log_func_format(func, args, kwargs, result)}")
+    try: 
+      result = func(*args, **kwargs)
+    except Exception as e:
+      exc_type, exc_value, exc_traceback = sys.exc_info()
+      result = f"# [{exc_traceback.tb_frame.f_code.co_filename}:{exc_traceback.tb_lineno}:{exc_type.__name__}] {str(exc_value)}: \n{''.join(traceback.format_tb(exc_traceback))}".replace('\n','')
+    finally: 
+      debug(log_func_format(func, args, kwargs, result))
     return result
   return wrapper
 
 def logged(func):
   def wrapper(*args, **kwargs):
     if kwargs.get('context'): del kwargs['context']
-    result = func(*args, **kwargs)
-    if kwargs.get("trigger_type") != "state" or (kwargs.get("trigger_type") == "state" and kwargs.get("value") not in STATES_UNDEFINED and kwargs.get("old_value") not in STATES_UNDEFINED):
+    try: 
+      result = func(*args, **kwargs)
+    except Exception as e:
+      exc_type, exc_value, exc_traceback = sys.exc_info()
+      result = f"# [{exc_traceback.tb_frame.f_code.co_filename}:{exc_traceback.tb_lineno}:{exc_type.__name__}] {str(exc_value)}: \n{''.join(traceback.format_tb(exc_traceback))}".replace('\n','')
+    finally: 
       log(log_func_format(func, args, kwargs, result), logger=f"{LOG_LOGGER_SYS}.{func.global_ctx_name}.{func.name}")
 
     return result

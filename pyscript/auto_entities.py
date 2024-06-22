@@ -8,11 +8,6 @@ entities = AUTO_ENTITIES
 
 trigger = []
 
-@state_trigger(expr("media_player.schlafzimmer"))
-def sz_media(value=None, old_value=None):
-  log(f"Schlafzimmer: {value} (from {old_value})")
-
-
 # Default 
 
 def default_factory(entity, func):

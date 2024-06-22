@@ -4,7 +4,7 @@ from constants.secrets import SYSTEM_FILES
 # Log
 
 LOG_HA_FILE = "home-assistant.log"
-LOG_HA_SIZE = 38
+LOG_HA_SIZE = 35
 LOG_HA_SIZE_TAIL = 8
 
 LOG_ARCHIVE_SIZE = LOG_HA_SIZE * 100
