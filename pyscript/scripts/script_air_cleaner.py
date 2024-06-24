@@ -8,26 +8,24 @@ from utils import *
 
 entities = SCRIPT_AIR_CLEANER_ENTITIES
 
-@state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_START, comparator=">"), watch=[entity["sensor"] for entity in entities.values()])
-@state_active(f"{EXPR_STATE_AIR_THRESHOLD_SEASON} and not {EXPR_STATE_OPEN_WINDOW}")
-@time_active(EXPR_STATE_AIR_THRESHOLD_TIME)
+@state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_START, comparator=">"))
+@state_active(expr([entity['fan'] for entity in entities.values()], STATE_OFF))
+@time_active(EXPR_STATE_AIR_THRESHOLD_SEASON and EXPR_STATE_AIR_THRESHOLD_TIME)
 @task_unique("script_air_cleaner_threshold_on", kill_me=True)
 @logged
 def script_air_cleaner_threshold_on(var_name=None, value=None):
   entity = entities[var_name.split(".")[1]]["fan"]
-  if state.get(var_name) != STATE_ON:
-    script_air_cleaner_sleep(entity) 
+  script_air_cleaner_sleep(entity) 
   task.sleep(SCRIPT_AIR_CLEANER_THRESHOLD_RETRIGGER_DELAY)
 
-@state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_STOP, comparator="<"), watch=[entity["sensor"] for entity in entities.values()])
-@state_active(f"{EXPR_STATE_AIR_THRESHOLD_SEASON} and {[entity['fan'] for entity in entities.values()]} == STATE_ON")
-@time_active(EXPR_STATE_AIR_THRESHOLD_TIME)
+@state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_STOP, comparator="<"))
+@state_active(expr([entity['fan'] for entity in entities.values()], STATE_ON))
+@time_active(EXPR_STATE_AIR_THRESHOLD_SEASON and EXPR_STATE_AIR_THRESHOLD_TIME)
 @task_unique("script_air_cleaner_threshold_off", kill_me=True) 
-@debugged
+@logged
 def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=None, **kwargs):
   entity = entities[var_name.split(".")[1]]["fan"]
-  if state.get(var_name) == STATE_ON:
-    script_air_cleaner_turn_off(entity)
+  script_air_cleaner_turn_off(entity)
   task.sleep(SCRIPT_AIR_CLEANER_THRESHOLD_RETRIGGER_DELAY)
 
 @event_trigger(EVENT_NEVER) # required for service

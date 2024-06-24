@@ -28,6 +28,9 @@ logger:
       - "Error handling request"
     habluetooth.scanner:
       - "org.bluez.Error.InProgress"
+    root:
+      - "Ical data was modified"
+      - "BEGIN:VEVENT"
 
 recorder:
   auto_purge: true
