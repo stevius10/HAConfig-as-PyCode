@@ -32,7 +32,7 @@ def _monitored(func, log_func):
       if log_func == "log":
         log(log_func_format(func, args, kwargs, result), title=title)
       debug(log_func_format(func, args, kwargs, result), title=title)
-    return result or ""
+    return result
   return wrapper
 
 def debugged(func):

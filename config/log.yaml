@@ -29,6 +29,8 @@ logger:
       - "Error handling request"
     habluetooth.scanner:
       - "org.bluez.Error.InProgress"
+    py.warnings:
+      - "Unverified HTTPS request"
     root:
       - "Ical data was modified"
       - "BEGIN:VEVENT"

@@ -99,13 +99,8 @@ def scrape_housings(housing_provider=housing_provider):
     pyscript.scrape_housing(provider=provider, blocking=False, return_response=False)
   return
 
-def init(): 
-  for provider in housing_provider.keys():
-    scrape_housing_factory(provider)
-
-  event.fire(EVENT_HOUSING_INITIALIZED)
-
-init()
+for provider in housing_provider.keys():
+  scrape_housing_factory(provider)
 
 # Helper
 
