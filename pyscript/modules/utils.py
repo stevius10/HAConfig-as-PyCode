@@ -7,44 +7,42 @@ import traceback
 
 # Logging
 
-def debug(msg=""):
+def debug(msg="", title=""):
   try:
     logfile = importlib.import_module("logfile")
+    if title: msg = f"[{title}] {msg}"
     logfile.Logfile.debug(msg)
   except ModuleNotFoundError:
     pass  # Avoid validation before sys.path appended
 
-def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL, **kwargs):
+def log(msg="", title="", logger=None, level=LOG_LOGGING_LEVEL, **kwargs):
   if msg and isinstance(msg, str):
     if title: msg = f"[{title}] {msg}"
-    system_log.write(message=msg, logger=logger, level=level)
+    if msg: 
+      logger = f"{LOG_LOGGER_SYS}.{logger}" if logger else LOG_LOGGER_SYS
+      system_log.write(message=msg, logger=LOG_LOGGER_SYS, level=level)
 
-def debugged(func):
-  def wrapper(*args, **kwargs):
-    debug(f"[{func.global_ctx_name}.{func.name}] {log_func_format(func, args, kwargs)}")
-    try: 
-      result = func(*args, **kwargs)
-    except Exception as e:
-      exc_type, exc_value, exc_traceback = sys.exc_info()
-      result = f"# [{exc_traceback.tb_frame.f_code.co_filename}:{exc_traceback.tb_lineno}:{exc_type.__name__}] {str(exc_value)}: \n{''.join(traceback.format_tb(exc_traceback))}".replace('\n','')
-    finally: 
-      debug(log_func_format(func, args, kwargs, result))
-    return result
-  return wrapper
-
-def logged(func):
+def _monitored(func, log_func):
   def wrapper(*args, **kwargs):
     if kwargs.get('context'): del kwargs['context']
-    try: 
+    title = f"{func.global_ctx_name}:{func.name}"
+    debug(f"{log_func_format(func, args, kwargs)}", title=title) # debug
+    try:
       result = func(*args, **kwargs)
     except Exception as e:
-      exc_type, exc_value, exc_traceback = sys.exc_info()
-      result = f"# [{exc_traceback.tb_frame.f_code.co_filename}:{exc_traceback.tb_lineno}:{exc_type.__name__}] {str(exc_value)}: \n{''.join(traceback.format_tb(exc_traceback))}".replace('\n','')
-    finally: 
-      log(log_func_format(func, args, kwargs, result), logger=f"{LOG_LOGGER_SYS}.{func.global_ctx_name}.{func.name}")
-
-    return result
+      result = f"{type(e)}: {str(e)}"
+    finally:
+      if log_func == "log":
+        log(log_func_format(func, args, kwargs, result), logger=title)
+      debug(log_func_format(func, args, kwargs, result), title=title)
+    return result or ""
   return wrapper
+
+def debugged(func):
+  return _monitored(func, "debug")
+
+def logged(func):
+  return _monitored(func, "log")
 
 # Expressions
 

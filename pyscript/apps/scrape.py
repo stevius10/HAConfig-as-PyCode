@@ -84,12 +84,13 @@ def scrape_housing_factory(provider):
     state.persist(get_entity(provider))
     
     apartments_result = f"{provider}: {str(apartments)}"
-    debug("{apartments_result} \n[{housing_provider.get(provider).get('url')}")
+    debug(f"{apartments_result} \n[{housing_provider.get(provider).get('url')}")
     return apartments_result
 
   trigger.append(scrape_housing)
 
 # Initialization
+
 @logged
 @service
 def scrape_housings(housing_provider=housing_provider):
@@ -97,12 +98,13 @@ def scrape_housings(housing_provider=housing_provider):
     pyscript.scrape_housing(provider=provider, blocking=False, return_response=False)
   return
 
-@event_trigger(EVENT_SYSTEM_STARTED)
 def init(): 
   for provider in housing_provider.keys():
     scrape_housing_factory(provider)
 
   event.fire(EVENT_HOUSING_INITIALIZED)
+
+init()
 
 # Helper
 

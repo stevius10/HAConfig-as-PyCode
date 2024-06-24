@@ -2,6 +2,7 @@ logger:
   default: error
   logs:
     custom_components.pyscript: info
+    py: info
     pychromecast.socket_client: critical
 
   filters:
@@ -9,7 +10,7 @@ logger:
       - "Unloaded"
     custom_components.pyscript.global_ctx:
       - "Loaded"
-      # - "Reloaded"
+      - "Reloaded"
     custom_components.pyscript.trigger:
       - "will never trigger"
     homeassistant.components.command_line.utils: 
