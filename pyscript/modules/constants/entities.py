@@ -45,12 +45,12 @@ CONFIG_CONTROL_ENTITIES = {
 SCRIPT_AIR_CLEANER_ENTITIES = {
   "wz_luft": {
     "fan": "fan.wz_luft",
-    "sensor": "sensor.wz_luft",
+    "sensor": "sensor.wz_luft_pm",
     "luftung": "switch.wz_luftung",
   },
   "sz_luft": {
     "fan": "fan.sz_luft", 
-    "sensor": "sensor.sz_luft",
+    "sensor": "sensor.sz_luft_pm",
     "luftung": "switch.sz_luftung",
   }
 }
