@@ -15,17 +15,14 @@ def debug(msg="", title=""):
   except ModuleNotFoundError:
     pass  # Avoid validation before sys.path appended
 
-def log(msg="", title="", logger=None, level=LOG_LOGGING_LEVEL, **kwargs):
-  if msg and isinstance(msg, str):
+def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL, **kwargs):
     if title: msg = f"[{title}] {msg}"
-    if msg: 
-      logger = f"{LOG_LOGGER_SYS}.{logger}" if logger else LOG_LOGGER_SYS
-      system_log.write(message=msg, logger=LOG_LOGGER_SYS, level=level)
+    if msg: system_log.write(message=msg, logger=logger, level=level)
 
 def _monitored(func, log_func):
   def wrapper(*args, **kwargs):
     if kwargs.get('context'): del kwargs['context']
-    title = f"{func.global_ctx_name}:{func.name}"
+    title = f"{func.global_ctx_name}"
     debug(f"{log_func_format(func, args, kwargs)}", title=title) # debug
     try:
       result = func(*args, **kwargs)
@@ -33,7 +30,7 @@ def _monitored(func, log_func):
       result = f"{type(e)}: {str(e)}"
     finally:
       if log_func == "log":
-        log(log_func_format(func, args, kwargs, result), logger=title)
+        log(log_func_format(func, args, kwargs, result), title=title)
       debug(log_func_format(func, args, kwargs, result), title=title)
     return result or ""
   return wrapper

@@ -83,9 +83,10 @@ def scrape_housing_factory(provider):
     state.set(get_entity(provider), apartments[:254])
     state.persist(get_entity(provider))
     
-    apartments_result = f"{provider}: {str(apartments)}"
-    debug(f"{apartments_result} \n[{housing_provider.get(provider).get('url')}")
-    return apartments_result
+    if apartments: 
+      apartments_result = f"{provider}: {str(apartments)}"
+      debug(f"{apartments_result} \n[{housing_provider.get(provider).get('url')}")
+      return apartments_result
 
   trigger.append(scrape_housing)
 
