@@ -62,7 +62,7 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
       else:
         conditions.append(f"{entity} not in {expression}")
     if isinstance(expression, (int, float)) or comparator in ['<', '>']:
-      conditions.append(f"int({entity}) {comparator} {expression}")
+      conditions.append(f"float({entity}) {comparator} {expression}")
     elif isinstance(expression, str):
       conditions.append(f"{entity} {comparator} \'{expression}\'")
     else:
