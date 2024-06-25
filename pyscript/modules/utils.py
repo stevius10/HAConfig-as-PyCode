@@ -57,16 +57,16 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
       
   if expression:
     if isinstance(expression, list):
-      if comparator is None or comparator == "==":
+      if comparator is None or comparator == "==" or comparator == "in":
         conditions.append(f"{entity} in {expression}")
-      else:
+      elif comparator == "!=":
         conditions.append(f"{entity} not in {expression}")
     if isinstance(expression, (int, float)) or comparator in ['<', '>']:
       conditions.append(f"float({entity}) {comparator} {expression}")
     elif isinstance(expression, str):
       conditions.append(f"{entity} {comparator} \'{expression}\'")
-    else:
-      conditions.append(f"{entity} {comparator} {expression}")
+    # else:
+      # conditions.append(f"{entity} {comparator} {expression}")
   else:
     conditions.append(f"{entity}")
 
