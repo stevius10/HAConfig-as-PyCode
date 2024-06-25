@@ -9,6 +9,7 @@ from utils import *
 
 @service(supports_response="optional")
 @time_trigger(EXPR_TIME_SERVICE_GIT_CRON)
+@logged
 def service_git_sync(
   key_path=SERVICE_GIT_SETTINGS_CREDENTIALS, 
   config_path=SERVICE_GIT_SETTINGS_CONFIG,
