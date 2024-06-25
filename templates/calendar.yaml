@@ -51,11 +51,11 @@ template_calendar:
             padding: 1px 1px 0px 1px !important; 
             text-align: left !important; 
             justify-content: bottom !important;
-            width: 19px;
+            width: 18px;
           }
           .event-date-week-day { 
             color: rgba(255, 255, 255, 0.4) !important;
-            font-size: 11px;
+            font-size: 9px;
           } 
           .event-date-day {
             font-weight: bold;
@@ -66,7 +66,7 @@ template_calendar:
           }
           .daywrap {  
             border: none !important;   
-            padding-top: 0px !important; 
+            padding-top: 2px !important; 
           }
 
     - <<: *calendar

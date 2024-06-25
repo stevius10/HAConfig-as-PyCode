@@ -9,8 +9,8 @@ AUTO_ENTITIES = {
   "switch.sofa": { "default": "off", "delay": 1800 }, 
   "fan.wz_ventilator": { "default": "off", "delay": 5400 }, 
   "fan.sz_ventilator": { "default": "off", "delay": 5400 }, 
-  "fan.wz_luft": { "default": "off", "delay": 14400 }, 
-  "fan.sz_luft": { "default": "off", "delay": 14400 }, 
+  "fan.wz_luft": { "default": "off", "delay": 21600 }, 
+  "fan.sz_luft": { "default": "off", "delay": 21600 }, 
   "switch.wz_luftung": { "default": "off", "delay": 600 },
   "switch.sz_luftung": { "default": "off", "delay": 600 }
 }

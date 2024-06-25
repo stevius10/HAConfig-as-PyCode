@@ -15,9 +15,11 @@ entities = SCRIPT_AIR_CLEANER_ENTITIES
 @logged
 def script_air_cleaner_threshold_on(var_name=None, value=None):
   entity = entities[var_name.split(".")[1]]["fan"]
-  script_air_cleaner_sleep(entity=var_name) 
+  fan.turn_on(entity_id=entity)
+  task.sleep(SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY)
+  script_air_cleaner_sleep(entity=var_name)
   task.sleep(SCRIPT_AIR_CLEANER_THRESHOLD_RETRIGGER_DELAY)
-
+  
 @state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_STOP, comparator="<"))
 @state_active(expr([entity['fan'] for entity in entities.values()], STATE_ON))
 @time_active(EXPR_STATE_AIR_THRESHOLD_SEASON and EXPR_STATE_AIR_THRESHOLD_TIME)

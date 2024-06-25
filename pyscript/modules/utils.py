@@ -16,8 +16,8 @@ def debug(msg="", title=""):
     pass  # Avoid validation before sys.path appended
 
 def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL, **kwargs):
-    if title: msg = f"[{title}] {msg}"
-    if msg: system_log.write(message=msg, logger=logger, level=level)
+  if title: msg = f"[{title}] {msg}"
+  if msg: system_log.write(message=msg, logger=logger, level=level)
 
 def _monitored(func, log_func):
   def wrapper(*args, **kwargs):

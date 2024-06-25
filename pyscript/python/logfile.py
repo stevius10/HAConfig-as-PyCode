@@ -59,6 +59,5 @@ class Logfile:
   def close(self):
     if hasattr(self, 'history'):
       if self.history:
-        self.history = "\n".join(str(item) for item in self.history)
-        return {"service": self.name, "logs": self.history}
+        self.history = " | ".join(str(item) for item in self.history)
     return {}
