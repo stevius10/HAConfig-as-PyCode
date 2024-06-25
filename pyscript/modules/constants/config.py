@@ -4,8 +4,8 @@ from constants.secrets import SYSTEM_FILES
 # Log
 
 LOG_HA_FILE = "home-assistant.log"
-LOG_HA_SIZE = 35
-LOG_HA_SIZE_TAIL = 8
+LOG_HA_SIZE = 32
+LOG_HA_SIZE_TAIL = 7
 
 LOG_ARCHIVE_SIZE = LOG_HA_SIZE * 10
 LOG_ARCHIVE_SUFFIX = "1"

@@ -47,7 +47,7 @@ def timeout_factory(entity, default, delay=0):
 
   @time_trigger('startup')
   def timer_init(): # TODO: add not entity default if no timer
-    state.persist(entity_persisted)
+    state.persist(entity_persisted, "idle")
     homeassistant.update_entity(entity_id=entity_persisted)
     if state.get(entity_persisted):
       start_timer(delay=str(state.get(entity_persisted)))

@@ -15,7 +15,7 @@ def notify(message, data=None, target=DEFAULT_NOTIFICATION_TARGET, default=True)
   for device in devices:
     service.call("notify", f"mobile_app_{device['id']}", message=message, data=data)
 
-@logged
+@debugged
 @service
 def shortcut(message, shortcut, input=None, target=DEFAULT_NOTIFICATION_TARGET, **kwargs):
   

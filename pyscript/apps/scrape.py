@@ -66,7 +66,7 @@ def scrape_housing_factory(provider):
   @time_trigger('startup')
   @time_trigger('shutdown')
   def scrape_housing_init():
-    state.persist(get_entity(provider))
+    state.persist(get_entity(provider), default_value="")
 
   @time_trigger(EXPR_TIME_UPDATE_SENSORS_HOUSING)
   @time_active(EXPR_TIME_GENERAL_WORKTIME)
@@ -84,9 +84,9 @@ def scrape_housing_factory(provider):
     state.persist(get_entity(provider))
     
     if apartments: 
-      apartments_result = f"{provider}: {str(apartments)}"
-      debug(f"{apartments_result} \n[{housing_provider.get(provider).get('url')}")
-      return apartments_result
+      return f"{provider}: {str(apartments)}"
+    debug(f"{provider}: [{housing_provider.get(provider).get('url')}")
+
 
   trigger.append(scrape_housing)
 

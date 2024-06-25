@@ -23,7 +23,7 @@ def script_air_cleaner_threshold_on(var_name=None, value=None):
 @time_active(EXPR_STATE_AIR_THRESHOLD_SEASON and EXPR_STATE_AIR_THRESHOLD_TIME)
 @task_unique("script_air_cleaner_threshold_off", kill_me=True) 
 @logged
-def script_air_cleaner_threshold_off(var_name=None, value=None, ns=None, ctx=None, **kwargs):
+def script_air_cleaner_threshold_off(var_name=None, value=None):
   entity = entities[var_name.split(".")[1]]["fan"]
   script_air_cleaner_turn_off(entity)
   task.sleep(SCRIPT_AIR_CLEANER_THRESHOLD_RETRIGGER_DELAY)
@@ -49,6 +49,7 @@ def script_air_cleaner_clean(conditioned=False, entity=[entity["fan"] for entity
 def script_air_cleaner_sleep(entity=[entity["fan"] for entity in entities.values()], var_name=None, state_check_now=True):
   if var_name: 
     entity = ".".join(var_name.split(".")[:2]) # handle percentage trigger
+  if entity and isinstance(entity, str): 
     if state.get(entity) and state.get(entity) == STATE_ON:
       feature = str(state.get(f"{entity}.supported_features"))
       if feature in ["9", 9]: 

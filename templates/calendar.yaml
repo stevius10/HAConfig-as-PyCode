@@ -27,7 +27,7 @@ template_calendar:
         style: | 
           ha-card {  
             border-radius: 0px;  
-            bottom: 2px;
+            bottom: 3px;
             font-size: 12px;
             margin: 7px 0 !important;
             padding: 0px !important;
@@ -39,29 +39,31 @@ template_calendar:
           .event-left { 
             color: rgba(255, 255, 255, 0.6) !important;
             font-size: 12px;
-            margin: 0px;   
+            margin: 0px;
           } 
           .event-right {  
             padding: 0px !important;
             margin: 0px !important;
-          }  
-          .event-date-day,  
+          } 
+          .event-date-day,
           .event-date-week-day {  
             margin: 0px !important; 
-            padding: 1px 1px 0px 0px !important; 
+            padding: 1px 1px 0px 1px !important; 
             text-align: left !important; 
             justify-content: bottom !important;
-            width: 17px;
+            width: 19px;
           }
           .event-date-week-day { 
             color: rgba(255, 255, 255, 0.4) !important;
-            font-size: 10px;
-            width: 13px;
+            font-size: 11px;
           } 
+          .event-date-day {
+            font-weight: bold;
+          }
           .single-event-container {   
             gap: 1px !important;  
             grid-gap: 1px !important;
-          } 
+          }
           .daywrap {  
             border: none !important;   
             padding-top: 0px !important; 
