@@ -11,8 +11,8 @@ entities = SCRIPT_AIR_CLEANER_ENTITIES
 @state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_START, comparator=">"))
 @state_active(expr([entity['fan'] for entity in entities.values()], STATE_OFF))
 @time_active(EXPR_STATE_AIR_THRESHOLD_SEASON and EXPR_STATE_AIR_THRESHOLD_TIME)
-@task_unique("script_air_cleaner_threshold_on", kill_me=True)
-@logged
+@task_unique("script_air_cleaner", kill_me=True)
+@debugged
 def script_air_cleaner_threshold_on(var_name=None, value=None):
   entity = entities[var_name.split(".")[1]]["fan"]
   fan.turn_on(entity_id=entity)
@@ -23,15 +23,14 @@ def script_air_cleaner_threshold_on(var_name=None, value=None):
 @state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_STOP, comparator="<"))
 @state_active(expr([entity['fan'] for entity in entities.values()], STATE_ON))
 @time_active(EXPR_STATE_AIR_THRESHOLD_SEASON and EXPR_STATE_AIR_THRESHOLD_TIME)
-@task_unique("script_air_cleaner_threshold_off", kill_me=True) 
-@logged
+@task_unique("script_air_cleaner", kill_me=True) 
+@debugged
 def script_air_cleaner_threshold_off(var_name=None, value=None):
   entity = entities[var_name.split(".")[1]]["fan"]
   script_air_cleaner_turn_off(entity)
   task.sleep(SCRIPT_AIR_CLEANER_THRESHOLD_RETRIGGER_DELAY)
 
 @event_trigger(EVENT_NEVER) # required for service
-@task_unique("-".join([entity["fan"] for entity in entities.values()]), kill_me=False)
 @service
 @logged
 def script_air_cleaner_clean(conditioned=False, entity=[entity["fan"] for entity in entities.values()]):
@@ -76,6 +75,7 @@ def script_air_cleaner_get_clean_percentage(name):
   return min(max(SCRIPT_AIR_CLEANER_CLEAN_MODE_PERCENTAGE, (int(state.get(entities[name].get("sensor"))) * 10)), 100)
 
 @debugged
+@service
 def script_air_cleaner_helper_air(entity=[entity["fan"] for entity in entities.values()], helper=[entity["luftung"] for entity in entities.values()], check=True):
   if (check == False) or (sum([int(state.get(entities[item.split(".")[1]]["sensor"])) for item in entity if state.get(entities[item.split(".")[1]]["sensor"]) is not None]) > SCRIPT_AIR_CLEANER_HELPER_PM_MINIMUM):
     homeassistant.turn_on(entity_id=helper)

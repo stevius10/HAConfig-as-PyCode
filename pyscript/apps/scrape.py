@@ -52,7 +52,7 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
 @pyscript_executor
 def fetch(provider):
   if housing_provider[provider].get("request_headers") and housing_provider[provider].get("request_data"):
-    response = (requests.post(housing_provider[provider]["url"], headers=housing_provider[provider].get("request_headers"), data=housing_provider[provider].get("request_data"), verify=False)).text
+    response = requests.post(housing_provider[provider]["url"], headers=housing_provider[provider]["request_headers"], data=housing_provider[provider]["request_data"], verify=False).text
     content = BeautifulSoup(json.loads(response)['searchresults'], 'html.parser')
   else:
     response = requests.get(housing_provider[provider]["url"], verify=False)

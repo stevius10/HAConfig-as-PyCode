@@ -11,17 +11,17 @@ template_calendar:
       - entity: calendar.aktenzeichen
       - entity: calendar.pokemon
         color: white
+      titleLength: 20
       compactMode: true
       showLoader: false
       showLocation: false
-      showHiddenText: false
       showRelativeTime: false
       showWeekDay: true
-      titleLength: 23
+      showHiddenText: false
       hideDuplicates: true
       maxEventCount: 4
-      noEventText: ""
       maxDaysToShow: 1
+      noEventText: ""
       showProgressBar: false
       card_mod:
         style: | 
@@ -29,7 +29,7 @@ template_calendar:
             border-radius: 0px;  
             bottom: 3px;
             font-size: 12px;
-            margin: 7px 0 !important;
+            margin: 7px 4px !important;
             padding: 0px !important;
             box-shadow: rgba(255, 255, 255, 0.2) 0px 10px 15px -3px inset, rgba(255, 255, 255, 0.2) 0px 4px 6px -4px;
           }
@@ -40,25 +40,28 @@ template_calendar:
             color: rgba(255, 255, 255, 0.6) !important;
             font-size: 12px;
             margin: 0px;
+            width: 43px !important;
           } 
           .event-right {  
             padding: 0px !important;
             margin: 0px !important;
           } 
           .event-date-day,
-          .event-date-week-day {  
+          .event-date-week-day {
             margin: 0px !important; 
             padding: 1px 1px 0px 1px !important; 
-            text-align: left !important; 
-            justify-content: bottom !important;
-            width: 18px;
-          }
-          .event-date-week-day { 
-            color: rgba(255, 255, 255, 0.4) !important;
-            font-size: 9px;
-          } 
-          .event-date-day {
+            font-size: 10px;
             font-weight: bold;
+            justify-content: bottom !important;
+            text-align: left !important; 
+          }
+          .event-date-day { 
+            color: rgba(255, 255, 255, 0.4) !important;
+            vertical-align: super;
+            font-size: smaller;
+          } 
+          .event-date-week-day {
+            width: 17px;
           }
           .single-event-container {   
             gap: 1px !important;  
@@ -66,7 +69,7 @@ template_calendar:
           }
           .daywrap {  
             border: none !important;   
-            padding-top: 2px !important; 
+            padding-top: 4px !important; 
           }
 
     - <<: *calendar
