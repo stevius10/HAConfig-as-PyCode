@@ -41,12 +41,11 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
     details = get_or_default(element, details_selector)
     apartment = filter({ "address": address, "rent": rent, "size": size, "rooms": rooms, "details": details })
     if apartment:
-      details = [detail for detail in [rent, rooms, size] if detail] 
+      details = [detail for detail in [rent, rooms, size, details] if detail] 
       apartment_format = f"{address} ({', '.join(details)})" if details else address
       apartments.append(apartment_format)
       
   apartments_format = ", ".join(apartments)
-
   return apartments_format
 
 @pyscript_executor
@@ -87,7 +86,6 @@ def scrape_housing_factory(provider):
       return f"{provider}: {str(apartments)}"
     debug(f"{provider}: [{housing_provider.get(provider).get('url')}")
 
-
   trigger.append(scrape_housing)
 
 # Initialization
@@ -105,8 +103,14 @@ for provider in housing_provider.keys():
 # Helper
 
 def get_entity(provider):
-    return f"pyscript.{PERSISTANCE_SCRAPE_HOUSING_SENSOR_PREFIX}_{provider}"
+  return f"pyscript.{PERSISTANCE_SCRAPE_HOUSING_SENSOR_PREFIX}_{provider}"
 
 def get_or_default(element, selector, default=None):
-  item = element.select_one(selector) if selector and element else ""
-  return item.get_text().strip() if item else default
+  if not selector:
+    return default
+  if isinstance(selector, str):
+    item = element.select_one(selector)
+    return item.get_text().strip() if item else default
+  elif callable(selector):
+    return selector(element)
+  return default
