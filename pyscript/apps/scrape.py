@@ -22,11 +22,15 @@ housing_provider = SERVICE_SCRAPE_HOUSING_PROVIDERS
 def filter(apartment):
   if all([value is None for value in apartment.values()]):
     return None
-  if apartment["address"] is None:
+  if apartment.get("address") is None:
     return None
-  if apartment["rent"] is not None:
+  if apartment.get("rent") is not None:
     if re.findall(r'\d', apartment["rent"]) and not (400 < int(''.join(re.findall(r'\d', apartment["rent"])[:3])) < SERVICE_SCRAPE_HOUSING_FILTER_RENT):
       return None
+  if apartment.get("details") is not None:
+    for blacklist_item in SERVICE_SCRAPE_HOUSING_BLACKLIST_DETAILS:
+      if re.search(r'\b' + re.escape(blacklist_item.lower()) + r'\b', apartment["details"].lower()):
+        return None
   return {k: v for k, v in apartment.items() if v is not None}
 
 def scrape(content, item, address_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None):
@@ -34,17 +38,38 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
   elements = content.select(item)
   
   for element in elements:
+    element_text = element.get_text(strip=True)
+    
     address = get_or_default(element, address_selector)
+    if not address:
+      address_match = re.search(r'([A-Za-zäöüß\s.-]+\s\d+(?:,\s*[A-Za-zäöüß\s-]+)?)', element_text)
+      address = address_match.group(1) if address_match else None
+    
     rent = get_or_default(element, rent_selector)
+    if not rent:
+      rent_match = re.search(r'(\d+(?:,\d+)?)\s*€', element_text)
+      rent = rent_match.group(1) + ' €' if rent_match else None
+    
     size = get_or_default(element, size_selector)
+    if not size:
+      size_match = re.search(r'(\d+(?:,\d+)?)\s*m²', element_text)
+      size = size_match.group(1) + ' m²' if size_match else None
+    
     rooms = get_or_default(element, rooms_selector)
+    if not rooms:
+      rooms_match = re.search(r'(\d+(?:,\d+)?)\s*Zimmer', element_text)
+      rooms = rooms_match.group(1) + ' Zimmer' if rooms_match else None
+    
     details = get_or_default(element, details_selector)
-    apartment = filter({ "address": address, "rent": rent, "size": size, "rooms": rooms, "details": details })
+    if not details:
+      details = element_text
+    
+    apartment = filter({"address": address, "rent": rent, "size": size, "rooms": rooms, "details": details})
     if apartment:
-      details = [detail for detail in [rent, rooms, size, details] if detail] 
-      apartment_format = f"{address} ({', '.join(details)})" if details else address
+      summary = [item for item in [rent, rooms, size] if item]
+      apartment_format = f"{address} ({', '.join(summary)})" if summary else address
       apartments.append(apartment_format)
-      
+  
   apartments_format = ", ".join(apartments)
   return apartments_format
 
