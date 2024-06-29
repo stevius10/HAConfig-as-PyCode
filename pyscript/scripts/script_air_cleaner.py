@@ -11,24 +11,22 @@ entities = SCRIPT_AIR_CLEANER_ENTITIES
 @state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_START, comparator=">"))
 @state_active(expr([entity['fan'] for entity in entities.values()], STATE_OFF))
 @time_active(EXPR_STATE_AIR_THRESHOLD_SEASON and EXPR_STATE_AIR_THRESHOLD_TIME)
-@task_unique("script_air_cleaner", kill_me=True)
 @debugged
 def script_air_cleaner_threshold_on(var_name=None, value=None):
-  entity = entities[var_name.split(".")[1]]["fan"]
-  fan.turn_on(entity_id=entity)
-  task.sleep(SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY)
-  script_air_cleaner_sleep(entity=var_name)
-  task.sleep(SCRIPT_AIR_CLEANER_THRESHOLD_RETRIGGER_DELAY)
-  
+  entity = entities.get(var_name.split(".")[1]["fan"])
+  if state.get(entity) and state.get(entity) == STATE_OFF:
+    fan.turn_on(entity_id=entity)
+    task.sleep(SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY)
+    script_air_cleaner_sleep(entity=var_name)
+
 @state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_STOP, comparator="<"))
 @state_active(expr([entity['fan'] for entity in entities.values()], STATE_ON))
 @time_active(EXPR_STATE_AIR_THRESHOLD_SEASON and EXPR_STATE_AIR_THRESHOLD_TIME)
-@task_unique("script_air_cleaner", kill_me=True) 
 @debugged
 def script_air_cleaner_threshold_off(var_name=None, value=None):
-  entity = entities[var_name.split(".")[1]]["fan"]
-  script_air_cleaner_turn_off(entity)
-  task.sleep(SCRIPT_AIR_CLEANER_THRESHOLD_RETRIGGER_DELAY)
+  entity = entities.get(var_name.split(".")[1]["fan"])
+  if state.get(entity) and state.get(entity) == STATE_ON:
+    script_air_cleaner_turn_off(entity)
 
 @event_trigger(EVENT_NEVER) # required for service
 @service
@@ -39,7 +37,7 @@ def script_air_cleaner_clean(conditioned=False, entity=[entity["fan"] for entity
   for item in entity: 
     percentage=script_air_cleaner_get_clean_percentage(item.split(".")[1]) if conditioned else 100
     fan.set_percentage(entity_id=item, percentage=percentage)
-    script_air_cleaner_helper_air(entity=item)
+    script_air_cleaner_helper_air(entity=item, check=True)
 
 @state_trigger(expr([entity["fan"] for entity in entities.values()], STATE_ON)) # reset
 @state_trigger(expr([f"'{entity['fan']}.percentage'" for entity in entities.values()], \
@@ -76,6 +74,6 @@ def script_air_cleaner_get_clean_percentage(name):
 
 @debugged
 @service
-def script_air_cleaner_helper_air(entity=[entity["fan"] for entity in entities.values()], helper=[entity["luftung"] for entity in entities.values()], check=True):
+def script_air_cleaner_helper_air(entity=[entity["fan"] for entity in entities.values()], helper=[entity["luftung"] for entity in entities.values()], check=False):
   if (check == False) or (sum([int(state.get(entities[item.split(".")[1]]["sensor"])) for item in entity if state.get(entities[item.split(".")[1]]["sensor"]) is not None]) > SCRIPT_AIR_CLEANER_HELPER_PM_MINIMUM):
     homeassistant.turn_on(entity_id=helper)

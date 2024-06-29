@@ -23,7 +23,7 @@ def _monitored(func, log_func):
   def wrapper(*args, **kwargs):
     if kwargs.get('context'): del kwargs['context']
     title = f"{func.global_ctx_name}"
-    debug(f"{log_func_format(func, args, kwargs)}", title=title) # debug
+    # debug(f"{log_func_format(func, args, kwargs)}", title=title) # log start function
     try:
       result = func(*args, **kwargs)
     except Exception as e:

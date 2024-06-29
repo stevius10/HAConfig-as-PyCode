@@ -19,7 +19,6 @@ def on_motion_factory(entity):
 def off_motion_factory(entity):
 
   @state_trigger(expr(entity, STATE_OFF), state_hold=AUTO_MOTION_TIMEOUT)
-  @debugged
   def off_motion(var_name=None):
     transition = float(AUTO_MOTION_ENTITIES.get(var_name, {}).get("transition", 0))
     scene.turn_on(entity_id=AUTO_MOTION_ENTITIES.get(var_name, {}).get("off"), transition=transition)
