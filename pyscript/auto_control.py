@@ -1,4 +1,4 @@
-from constants.entities import CONFIG_CONTROL_ENTITIES
+from constants.entities import AUTO_CONTROL_ENTITIES
 
 from utils import *
 
@@ -8,11 +8,11 @@ def on_press_factory(entity):
   @state_trigger(expr(entity, expression=['on-press', 'off-press', 'up-press', 'down-press', 'single-press', 'double-press', 'long-press'], comparator="in", defined=False))
   @debugged
   def on_press(var_name=None, value=None):
-    action = CONFIG_CONTROL_ENTITIES.get(entity).get(value.split("-")[0])
+    action = AUTO_CONTROL_ENTITIES.get(entity).get(value.split("-")[0])
     scene.turn_on(entity_id=action)
   trigger.append(on_press)
 
-for entity in CONFIG_CONTROL_ENTITIES:
+for entity in AUTO_CONTROL_ENTITIES:
   on_press_factory(entity)
 
 
@@ -20,7 +20,7 @@ for entity in CONFIG_CONTROL_ENTITIES:
 #
 # from utils import *
 #
-# entities = CONFIG_CONTROL
+# entities = AUTO_CONTROL
 #
 # trigger_control = []
 #

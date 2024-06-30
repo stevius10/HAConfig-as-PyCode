@@ -9,28 +9,25 @@ from utils import *
 entities = SCRIPT_AIR_CLEANER_ENTITIES
 
 @state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_START, comparator=">"))
-@state_active(expr([entity['fan'] for entity in entities.values()], STATE_OFF))
-@time_active(EXPR_STATE_AIR_THRESHOLD_SEASON and EXPR_STATE_AIR_THRESHOLD_TIME)
+@state_active(f"{EXPR_STATE_AIR_AUTOMATION_SEASON} and {expr([entity['fan'] for entity in entities.values()], STATE_OFF)}")
+@time_active(EXPR_TIME_AIR_AUTOMATION)
 @debugged
-def script_air_cleaner_threshold_on(var_name=None, value=None):
-  entity = entities.get(var_name.split(".")[1]["fan"])
-  if state.get(entity) and state.get(entity) == STATE_OFF:
-    fan.turn_on(entity_id=entity)
-    task.sleep(SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY)
-    script_air_cleaner_sleep(entity=var_name)
+def script_air_cleaner_threshold_on(var_name=None):
+  script_air_cleaner_turn_off(entities.get(var_name.split(".")[1]).get("fan"))
+  fan.turn_on(entity_id=entity)
+  task.sleep(SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY)
+  script_air_cleaner_sleep(entity=var_name)
 
 @state_trigger(expr([entity["sensor"] for entity in entities.values()], SCRIPT_AIR_CLEANER_THRESHOLD_STOP, comparator="<"))
-@state_active(expr([entity['fan'] for entity in entities.values()], STATE_ON))
-@time_active(EXPR_STATE_AIR_THRESHOLD_SEASON and EXPR_STATE_AIR_THRESHOLD_TIME)
+@state_active(f"{EXPR_STATE_AIR_AUTOMATION_SEASON} and {expr([entity['fan'] for entity in entities.values()], STATE_ON)}")
+@time_active(EXPR_TIME_AIR_AUTOMATION)
 @debugged
-def script_air_cleaner_threshold_off(var_name=None, value=None):
-  entity = entities.get(var_name.split(".")[1]["fan"])
-  if state.get(entity) and state.get(entity) == STATE_ON:
-    script_air_cleaner_turn_off(entity)
+def script_air_cleaner_threshold_off(var_name=None):
+  script_air_cleaner_turn_off(entities.get(var_name.split(".")[1]).get("fan"))
 
 @event_trigger(EVENT_NEVER) # required for service
+@debugged
 @service
-@logged
 def script_air_cleaner_clean(conditioned=False, entity=[entity["fan"] for entity in entities.values()]):
   fan.turn_on(entity_id=entity)
   task.sleep(SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY)
@@ -62,6 +59,7 @@ def script_air_cleaner_sleep(entity=[entity["fan"] for entity in entities.values
     for item in entity: 
       script_air_cleaner_sleep(entity=item, var_name=item)
 
+@debugged
 def script_air_cleaner_turn_off(entity=[entity["fan"] for entity in entities.values()]):
   if isinstance(entity, list):
     for item in entity:

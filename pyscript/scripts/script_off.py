@@ -19,7 +19,7 @@ def script_off_away():
 @service
 def script_off_air(entity=None):
   if entity == None:
-    script_off_air(entity=ENTITIES_AIR)
+    script_off_air(entity=SCRIPT_OFF_ENTITIES_AIR)
   elif isinstance(entity, list):
     for item in entity:
       script_off_air(entity=item)
@@ -28,7 +28,7 @@ def script_off_air(entity=None):
     
 def script_off_heating(entity=None, away=False):
   if entity == None:
-    script_off_heating(entity=ENTITIES_HEATING, away=away)
+    script_off_heating(entity=SCRIPT_OFF_ENTITIES_HEATING, away=away)
   if isinstance(entity, str):
     if not away: 
       climate.turn_off(entity_id=entity)
@@ -38,14 +38,14 @@ def script_off_heating(entity=None, away=False):
 
 def script_off_media(entity=None):
   if entity == None:
-    script_off_media(entity=ENTITIES_MEDIA)
+    script_off_media(entity=SCRIPT_OFF_ENTITIES_MEDIA)
   if isinstance(entity, list):
     for item in entity:
       turn_off(entity=item)
 
 def script_off_lights(entity=None, away=False):
   if entity == None:
-    script_off_lights(entity=ENTITIES_LIGHT)
+    script_off_lights(entity=SCRIPT_OFF_ENTITIES_LIGHT)
   if isinstance(entity, str):
     if not away: 
       scene.turn_off(entity_id=entity)
@@ -60,14 +60,14 @@ def script_off_lights(entity=None, away=False):
       
 def script_off_switches(entity=None):
   if entity == None:
-    script_off_switches(entity=ENTITIES_SWITCHES)
+    script_off_switches(entity=SCRIPT_OFF_ENTITIES_SWITCHES)
   if isinstance(entity, list):
     for item in entity:
       turn_off(entity=item)
       
 def script_off_tv(entity=None):
   if entity == None:
-    script_off_tv(entity=ENTITIES_TV)
+    script_off_tv(entity=SCRIPT_OFF_ENTITIES_TV)
   if isinstance(entity, str):
     try: 
       turn_off(entity)
