@@ -1,5 +1,4 @@
 from constants.config import *
-from constants.devices import *
 from constants.mappings import *
 
 from utils import *

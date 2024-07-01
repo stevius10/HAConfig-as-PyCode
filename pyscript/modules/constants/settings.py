@@ -1,16 +1,44 @@
-AUTO_MOTION_TIMEOUT = 70
-AUTO_TURN_OFF_AWAY_TRANSITION = 20
+# Automation
 
-SCRIPT_AIR_CLEANER_CLEAN_MODE_PERCENTAGE = 50
-SCRIPT_AIR_CLEANER_SLEEP_MODE_PERCENTAGE = 15
-SCRIPT_AIR_CLEANER_HELPER_PM_MINIMUM = 8
-SCRIPT_AIR_CLEANER_SPEED_THRESHOLD = 30
-SCRIPT_AIR_CLEANER_THRESHOLD_RETRIGGER_DELAY = 900
-SCRIPT_AIR_CLEANER_THRESHOLD_START = 8
-SCRIPT_AIR_CLEANER_THRESHOLD_STOP = 2
-SCRIPT_AIR_CLEANER_TIMEOUT_CLEAN = 600
-SCRIPT_AIR_CLEANER_TIMEOUT_HELPER = 240
-SCRIPT_AIR_CLEANER_WAIT_ACTIVE_DELAY = 3
+AUTO_MOTION_TIMEOUT = 70
+TURN_OFF_AWAY_TRANSITION = 20
+
+AUTO_PRESENCE_TRANSITION = {
+    "wohnzimmer": {
+      "on": [],
+      "off": [
+        { "condition": "state.get('climate.wohnzimmer') 'on'",
+          "action": lambda: service.call("climate", "set_temperature", entity_id="climate.wohnzimmer", temperature=18) }
+      ]
+    },
+    "schlafzimmer": {
+      "on": [],
+      "off": [
+        { "condition": "state.get('climate.schlafzimmer') 'on'",
+          "action": lambda: service.call("climate", "set_temperature", entity_id="climate.schlafzimmer", temperature=18) }
+      ]
+    },
+    "away": {
+      "on": [
+        { "condition": "state.get('climate.wohnzimmer') == 'on' or state.get('climate.schlafzimmer') == 'on'",
+          "action": lambda: [ service.call("climate", "turn_off", entity_id=["climate.wohnzimmer", "climate.schlafzimmer"]) ] }
+      ],
+      "off": []
+    }
+  }
+
+# Services
+
+SERVICE_AIR_CLEANER_CLEAN_MODE_PERCENTAGE = 50
+SERVICE_AIR_CLEANER_SLEEP_MODE_PERCENTAGE = 15
+SERVICE_AIR_CLEANER_HELPER_PM_MINIMUM = 8
+SERVICE_AIR_CLEANER_SPEED_THRESHOLD = 30
+SERVICE_AIR_CLEANER_THRESHOLD_RETRIGGER_DELAY = 900
+SERVICE_AIR_CLEANER_THRESHOLD_START = 8
+SERVICE_AIR_CLEANER_THRESHOLD_STOP = 2
+SERVICE_AIR_CLEANER_TIMEOUT_CLEAN = 600
+SERVICE_AIR_CLEANER_TIMEOUT_HELPER = 240
+SERVICE_AIR_CLEANER_WAIT_ACTIVE_DELAY = 3
 
 SERVICE_SCRAPE_HOUSING_BLACKLIST_DETAILS = ["WBS erforderlich", "mit WBS"]
 SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN = 60

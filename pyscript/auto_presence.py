@@ -1,79 +1,8 @@
-from constants.mappings import STATE_ON, STATE_OFF, STATE_UNAVAILABLE, STATE_UNKNOWN
+from constants.entities import AUTO_PRESENCE_ENTITIES
+from constants.mappings import STATE_ON, STATE_OFF, STATES_HA_UNDEFINED
+from constants.settings import AUTO_PRESENCE_TRANSITION
 
 from utils import *
-
-AUTO_PRESENCE_ENTITIES = {
-  "wohnzimmer": {
-    "indicators": {
-      "media_player.wz_fernseher": {"condition": "playing"},
-      "fan.wz_ventilator": {"condition": "playing", "weight": 0.1}
-    },
-    "exclusions": {
-      "media_player.schlafzimmer": {"condition": "playing", "weight": 0.9},
-    }
-  },
-  "schlafzimmer": {
-    "indicators": {
-      "media_player.sz_fernseher": {"condition": "playing"},
-      "media_player.schlafzimmer": {"condition": "playing"},
-      "fan.sz_ventilator": {"condition": "playing", "weight": 0.1}
-    },
-    "exclusions": {}
-  },
-  "away": {
-    "indicators": {
-      "person.steven": {"condition": "not_home"}
-    },
-    "exclusions": {}
-  }
-}
-
-AUTO_PRESENCE_TRANSITION = {
-  "wohnzimmer": {
-    "on": [],
-    "off": [
-      {
-        "condition": "state.get('climate.wohnzimmer') 'on'",
-        "action": lambda: service.call("climate", "set_temperature", entity_id="climate.wohnzimmer", temperature=18)
-      },
-      {
-        "condition": "state.get('light.wz_beleuchtung') 'on'",
-        "action": lambda: service.call("light", "turn_off", entity_id="light.wz_beleuchtung")
-      }
-    ]
-  },
-  "schlafzimmer": {
-    "on": [],
-    "off": [
-      {
-        "condition": "state.get('climate.schlafzimmer') 'on'",
-        "action": lambda: service.call("climate", "set_temperature", entity_id="climate.schlafzimmer", temperature=18)
-      },
-      {
-        "condition": "state.get('light.sz_beleuchtung') 'on'",
-        "action": lambda: service.call("light", "turn_off", entity_id="light.sz_beleuchtung")
-      }
-    ]
-  },
-  "away": {
-    "on": [
-      {
-        "condition": "state.get('climate.wohnzimmer') 'on' or state.get('climate.schlafzimmer') 'on'",
-        "action": lambda: [
-          service.call("climate", "turn_off", entity_id="climate.schlafzimmer")
-        ]
-      },
-      {
-        "condition": "state.get('light.wz_beleuchtung') 'on' or state.get('light.sz_beleuchtung') 'on'",
-        "action": lambda: [
-          service.call("light", "turn_off", entity_id="light.wz_beleuchtung"),
-          service.call("light", "turn_off", entity_id="light.sz_beleuchtung")
-        ]
-      }
-    ],
-    "off": []
-  }
-}
 
 trigger = []
 
@@ -100,7 +29,7 @@ def transition(room, action):
 def evaluate(condition):
   entity, state = condition.split(' ', 1)
   current_state = state.get(entity)
-  if current_state is None or current_state in [STATE_UNAVAILABLE, STATE_UNKNOWN]:
+  if current_state is None or current_state in STATES_HA_UNDEFINED:
     return False
   return eval(f"'{current_state}' {state}")
 

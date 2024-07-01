@@ -1,18 +1,15 @@
 from constants.config import *
-from constants.events import EVENT_FOLDER_WATCHER
+from constants.mappings import EVENT_FOLDER_WATCHER
 
 from utils import *
 
 import aiofiles
-
-from homeassistant.const import EVENT_HOMEASSISTANT_STOP
-
 from datetime import datetime
 
 # Automations
 
 @event_trigger(EVENT_FOLDER_WATCHER)
-@time_trigger
+@time_trigger('shutdown')
 @task_unique("ha_log_truncate", kill_me=True)
 async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder="", path="", **kwargs):
   try: 

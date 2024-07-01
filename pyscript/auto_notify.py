@@ -1,6 +1,4 @@
 from constants.config import *
-from constants.devices import *
-from constants.events import *
 from constants.expressions import *
 from constants.mappings import *
 from constants.settings import *

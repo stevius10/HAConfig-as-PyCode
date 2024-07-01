@@ -1,5 +1,5 @@
 from constants.config import *
-from constants.events import EVENT_SYSTEM_STARTED
+from constants.mappings import EVENT_SYSTEM_STARTED
 
 import shutil
 import sys
@@ -30,7 +30,6 @@ def ha_setup():
   ha_setup_files()
   ha_setup_links()
   ha_setup_logging()
-  #ha_setup_syslog()
 
 # Tasks
 
@@ -54,20 +53,3 @@ def ha_setup_links(links=SYSTEM_LINKS):
 
 def ha_setup_logging():  # sync. task due logging scope
   logger.set_level(**{LOG_LOGGER_SYS: LOG_LOGGING_LEVEL})
-
-@debugged
-def ha_setup_syslog():
-  @callback
-  @event_trigger("system_log_event", "message.find('Reloaded /config/pyscript/') != -1")
-  def ha_setup_syslog_on_reload(event):
-    global reload
-    if re.search(r'Reloaded (/config/pyscript/.*\.py)', event['message']):
-      scripts.append(paths.group(1))
-    if not reload:
-      reload = True
-      task.sleep(1)
-    if reloaded:
-      logs(f"# {len(scripts)} reloaded\n" + "\n".join(f"- {script.split('/')[-1]}" for script in reloaded_scripts))
-    scripts.clear()
-    reload = False
-  trigger.append(ha_setup_syslog_on_reload)

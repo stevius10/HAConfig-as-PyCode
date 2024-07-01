@@ -1,3 +1,4 @@
+from constants.config import SERVICE_GIT_SYNC_ENABLED
 from constants.expressions import *
 from constants.secrets import *
 from constants.settings import *
@@ -9,6 +10,7 @@ from utils import *
 
 @service(supports_response="optional")
 @time_trigger(EXPR_TIME_SERVICE_GIT_CRON)
+@state_active(str(SERVICE_GIT_SYNC_ENABLED))
 @logged
 def service_git_sync(
   key_path=SERVICE_GIT_SETTINGS_CREDENTIALS, 

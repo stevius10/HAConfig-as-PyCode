@@ -1,4 +1,4 @@
-from constants.events import *
+from constants.config import SERVICE_SCRAPE_HOUSING_ENABLED
 from constants.expressions import *
 from constants.mappings import *
 from constants.settings import *
@@ -93,6 +93,7 @@ def scrape_housing_factory(provider):
     state.persist(get_entity(provider), default_value="")
 
   @time_trigger(EXPR_TIME_UPDATE_SENSORS_HOUSING)
+  @state_active(str(SERVICE_SCRAPE_HOUSING_ENABLED))
   @time_active(EXPR_TIME_GENERAL_WORKTIME)
   @logged
   @service

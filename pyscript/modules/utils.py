@@ -1,5 +1,5 @@
 from constants.config import LOG_LOGGER_SYS, LOG_LOGGING_LEVEL
-from constants.mappings import STATES_UNDEFINED
+from constants.mappings import STATES_HA_UNDEFINED
 
 import importlib
 import sys
@@ -52,7 +52,7 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
   conditions = []
   if defined:
     conditions.append(f"{entity} is not None")
-    states_undefined_str = ", ".join([f'\"{state}\"' for state in STATES_UNDEFINED])
+    states_undefined_str = ", ".join([f'\"{state}\"' for state in STATES_HA_UNDEFINED])
     conditions.append(f"{entity} not in [{states_undefined_str}]")
       
   if expression:

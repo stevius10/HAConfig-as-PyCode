@@ -1,6 +1,5 @@
 from constants.entities import AUTO_ENTITIES
-from constants.events import EVENT_SYSTEM_STARTED
-from constants.mappings import PERSISTANCE_GENERAL_TIMER_PREFIX, SERVICE_HA_TURN_OFF
+from constants.mappings import EVENT_SYSTEM_STARTED, PERSISTANCE_GENERAL_TIMER_PREFIX, SERVICE_HA_TURN_OFF
 
 from utils import *
 

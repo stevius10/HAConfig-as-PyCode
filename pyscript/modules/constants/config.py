@@ -1,5 +1,12 @@
 from constants.expressions import EXPR_TIME_SERVICE_FILEBACKUP_CRON
-from constants.secrets import SYSTEM_FILES
+from constants.secrets import DEVICES, SYSTEM_FILES
+
+DEVICES = {
+  "home": [{"id": entry["id"], "default": entry["default"]} for entry in DEVICES["home"]],
+  "mobile": [{"id": entry["id"], "default": entry["default"]} for entry in DEVICES["mobile"]]
+}
+
+DEFAULT_NOTIFICATION_TARGET = "home"
 
 # Log
 
@@ -15,10 +22,6 @@ LOG_TRUNCATE_IO_RETRY = 3
 
 LOG_LOGGER_SYS = "py"
 LOG_LOGGING_LEVEL = "info"
-
-# Notifications
-
-DEFAULT_NOTIFICATION_TARGET = "home"
 
 # Paths
 
@@ -38,7 +41,13 @@ PATH_DOCKER_LOG_HA = f"{PATH_DIR_HOMEASSISTANT}/{LOG_HA_FILE}"
 
 # Services
 
+SERVICE_AIR_MANAGEMENT_ENABLED = False
+SERVICE_GIT_SYNC_ENABLED = True
+SERVICE_SCRAPE_HOUSING_ENABLED = True
+
 SERVICES_AUTO = { 'shell_command.filebackup': EXPR_TIME_SERVICE_FILEBACKUP_CRON }
+
+SERVICE_SCRAPE_HOUSING_BLACKLIST_DETAILS = ["WBS erforderlich", "mit WBS"]
 
 # System
 
