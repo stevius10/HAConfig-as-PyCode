@@ -1,7 +1,10 @@
+from tests.mocks.mock_decorator import MockDecorator
+from tests.mocks.mock_hass import MockHass
+from tests.mocks.mock_pyscript import MockPyscript
+from tests.mocks.mock_trigger import MockTrigger
+
 import unittest
 from unittest.mock import patch, MagicMock
-from mocks.mock_hass import MockHass
-from mocks.mock_pyscript import MockPyscript
 
 class TestFilesystem(unittest.TestCase):
   def setUp(self):
@@ -10,7 +13,7 @@ class TestFilesystem(unittest.TestCase):
 
   @patch('shutil.copy2')
   def test_cp(self, mock_copy2):
-    from pyscript.python.filesystem import cp
+    from filesystem import cp
     
     cp("src.txt", "dest.txt")
     
@@ -21,9 +24,9 @@ class TestLogfile(unittest.TestCase):
     self.mock_hass = MockHass()
     self.mock_pyscript = MockPyscript()
 
-  @patch('pyscript.python.logfile.logging')
+  @patch('python.logfile.logging')
   def test_logfile_initialization(self, mock_logging):
-    from pyscript.python.logfile import Logfile
+    from logfile import Logfile
     
     log = Logfile(ctx="test_context")
     
@@ -31,9 +34,9 @@ class TestLogfile(unittest.TestCase):
     self.assertEqual(log.name, "test_context")
     self.assertEqual(len(log.history), 0)
 
-  @patch('pyscript.python.logfile.logging')
+  @patch('python.logfile.logging')
   def test_logfile_log_method(self, mock_logging):
-    from pyscript.python.logfile import Logfile
+    from logfile import Logfile
     
     log = Logfile(ctx="test_context")
     test_message = "Test log message"

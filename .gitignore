@@ -8,6 +8,7 @@
 
 !pyscript
 !pyscript/**/*
+pyscript/**/__init__.py
 pyscript/apps/debug/**/*
 pyscript/logs/**/*
 pyscript/snippets/**/*

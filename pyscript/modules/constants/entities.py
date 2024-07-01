@@ -68,7 +68,7 @@ CLUSTER_ENTITIES_TV = [ "media.wz_fernseher", "media.sz_fernseher" ]
 
 # Services
 
-SERVICE_AIR_CLEANER_ENTITIES = {
+AIR_CONTROL_ENTITIES = {
   "wz_luft": { "fan": "fan.wz_luft", "sensor": "sensor.wz_luft", "luftung": "switch.wz_luftung" },
   "sz_luft": { "fan": "fan.sz_luft", "sensor": "sensor.sz_luft", "luftung": "switch.sz_luftung" }
 }

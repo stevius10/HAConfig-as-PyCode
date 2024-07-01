@@ -17,6 +17,8 @@ logger:
       - "Timeout for command: python3"
     homeassistant.components.google_assistant.http: 
       - "googleapis.com"
+    homeassistant.components.websocket_api.http.connection:
+      - "Unexpected error inside websocket API"
     homeassistant.helpers.script.websocket_api_script:
       - "Service not found for call_service"
     custom_components.tapo.coordinators:

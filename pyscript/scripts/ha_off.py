@@ -16,7 +16,7 @@ def turnoff(away=False):
 def turnoff_away():
   turnoff(away=True)
 
-@service
+@service # air management service
 def turnoff_air(entity=None):
   if entity == None:
     turnoff_air(entity=CLUSTER_ENTITIES_AIR)

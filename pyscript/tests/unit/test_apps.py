@@ -1,12 +1,10 @@
-import unittest
-from unittest.mock import patch, MagicMock
-from mocks.mock_hass import MockHass
-from mocks.mock_pyscript import MockPyscript
+from tests.mocks.mock_decorator import MockDecorator
+from tests.mocks.mock_hass import MockHass
+from tests.mocks.mock_pyscript import MockPyscript
+from tests.mocks.mock_trigger import MockTrigger
 
 import unittest
 from unittest.mock import patch, MagicMock
-from mocks.mock_hass import MockHass
-from mocks.mock_pyscript import MockPyscript
 
 class TestScrape(unittest.TestCase):
   def setUp(self):
@@ -14,7 +12,7 @@ class TestScrape(unittest.TestCase):
     self.mock_pyscript = MockPyscript()
 
   def test_filter(self):
-    from apps.scrape import filter
+    from scrape import filter
     valid_apartment = {
       "address": "Test Street 1",
       "rent": "500",
@@ -32,7 +30,7 @@ class TestScrape(unittest.TestCase):
 
   @patch('apps.scrape.requests.get')
   def test_scrape(self, mock_get):
-    from apps.scrape import scrape
+    from scrape import scrape
     mock_response = MagicMock()
     mock_response.content = "Mocked content"
     mock_get.return_value = mock_response
@@ -40,14 +38,14 @@ class TestScrape(unittest.TestCase):
     self.assertIsNotNone(result)
 
   def test_scrape_housing(self):
-    from apps.scrape import scrape_housing
+    from scrape import scrape_housing
     
-    self.mock_pyscript.state.get.return_value = "<html></html>"
+    self.mock_state.get.return_value = "<html></html>"
     
     scrape_housing("test_provider")
     
-    self.mock_pyscript.state.set.assert_called_once()
-    self.mock_pyscript.state.persist.assert_called_once()
+    self.mock_state.set.assert_called_once()
+    self.mock_state.persist.assert_called_once()
 
 class TestServices(unittest.TestCase):
   def setUp(self):
@@ -55,12 +53,12 @@ class TestServices(unittest.TestCase):
     self.mock_pyscript = MockPyscript()
 
   def test_services_auto_factory(self):
-    from apps.services import services_auto_factory
+    from services import services_auto_factory
     
     services_auto_factory("test.service", "* * * * *")
     
-    self.mock_pyscript.time_trigger.assert_called_once_with("* * * * *")
-    self.mock_pyscript.service.call.assert_called_once_with("test", "service")
+    self.mock_time_trigger.assert_called_once_with("* * * * *")
+    self.mock_service.call.assert_called_once_with("test", "service")
 
 class TestSyncGit(unittest.TestCase):
   def setUp(self):
@@ -69,7 +67,7 @@ class TestSyncGit(unittest.TestCase):
 
   @patch('apps.sync_git.subprocess.run')
   def test_git_sync(self, mock_run):
-    from apps.sync_git import git_sync
+    from sync_git import git_sync
     
     mock_run.return_value = MagicMock(stdout="Test output", stderr="")
     
