@@ -59,5 +59,5 @@ class Logfile:
   def close(self):
     if hasattr(self, 'history'):
       if self.history:
-        self.history = " | ".join(str(item) for item in self.history)
+        return " | ".join(str(item) for item in self.history)
     return {}
