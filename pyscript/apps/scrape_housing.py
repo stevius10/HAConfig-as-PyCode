@@ -105,12 +105,11 @@ def scrape_housing_factory(provider):
       structure["item"], structure["address_selector"], structure["rent_selector"],
       structure["size_selector"], structure["rooms_selector"], structure["details_selector"])
     
-    state.set(get_entity(provider), apartments[:254])
+    state.set(get_entity(provider), apartments[:254], attributes={'url': housing_provider.get(provider).get('url')})
     state.persist(get_entity(provider))
     
     if apartments: 
       return f"{provider}: {str(apartments)}"
-    debug(housing_provider.get(provider).get('url'), title=".".join([pyscript.get_global_ctx(), provider]))
 
   trigger.append(scrape_housing)
 

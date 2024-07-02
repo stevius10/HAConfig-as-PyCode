@@ -1,9 +1,10 @@
 import logging
+from logging.handlers import RotatingFileHandler
+import os
 from pathlib import Path
 
 PATH_DIR_PY_LOG = "/config/pyscript/logs/"
-
-LOG_LOGFILE_FORMAT = "%(asctime)s: %(message)s"
+LOG_LOGFILE_FORMAT = "%(asctime)s  %(message)s"
 
 class Logfile:
   _logger = None
@@ -29,7 +30,16 @@ class Logfile:
   @staticmethod
   def _create_logger(name):
     logfile = Path(PATH_DIR_PY_LOG, f"{name}.log")
-    handler = logging.FileHandler(logfile, mode='w+')
+    
+    if logfile.exists():
+      for i in range(2, 1, -1):
+        old = logfile.with_suffix(f".log.{i}")
+        new = logfile.with_suffix(f".log.{i+1}")
+        if old.exists():
+          old.rename(new)
+      logfile.rename(logfile.with_suffix(".log.1"))
+    
+    handler = RotatingFileHandler(logfile, mode='w+', maxBytes=1024 * 1024, backupCount=3, encoding='utf-8')
     handler.setFormatter(logging.Formatter(LOG_LOGFILE_FORMAT))
     logger = logging.getLogger(name)
     logger.addHandler(handler)
@@ -54,7 +64,7 @@ class Logfile:
         logger.info(message)
     elif isinstance(message, list):
       for msg in message:
-        if msg: logger.info(message)
+        if msg: logger.info(msg)
 
   def close(self):
     if hasattr(self, 'history'):

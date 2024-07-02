@@ -7,14 +7,14 @@ AUTO_PRESENCE_TRANSITION = {
     "wohnzimmer": {
       "on": [],
       "off": [
-        { "condition": "state.get('climate.wohnzimmer') 'on'",
+        { "condition": "state.get('climate.wohnzimmer') == 'on'",
           "action": lambda: service.call("climate", "set_temperature", entity_id="climate.wohnzimmer", temperature=18) }
       ]
     },
     "schlafzimmer": {
       "on": [],
       "off": [
-        { "condition": "state.get('climate.schlafzimmer') 'on'",
+        { "condition": "state.get('climate.schlafzimmer') == 'on'",
           "action": lambda: service.call("climate", "set_temperature", entity_id="climate.schlafzimmer", temperature=18) }
       ]
     },

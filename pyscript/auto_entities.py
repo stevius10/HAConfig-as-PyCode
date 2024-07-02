@@ -1,86 +1,76 @@
-import unittest
-from unittest.mock import patch, MagicMock
+from constants.entities import AUTO_ENTITIES
+from constants.mappings import EVENT_SYSTEM_STARTED, PERSISTENCE_GENERAL_TIMER_PREFIX, SERVICE_HA_TURN_OFF, STATES_HA_UNDEFINED
 
-class TestAutoEntities(unittest.TestCase):
-  def setUp(self):
-    self.mock_pyscript = MagicMock()
-    pyscript.state = MagicMock()
-    pyscript.task = MagicMock()
-    pyscript.event = MagicMock()
-    pyscript.service = MagicMock()
-    pyscript.timer = MagicMock()
+from utils import *
 
-  @patch('pyscript.auto_entities.AUTO_ENTITIES')
-  @patch('pyscript.auto_entities.state_trigger')
-  def test_default_factory(self, mock_state_trigger, mock_auto_entities):
-    from pyscript.auto_entities import default_factory
-    mock_auto_entities.return_value = {
-      'light.test': {
-        'default': 'off',
-        'func': 'light.turn_off'
-      }
-    }
-    mock_state_trigger.return_value = lambda x: x
-    default_factory('light.test', 'light.turn_off')
-    mock_state_trigger.assert_called_once()
-    decorated_func = mock_state_trigger.return_value
-    decorated_func('light.turn_off')
-    pyscript.service.call.assert_called_once_with('light', 'turn_off', entity_id='light.test')
+entities = AUTO_ENTITIES
 
-  @patch('pyscript.auto_entities.AUTO_ENTITIES')
-  @patch('pyscript.auto_entities.state_trigger')
-  @patch('pyscript.auto_entities.event_trigger')
-  def test_timeout_factory(self, mock_event_trigger, mock_state_trigger, mock_auto_entities):
-    from pyscript.auto_entities import timeout_factory
-    mock_auto_entities.return_value = {
-      'switch.test': {
-        'default': 'off',
-        'delay': 300
-      }
-    }
-    mock_state_trigger.return_value = lambda x: x
-    mock_event_trigger.return_value = lambda x: x
-    pyscript.state.get.side_effect = ['on', 'on', 'off']
-    timeout_factory('switch.test', 'off', 300)
-    self.assertEqual(mock_state_trigger.call_count, 2)
-    self.assertEqual(mock_event_trigger.call_count, 1)
-    start_timer = mock_state_trigger.return_value
-    start_timer()
-    pyscript.timer.start.assert_called_once_with(entity_id='timer.test', duration=300)
-    timer_stop = mock_event_trigger.return_value
-    timer_stop()
-    pyscript.service.call.assert_called_once_with('homeassistant', 'turn_off', entity_id='switch.test')
-    timer_reset = mock_state_trigger.return_value
-    timer_reset()
-    pyscript.timer.cancel.assert_called_once_with(entity_id='timer.test')
+trigger = []
 
-  @patch('pyscript.auto_entities.AUTO_ENTITIES')
-  @patch('pyscript.auto_entities.state_trigger')
-  @patch('pyscript.auto_entities.time_trigger')
-  @patch('pyscript.auto_entities.event_trigger')
-  def test_timeout_factory_system_events(self, mock_event_trigger, mock_time_trigger, mock_state_trigger, mock_auto_entities):
-    from pyscript.auto_entities import timeout_factory
-    mock_auto_entities.return_value = {
-      'switch.test': {
-        'default': 'off',
-        'delay': 300
-      }
-    }
-    mock_state_trigger.return_value = lambda x: x
-    mock_time_trigger.return_value = lambda x: x
-    mock_event_trigger.return_value = lambda x: x
-    timeout_factory('switch.test', 'off', 300)
-    self.assertEqual(mock_time_trigger.call_count, 2)
-    self.assertEqual(mock_event_trigger.call_count, 2)
-    timer_init = mock_time_trigger.return_value
-    timer_init()
-    pyscript.state.persist.assert_called_once_with('pyscript.timer_test', 'idle')
-    timer_restore = mock_event_trigger.return_value
-    timer_restore()
-    pyscript.state.set.assert_called_once_with('pyscript.timer_test', '')
-    timer_persist = mock_time_trigger.return_value
-    timer_persist()
-    pyscript.timer.pause.assert_called_once_with(entity_id='timer.test')
+# Default 
 
-if __name__ == '__main__':
-  unittest.main()
+def default_factory(entity, func):
+  @state_trigger(expr(entity, entities.get(entity)['default'], comparator="!="), func, state_hold=1)
+  @debugged
+  def default(func):
+    service.call(func.split(".")[0], func.split(".")[1], entity_id=entity)
+  trigger.append(default)
+
+# Timeout
+
+def timeout_factory(entity, default, delay=0):
+  entity_name = entity.split(".")[1]
+  entity_timer = f"timer.{entity_name}"
+  entity_persisted = f"pyscript.{PERSISTENCE_GENERAL_TIMER_PREFIX}_{entity_name}"
+
+  @state_trigger(expr(entity, expression=default, comparator="!=", defined=True), state_hold_false=1)
+  @debugged
+  def start_timer(delay=delay, trigger_type=None, var_name=None):
+    if state.get(entity) != default and state.get(entity) not in STATES_HA_UNDEFINED:
+      timer.start(entity_id=entity_timer, duration=delay)
+  trigger.append(start_timer)
+
+  @event_trigger("timer.finished", f"entity_id == '{entity_timer}'")
+  @logged
+  def timer_stop(**kwargs):
+    service.call("homeassistant", f"turn_{default[0] if isinstance(default, list) else default}", entity_id=entity)
+  trigger.append(timer_stop)
+  
+  @state_trigger(expr(entity, expression=default, comparator="=="), state_hold=1)
+  @debugged
+  def timer_reset(var_name=None):
+    timer.cancel(entity_id=entity_timer)
+  trigger.append(timer_reset)
+
+  # Handle system based events 
+
+  @time_trigger('startup')
+  def timer_init(): 
+    state.persist(entity_persisted, "idle")
+    homeassistant.update_entity(entity_id=entity_persisted)
+
+  @event_trigger(EVENT_SYSTEM_STARTED)
+  def timer_restore():
+    if state.get(entity_persisted):
+      start_timer(delay=str(state.get(entity_persisted)))
+      log(f"timer '{entity_timer}' restored with duration {state.getattr(entity_timer).get('remaining')}")
+    state.set(entity_persisted, "")
+
+  @time_trigger('shutdown')
+  def timer_persist():
+    if entity_persisted and state.get(entity_timer):
+      timer.pause(entity_id=entity_timer)
+      homeassistant.update_entity(entity_id=entity_timer)
+      state.set(entity_persisted, state.getattr(entity_timer).get('remaining'))
+      homeassistant.update_entity(entity_id=entity_persisted)
+      state.persist(entity_persisted)
+          
+# Initialization
+
+for entity in entities:
+  if "delay" not in entities[entity]:
+    if "func" not in entities[entity]:
+      entities_default[entity]["func"] = SERVICE_HA_TURN_OFF
+    default_factory(entity, entities.get(entity)['func'])
+  else: 
+    timeout_factory(entity, entities[entity]["default"], entities[entity]["delay"])

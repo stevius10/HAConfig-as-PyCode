@@ -30,7 +30,7 @@ AUTO_PRESENCE_ENTITIES = {
   "wohnzimmer": {
     "indicators": {
       "media_player.wz_fernseher": {"condition": "playing"},
-      "fan.wz_ventilator": {"condition": "playing", "weight": 0.1}
+      "fan.wz_ventilator": {"condition": "on", "weight": 0.1}
     },
     "exclusions": {
       "media_player.sz_fernseher": {"condition": "playing"},
@@ -41,7 +41,7 @@ AUTO_PRESENCE_ENTITIES = {
     "indicators": {
       "media_player.schlafzimmer": {"condition": "playing"},
       "media_player.sz_fernseher": {"condition": "playing"},
-      "fan.sz_ventilator": {"condition": "playing", "weight": 0.1}
+      "fan.sz_ventilator": {"condition": "on", "weight": 0.1}
     },
     "exclusions": {
       "media_player.wz_fernseher": {"condition": "playing"}

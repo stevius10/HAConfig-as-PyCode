@@ -2,11 +2,14 @@ from homeassistant.const import STATE_ON, STATE_OFF, STATE_UNAVAILABLE, STATE_UN
 
 # Home Assistant
 
+STATE_HA_TIMER_STOPPED = "idle"
 STATES_HA_UNDEFINED = [STATE_UNAVAILABLE, STATE_UNKNOWN]
 
-STATE_HA_TIMER_STOPPED = "idle"
-
 SERVICE_HA_TURN_OFF = "homeassistant.turn_off"
+
+# States 
+
+STATES_UNDEFINED = [STATES_HA_UNDEFINED, "", None, "None", type(None), "NoneType"]
 
 # Events
 
@@ -21,11 +24,14 @@ NOTIFICATION_ID_CHANGE_DETECTION = "changedetection"
 
 # Persistence
 
+PERSISTENCE_ENTITY_AUTO_PRESENCE = "pyscript.auto_presence"
+
 PERSISTENCE_GENERAL_TIMER_PREFIX = "timer"
 
 PERSISTENCE_SCRAPE_HOUSING_SENSOR_PREFIX = "v_scrape"
 
 # Services
+
 SERVICE_AIR_CONTROL_MODE_SLEEP = "sleep"
 
 # Shortcuts
