@@ -1,9 +1,8 @@
+import importlib
+
 from constants.config import LOG_LOGGER_SYS, LOG_LOGGING_LEVEL
 from constants.mappings import STATES_HA_UNDEFINED
 
-import importlib
-import sys
-import traceback
 
 # Logging
 

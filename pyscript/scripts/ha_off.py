@@ -18,7 +18,7 @@ def turnoff_away():
 
 @service # air management service
 def turnoff_air(entity=None):
-  if entity == None:
+  if not entity:
     turnoff_air(entity=CLUSTER_ENTITIES_AIR)
   elif isinstance(entity, list):
     for item in entity:
@@ -27,46 +27,46 @@ def turnoff_air(entity=None):
     turn_off(entity=entity)
     
 def turnoff_heating(entity=None, away=False):
-  if entity == None:
+  if not entity:
     turnoff_heating(entity=CLUSTER_ENTITIES_HEATING, away=away)
   if isinstance(entity, str):
     if not away: 
-      climate.turn_off(entity_id=entity)
+      climate.air_control_turn_off(entity_id=entity)
   if isinstance(entity, list):
     for item in entity:
       turnoff_heating(entity=item, away=away)
 
 def turnoff_media(entity=None):
-  if entity == None:
+  if not entity:
     turnoff_media(entity=CLUSTER_ENTITIES_MEDIA)
   if isinstance(entity, list):
     for item in entity:
       turn_off(entity=item)
 
 def turnoff_lights(entity=None, away=False):
-  if entity == None:
+  if not entity:
     turnoff_lights(entity=CLUSTER_ENTITIES_LIGHT)
   if isinstance(entity, str):
     if not away: 
-      scene.turn_off(entity_id=entity)
+      scene.air_control_turn_off(entity_id=entity)
     else:
-      scene.turn_off(entity, transition=OFF_AWAY_TRANSITION)
+      scene.air_control_turn_off(entity, transition=OFF_AWAY_TRANSITION)
   if isinstance(entity, list):
     for item in entity[:-1]:
       turn_off(entity=item)
     if away:
-      task.sleep(transition)
+      task.air_control_sleep(transition)
     turn_off(entity[-1])
       
 def turnoff_switches(entity=None):
-  if entity == None:
+  if not entity:
     turnoff_switches(entity=CLUSTER_ENTITIES_SWITCHES)
   if isinstance(entity, list):
     for item in entity:
       turn_off(entity=item)
       
 def turnoff_tv(entity=None):
-  if entity == None:
+  if not entity:
     turnoff_tv(entity=CLUSTER_ENTITIES_TV)
   if isinstance(entity, str):
     try: 
@@ -81,4 +81,4 @@ def turnoff_tv(entity=None):
 
 @service
 def turn_off(entity):
-  homeassistant.turn_off(entity_id=entity)
+  homeassistant.air_control_turn_off(entity_id=entity)

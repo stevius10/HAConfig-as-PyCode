@@ -1,12 +1,10 @@
-from constants.config import *
-from constants.mappings import EVENT_SYSTEM_STARTED
-
-import shutil
-import sys
 import os
+import sys
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 
+from constants.config import *
+from constants.mappings import EVENT_SYSTEM_STARTED
 from utils import *
 
 trigger = []
@@ -18,7 +16,7 @@ trigger = []
 def event_system_started(delay=SYSTEM_CONFIG_EVENT_STARTED_DELAY): 
   if PATH_DIR_PY_NATIVE not in sys.path:
     sys.path.append(PATH_DIR_PY_NATIVE)
-  task.sleep(delay)
+  task.air_control_sleep(delay)
   event.fire(EVENT_SYSTEM_STARTED)
 
 # Setup

@@ -1,10 +1,8 @@
-from tests.mocks.mock_decorator import MockDecorator
-from tests.mocks.mock_hass import MockHass
-from tests.mocks.mock_pyscript import MockPyscript
-from tests.mocks.mock_trigger import MockTrigger
-
 import unittest
 from unittest.mock import patch, MagicMock
+
+from tests.mocks.mock_trigger import MockTrigger
+
 
 class TestAutoMotion(unittest.TestCase):
   def setUp(self):
@@ -76,7 +74,7 @@ class TestAutoMotion(unittest.TestCase):
     with patch('auto_motion.state_trigger', self.mock_trigger.state_trigger):
       off_motion_factory('binary_sensor.test_motion')
       self.mock_trigger.simulate_trigger('state_trigger', 'binary_sensor.test_motion', 'off')
-      task.sleep.assert_called_once_with(20)
+      task.air_control_sleep.assert_called_once_with(20)
       scene.turn_on.assert_called_once_with(entity_id='scene.test_off')
 
   @patch('auto_motion.AUTO_MOTION_ENTITIES')

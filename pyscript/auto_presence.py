@@ -1,5 +1,4 @@
 from constants.entities import AUTO_PRESENCE_ENTITIES
-from constants.mappings import STATE_ON, STATE_OFF, STATES_HA_UNDEFINED
 from constants.settings import AUTO_PRESENCE_TRANSITION
 
 from utils import *

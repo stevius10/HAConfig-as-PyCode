@@ -12,37 +12,37 @@ entities = AIR_CONTROL_ENTITIES
 @state_active(f"{SERVICE_AIR_CONTROL_ENABLED} == True and {EXPR_STATE_AIR_AUTOMATION_SEASON} and {expr([entity['fan'] for entity in entities.values()], STATE_OFF)}")
 @time_active(EXPR_TIME_AIR_AUTOMATION)
 @debugged
-def threshold_on(var_name=None):
-  turn_off(entities.get(var_name.split(".")[1]).get("fan"))
+def air_control_threshold_on(var_name=None):
+  entity = entities.get(var_name.split(".")[1]).get("fan")
   fan.turn_on(entity_id=entity)
-  task.sleep(WAIT_ACTIVE_DELAY)
-  sleep(entity=var_name)
+  task.air_control_sleep(WAIT_ACTIVE_DELAY)
+  air_control_sleep(entity=var_name)
 
 @state_trigger(expr([entity["sensor"] for entity in entities.values()], SERVICE_AIR_CONTROL_THRESHOLD_STOP, comparator="<"))
 @state_active(f"{SERVICE_AIR_CONTROL_ENABLED} == True and {EXPR_STATE_AIR_AUTOMATION_SEASON} and {expr([entity['fan'] for entity in entities.values()], STATE_ON)}")
 @time_active(EXPR_TIME_AIR_AUTOMATION)
 @debugged
-def threshold_off(var_name=None):
-  turn_off(entities.get(var_name.split(".")[1]).get("fan"))
+def air_control_threshold_off(var_name=None):
+  air_control_turn_off(entities.get(var_name.split(".")[1]).get("fan"))
 
 @event_trigger(EVENT_NEVER) # required for service
 @debugged
 @service
-def clean(conditioned=False, entity=[entity["fan"] for entity in entities.values()]):
+def air_control_clean(conditioned=False, entity=[entity["fan"] for entity in entities.values()]):
   fan.turn_on(entity_id=entity)
-  task.sleep(SERVICE_AIR_CONTROL_WAIT_ACTIVE_DELAY)
-  for item in entity: 
+  task.air_control_sleep(SERVICE_AIR_CONTROL_WAIT_ACTIVE_DELAY)
+  for item in entity:
     percentage=get_clean_percentage(item.split(".")[1]) if conditioned else 100
     fan.set_percentage(entity_id=item, percentage=percentage)
-    helper_air(entity=item, check=True)
+    air_control_helper_air(entity=item, check=True)
 
 @state_trigger(expr([entity["fan"] for entity in entities.values()], STATE_ON)) # reset
-@state_trigger(expr([f"'{entity['fan']}.percentage'" for entity in entities.values()], \
+@state_trigger(expr([f"'{entity['fan']}.percentage'" for entity in entities.values()],
   SERVICE_AIR_CONTROL_SLEEP_MODE_PERCENTAGE, comparator='>').replace("'", ""), # prevent interpretation \
   state_hold=SERVICE_AIR_CONTROL_TIMEOUT_CLEAN, state_check_now=True)
 @debugged
 @service
-def sleep(entity=[entity["fan"] for entity in entities.values()], var_name=None, state_check_now=True):
+def air_control_sleep(entity=[entity["fan"] for entity in entities.values()], var_name=None, state_check_now=True):
   if var_name: 
     entity = ".".join(var_name.split(".")[:2]) # handle percentage trigger
   if entity and isinstance(entity, str): 
@@ -52,18 +52,18 @@ def sleep(entity=[entity["fan"] for entity in entities.values()], var_name=None,
         fan.set_preset_mode(entity_id=entity, preset_mode=SERVICE_AIR_CONTROL_PRESET_MODE_SLEEP)
       if feature in ["1", 1]:
         fan.set_percentage(entity_id=entity, percentage=SERVICE_AIR_CONTROL_SLEEP_MODE_PERCENTAGE)
-      turn_off(entities[entity.split(".")[1]]["luftung"])
+      air_control_turn_off(entities[entity.split(".")[1]]["luftung"])
   elif isinstance(entity, list):
     fan.turn_on(entity_id=entity)
-    task.sleep(SERVICE_AIR_CONTROL_WAIT_ACTIVE_DELAY)
+    task.air_control_sleep(SERVICE_AIR_CONTROL_WAIT_ACTIVE_DELAY)
     for item in entity: 
-      sleep(entity=item, var_name=item)
+      air_control_sleep(entity=item, var_name=item)
 
 @debugged
-def turn_off(entity=[entity["fan"] for entity in entities.values()]):
+def air_control_turn_off(entity=[entity["fan"] for entity in entities.values()]):
   if isinstance(entity, list):
     for item in entity:
-      turn_off(item)
+      air_control_turn_off(item)
   else:
     pyscript.turnoff_air(entity=entity)
 
@@ -72,6 +72,6 @@ def get_clean_percentage(name):
 
 @debugged
 @service
-def helper_air(entity=[entity["fan"] for entity in entities.values()], helper=[entity["luftung"] for entity in entities.values()], check=False):
+def air_control_helper_air(entity=[entity["fan"] for entity in entities.values()], helper=[entity["luftung"] for entity in entities.values()], check=False):
   if (check == False) or (sum([int(state.get(entities[item.split(".")[1]]["sensor"])) for item in entity if state.get(entities[item.split(".")[1]]["sensor"]) is not None]) > SERVICE_AIR_CONTROL_HELPER_PM_MINIMUM):
     homeassistant.turn_on(entity_id=helper)

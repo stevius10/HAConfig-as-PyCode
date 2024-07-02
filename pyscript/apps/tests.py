@@ -1,9 +1,8 @@
-import unittest
-import sys
-import os
 import io
+import unittest
 
 from utils import *
+
 
 @service
 def test():
@@ -28,15 +27,15 @@ def test_unit():
   from tests.unit.test_scripts import TestHaSystem, TestHaUtils
 
   suite = unittest.TestSuite()
-  suite.addTest(unittest.makeSuite(TestConstants))
-  suite.addTest(unittest.makeSuite(TestUtils))
-  suite.addTest(unittest.makeSuite(TestScrape))
-  suite.addTest(unittest.makeSuite(TestServices))
-  suite.addTest(unittest.makeSuite(TestSyncGit))
-  suite.addTest(unittest.makeSuite(TestFilesystem))
-  suite.addTest(unittest.makeSuite(TestLogfile))
-  suite.addTest(unittest.makeSuite(TestHaSystem))
-  suite.addTest(unittest.makeSuite(TestHaUtils))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestConstants))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestUtils))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestScrape))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestServices))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestSyncGit))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestFilesystem))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestLogfile))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestHaSystem))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestHaUtils))
 
   output = io.StringIO()
   runner = unittest.TextTestRunner(stream=output, verbosity=2)
@@ -57,10 +56,10 @@ def test_integration():
   from tests.integration.test_auto_control import TestAutoControl
 
   suite = unittest.TestSuite()
-  suite.addTest(unittest.makeSuite(TestAutoEntities))
-  suite.addTest(unittest.makeSuite(TestAutoMotion))
-  suite.addTest(unittest.makeSuite(TestAutoNotify))
-  suite.addTest(unittest.makeSuite(TestAutoControl))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestAutoEntities))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestAutoMotion))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestAutoNotify))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestAutoControl))
 
   output = io.StringIO()
   runner = unittest.TextTestRunner(stream=output, verbosity=2)
@@ -79,8 +78,8 @@ def test_functional():
   from tests.functional.test_off import TestOff
 
   suite = unittest.TestSuite()
-  suite.addTest(unittest.makeSuite(TestAirControl))
-  suite.addTest(unittest.makeSuite(TestOff))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestAirControl))
+  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestOff))
 
   output = io.StringIO()
   runner = unittest.TextTestRunner(stream=output, verbosity=2)

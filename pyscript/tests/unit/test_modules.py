@@ -1,8 +1,9 @@
+import unittest
+from unittest.mock import MagicMock
+
 from tests.mocks.mock_hass import MockHass
 from tests.mocks.mock_pyscript import MockPyscript
 
-import unittest
-from unittest.mock import patch, MagicMock
 
 class TestConstants(unittest.TestCase):
   def setUp(self):
@@ -10,7 +11,6 @@ class TestConstants(unittest.TestCase):
     self.mock_pyscript = MockPyscript()
 
   def test_constants_import(self):
-    from pyscript.modules.constants.expressions import EXPR_TIME_DAY, EXPR_TIME_DAYTIME, EXPR_TIME_GENERAL_WORKTIME
     self.assertTrue('EXPR_TIME_DAY' in globals())
     self.assertTrue('EXPR_TIME_DAYTIME' in globals())
     self.assertTrue('EXPR_TIME_GENERAL_WORKTIME' in globals())

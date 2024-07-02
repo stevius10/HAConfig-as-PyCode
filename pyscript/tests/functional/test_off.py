@@ -25,8 +25,8 @@ class TestOff(unittest.TestCase):
     mock_tv.return_value = ["media_player.test_tv"]
     turnoff()
     turn_off.assert_called()
-    climate.turn_off.assert_called_once()
-    scene.turn_off.assert_called()
+    climate.air_control_turn_off.assert_called_once()
+    scene.air_control_turn_off.assert_called()
 
   @patch('ha_off.ENTITIES_AIR', new_callable=PropertyMock)
   def test_turnoff_air(self, mock_air):
@@ -40,14 +40,14 @@ class TestOff(unittest.TestCase):
     from ha_off import turnoff_heating
     mock_heating.return_value = ["climate.test_heating"]
     turnoff_heating()
-    climate.turn_off.assert_called_once_with(entity_id="climate.test_heating")
+    climate.air_control_turn_off.assert_called_once_with(entity_id="climate.test_heating")
 
   @patch('ha_off.ENTITIES_LIGHT', new_callable=PropertyMock)
   def test_turnoff_lights(self, mock_light):
     from ha_off import turnoff_lights
     mock_light.return_value = ["light.test_light"]
     turnoff_lights()
-    scene.turn_off.assert_called()
+    scene.air_control_turn_off.assert_called()
 
 if __name__ == '__main__':
   unittest.main()

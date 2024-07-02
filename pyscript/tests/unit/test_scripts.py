@@ -1,10 +1,9 @@
-from tests.mocks.mock_decorator import MockDecorator
+import unittest
+from unittest.mock import patch
+
 from tests.mocks.mock_hass import MockHass
 from tests.mocks.mock_pyscript import MockPyscript
-from tests.mocks.mock_trigger import MockTrigger
 
-import unittest
-from unittest.mock import patch, MagicMock
 
 class TestHaSystem(unittest.TestCase):
   def setUp(self):

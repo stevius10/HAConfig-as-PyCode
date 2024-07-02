@@ -1,12 +1,10 @@
+import subprocess
+
 from constants.config import SERVICE_GIT_SYNC_ENABLED
 from constants.expressions import *
 from constants.secrets import *
-from constants.settings import *
-
-import subprocess
-import requests
-
 from utils import *
+
 
 @service(supports_response="optional")
 @time_trigger(EXPR_TIME_SERVICE_GIT_CRON)

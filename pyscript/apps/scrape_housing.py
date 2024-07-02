@@ -1,16 +1,15 @@
+import json
+import random
+
+import regex as re
+import requests
+from bs4 import BeautifulSoup
+
 from constants.config import SERVICE_SCRAPE_HOUSING_ENABLED
 from constants.expressions import *
 from constants.mappings import *
 from constants.settings import *
-
 from utils import *
-
-import json
-import random
-import regex as re
-import requests
-
-from bs4 import BeautifulSoup
 
 trigger = []
 
@@ -19,7 +18,7 @@ housing_provider = SERVICE_SCRAPE_HOUSING_PROVIDERS
 # Function
 
 @debugged
-def filter(apartment):
+def filtering(apartment):
   if all([value is None for value in apartment.values()]):
     return None
   if apartment.get("address") is None:
@@ -64,7 +63,7 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
     if not details:
       details = element_text
     
-    apartment = filter({"address": address, "rent": rent, "size": size, "rooms": rooms, "details": details})
+    apartment = filtering({"address": address, "rent": rent, "size": size, "rooms": rooms, "details": details})
     if apartment:
       summary = [item for item in [rent, rooms, size] if item]
       apartment_format = f"{address} ({', '.join(summary)})" if summary else address
@@ -98,7 +97,7 @@ def scrape_housing_factory(provider):
   @logged
   @service
   def scrape_housing(provider=provider):
-    task.sleep(random.randint(SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
+    task.air_control_sleep(random.randint(SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
     
     structure = housing_provider[provider]["structure"]
     apartments = scrape(fetch(provider), 

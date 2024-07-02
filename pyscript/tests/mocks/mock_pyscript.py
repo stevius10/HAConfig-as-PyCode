@@ -1,5 +1,3 @@
-import asyncio
-
 class MockPyscript:
   def __init__(self):
     self.global_vars = {}
@@ -37,9 +35,6 @@ class MockPyscript:
     task = MockTask(func, *args, **kwargs)
     self.tasks.append(task)
     return task
-
-  def log(self, message, level="INFO"):
-    print(f"[{level}] {message}")
 
   def state_trigger(self, *args, **kwargs):
     def decorator(func):

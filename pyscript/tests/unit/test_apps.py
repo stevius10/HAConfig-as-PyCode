@@ -1,10 +1,9 @@
-from tests.mocks.mock_decorator import MockDecorator
-from tests.mocks.mock_hass import MockHass
-from tests.mocks.mock_pyscript import MockPyscript
-from tests.mocks.mock_trigger import MockTrigger
-
 import unittest
 from unittest.mock import patch, MagicMock
+
+from tests.mocks.mock_hass import MockHass
+from tests.mocks.mock_pyscript import MockPyscript
+
 
 class TestScrape(unittest.TestCase):
   def setUp(self):
