@@ -21,7 +21,7 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
       system_log.clear()
     
   except Exception as e: log(str(e))
-  finally: task.air_control_sleep(LOG_TRUNCATE_BLOCK_DELAY)
+  finally: task.sleep(LOG_TRUNCATE_BLOCK_DELAY)
 
 # Services
 
