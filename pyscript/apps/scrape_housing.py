@@ -26,9 +26,9 @@ def filtering(apartment):
   if apartment.get("rent") is not None:
     if re.findall(r'\d', apartment["rent"]) and not (400 < int(''.join(re.findall(r'\d', apartment["rent"])[:3])) < SERVICE_SCRAPE_HOUSING_FILTER_RENT):
       return None
-  if apartment.get("details") is not None:
+  if apartment.get("text") is not None:
     for blacklist_item in SERVICE_SCRAPE_HOUSING_BLACKLIST_DETAILS:
-      if re.search(r'\b' + re.escape(blacklist_item.lower()) + r'\b', apartment["details"].lower()):
+      if re.search(r'\b' + re.escape(blacklist_item.lower()) + r'\b', apartment["text"].lower()):
         return None
   return {k: v for k, v in apartment.items() if v is not None}
 
@@ -63,7 +63,7 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
     if not details:
       details = element_text
     
-    apartment = filtering({"address": address, "rent": rent, "size": size, "rooms": rooms, "details": details})
+    apartment = filtering({"address": address, "rent": rent, "size": size, "rooms": rooms, "details": details, "text": element_text})
     if apartment:
       summary = [item for item in [rent, rooms, size] if item]
       apartment_format = f"{address} ({', '.join(summary)})" if summary else address
@@ -96,8 +96,9 @@ def scrape_housing_factory(provider):
   @time_active(EXPR_TIME_GENERAL_WORKTIME)
   @logged
   @service
-  def scrape_housing(provider=provider):
-    task.air_control_sleep(random.randint(SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
+  def scrape_housing(provider=provider, event_trigger=None):
+    if event_trigger: 
+      task.sleep(random.randint(SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
     
     structure = housing_provider[provider]["structure"]
     apartments = scrape(fetch(provider), 
@@ -109,7 +110,7 @@ def scrape_housing_factory(provider):
     
     if apartments: 
       return f"{provider}: {str(apartments)}"
-    debug(f"{provider}: [{housing_provider.get(provider).get('url')}")
+    debug(housing_provider.get(provider).get('url'), title=".".join([pyscript.get_global_ctx(), provider]))
 
   trigger.append(scrape_housing)
 
@@ -139,3 +140,8 @@ def get_or_default(element, selector, default=None):
   elif callable(selector):
     return selector(element)
   return default
+
+def get_or_default_format(text):
+  text = text.replace("\n", ", ")
+  text = text.replace(" | ", ", ")
+  return text
