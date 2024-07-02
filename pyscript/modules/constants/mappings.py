@@ -1,4 +1,4 @@
-from homeassistant.const import STATE_UNAVAILABLE, STATE_UNKNOWN
+from homeassistant.const import STATE_ON, STATE_OFF, STATE_UNAVAILABLE, STATE_UNKNOWN
 
 # Home Assistant
 
@@ -19,11 +19,11 @@ EVENT_SYSTEM_STARTED = "EVENT_SYSTEM_STARTED"
 
 NOTIFICATION_ID_CHANGE_DETECTION = "changedetection"
 
-# Persistance
+# Persistence
 
-PERSISTANCE_GENERAL_TIMER_PREFIX = "timer"
+PERSISTENCE_GENERAL_TIMER_PREFIX = "timer"
 
-PERSISTANCE_SCRAPE_HOUSING_SENSOR_PREFIX = "v_scrape"
+PERSISTENCE_GENERAL_TIMER_PREFIX = "v_scrape"
 
 # Shortcuts
 

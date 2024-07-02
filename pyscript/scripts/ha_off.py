@@ -81,4 +81,4 @@ def turnoff_tv(entity=None):
 
 @service
 def turn_off(entity):
-  homeassistant.air_control_turn_off(entity_id=entity)
+  homeassistant.turn_off(entity_id=entity)

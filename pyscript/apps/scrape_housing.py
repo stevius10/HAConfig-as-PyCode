@@ -128,7 +128,7 @@ for provider in housing_provider.keys():
 # Helper
 
 def get_entity(provider):
-  return f"pyscript.{PERSISTANCE_SCRAPE_HOUSING_SENSOR_PREFIX}_{provider}"
+  return f"pyscript.{PERSISTENCE_SCRAPE_HOUSING_SENSOR_PREFIX}_{provider}"
 
 def get_or_default(element, selector, default=None):
   if not selector:

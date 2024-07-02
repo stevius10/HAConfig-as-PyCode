@@ -16,7 +16,7 @@ trigger = []
 def event_system_started(delay=SYSTEM_CONFIG_EVENT_STARTED_DELAY): 
   if PATH_DIR_PY_NATIVE not in sys.path:
     sys.path.append(PATH_DIR_PY_NATIVE)
-  task.air_control_sleep(delay)
+  task.sleep(delay)
   event.fire(EVENT_SYSTEM_STARTED)
 
 # Setup

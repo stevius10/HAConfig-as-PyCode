@@ -20,7 +20,7 @@ class TestAutoNotify(unittest.TestCase):
     init_housing()
     event.trigger.assert_called_once_with(mock_event)
 
-  @patch('auto_notify.PERSISTANCE_SCRAPE_HOUSING_SENSOR_PREFIX', 'v_scrape_')
+  @patch('auto_notify.PERSISTENCE_SCRAPE_HOUSING_SENSOR_PREFIX', 'v_scrape_')
   @patch('auto_notify.SERVICE_SCRAPE_HOUSING_PROVIDERS')
   @patch('auto_notify.state_trigger', new=MockTrigger().state_trigger)
   def test_notify_housing_integration(self, mock_providers, mock_prefix):
