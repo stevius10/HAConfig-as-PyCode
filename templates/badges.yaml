@@ -48,13 +48,13 @@ badge_air_quality:
         {% endif %} 
   tap_action:
     action: call-service
-    service: pyscript.service_air_cleaner_sleep
+    service: pyscript.air_control_sleep
   double_tap_action:
     action: call-service
-    service: pyscript.service_air_cleaner_clean
+    service: pyscript.air_control_clean
   hold_action:
     action: call-service
-    service: pyscript.service_air_cleaner_turn_off
+    service: pyscript.air_control_turn_off
     
 # Badges
 
