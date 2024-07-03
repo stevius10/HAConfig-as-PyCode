@@ -3,12 +3,21 @@ import unittest
 
 from utils import *
 
-
 @service
 def run_tests():
   from logfile import Logfile # req. sys setup 
   logfile = Logfile(ctx=pyscript.get_global_ctx())
   try: 
+    import os
+    import sys
+    
+    base = '/homeassistant/pyscript'
+    dirs = ['', 'apps', 'modules', 'python', 'scripts', 'test']
+    
+    for d in dirs:
+      path = os.path.join(base, d)
+      if path not in sys.path:
+        sys.path.append(path)
     logfile.log(test_unit())
     logfile.log(test_integration())
     logfile.log(test_functional())
@@ -20,10 +29,10 @@ def run_tests():
 @logged
 @service
 def test_unit():
-  from tests.unit.test_modules import TestConstants, TestUtils
-  from tests.unit.test_apps import TestScrape, TestServices, TestSyncGit
-  from tests.unit.test_python import TestFilesystem, TestLogfile
-  from tests.unit.test_scripts import TestHaSystem, TestHaUtils
+  from unit.test_modules import TestConstants, TestUtils
+  from unit.test_apps import TestScrape, TestServices, TestSyncGit
+  from unit.test_python import TestFilesystem, TestLogfile
+  from unit.test_scripts import TestHaSystem, TestHaUtils
 
   suite = unittest.TestSuite()
   suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestConstants))
@@ -49,10 +58,10 @@ def test_unit():
 @logged
 @service
 def test_integration():
-  from tests.integration.test_auto_entities import TestAutoEntities
-  from tests.integration.test_auto_motion import TestAutoMotion
-  from tests.integration.test_auto_notify import TestAutoNotify
-  from tests.integration.test_auto_control import TestAutoControl
+  from integration.test_auto_entities import TestAutoEntities
+  from integration.test_auto_motion import TestAutoMotion
+  from integration.test_auto_notify import TestAutoNotify
+  from integration.test_auto_control import TestAutoControl
 
   suite = unittest.TestSuite()
   suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestAutoEntities))
@@ -73,8 +82,8 @@ def test_integration():
 @logged
 @service
 def test_functional():
-  from tests.functional.test_air_control import TestAirControl
-  from tests.functional.test_off import TestOff
+  from functional.test_air_control import TestAirControl
+  from functional.test_off import TestOff
 
   suite = unittest.TestSuite()
   suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestAirControl))

@@ -1,6 +1,6 @@
 import importlib
 
-from constants.config import LOG_LOGGER_SYS, LOG_LOGGING_LEVEL
+from constants.config import LOG_LOGGER_SYS, LOG_LOGGING_LEVEL, LOG_DEBUG_FUNCTION_STARTED
 from constants.mappings import STATES_HA_UNDEFINED
 from exceptions import ForwardException
 
@@ -12,7 +12,7 @@ def debug(msg="", title=""):
     if title: 
       msg = f"[{title}] {msg}"
     logfile.Logfile.debug(msg)
-  except Exception: pass  
+  except Exception as e: raise e
 
 def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL, **kwargs):
   if title: 
@@ -20,11 +20,11 @@ def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL, **kwar
   if msg: 
     system_log.write(message=msg, logger=logger, level=level)
 
-def _monitored(func, log_func, print_function_start=True):
+def _monitored(func, log_func, debug_function_started=LOG_DEBUG_FUNCTION_STARTED):
   def wrapper(*args, **kwargs):
     if kwargs.get('context'): del kwargs['context']
     context = ".".join([func.global_ctx_name, func.name])
-    if print_function_start:
+    if debug_function_started:
       debug(f"{log_func_format(func, args, kwargs)}", title=context)
     try:
       result = func(*args, **kwargs)

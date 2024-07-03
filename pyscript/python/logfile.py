@@ -1,17 +1,10 @@
 import os
 import sys
 
-base = '/homeassistant/pyscript'
-dirs = ['', 'apps', 'modules', 'python', 'scripts', 'test']
-
-for d in dirs:
-  path = os.path.join(base, d)
-  if path not in sys.path:
-    sys.path.append(path)
-
 import logging
 from pathlib import Path
 
+sys.path.append('/config/pyscript/modules/')
 from constants.config import LOG_DEBUG_FILE, PATH_DIR_LOG
 
 LOG_LOGFILE_FORMAT = "%(asctime)s: %(message)s"
