@@ -2,35 +2,38 @@ import importlib
 
 from constants.config import LOG_LOGGER_SYS, LOG_LOGGING_LEVEL
 from constants.mappings import STATES_HA_UNDEFINED
-
+from exceptions import ForwardException
 
 # Logging
 
 def debug(msg="", title=""):
-  try:
+  try: # Avoid validation before sys.path appended
     logfile = importlib.import_module("logfile")
-    if title: msg = f"[{title}] {msg}"
+    if title: 
+      msg = f"[{title}] {msg}"
     logfile.Logfile.debug(msg)
-  except ModuleNotFoundError:
-    pass  # Avoid validation before sys.path appended
+  except Exception: pass  
 
 def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL, **kwargs):
-  if title: msg = f"[{title}] {msg}"
-  if msg: system_log.write(message=msg, logger=logger, level=level)
+  if title: 
+    msg = f"[{title}] {msg}"
+  if msg: 
+    system_log.write(message=msg, logger=logger, level=level)
 
-def _monitored(func, log_func):
+def _monitored(func, log_func, print_function_start=True):
   def wrapper(*args, **kwargs):
     if kwargs.get('context'): del kwargs['context']
-    title = f"{func.global_ctx_name}"
-    # debug(f"{log_func_format(func, args, kwargs)}", title=title) # log start function
+    context = ".".join([func.global_ctx_name, func.name])
+    if print_function_start:
+      debug(f"{log_func_format(func, args, kwargs)}", title=context)
     try:
       result = func(*args, **kwargs)
     except Exception as e:
-      result = f"{type(e)}: {str(e)}"
+      raise ForwardException(e, context)
     finally:
       if log_func == "log":
-        log(log_func_format(func, args, kwargs, result), title=title)
-      debug(log_func_format(func, args, kwargs, result), title=title)
+        log(log_func_format(func, args, kwargs, result), title=context)
+      debug(log_func_format(func, args, kwargs, result), title=context)
     return result
   return wrapper
 

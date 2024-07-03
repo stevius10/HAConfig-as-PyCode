@@ -63,7 +63,7 @@ CLUSTER_ENTITIES_AIR = [ "humidifier.luftbefeuchter", "fan.wz_ventilator", "fan.
 CLUSTER_ENTITIES_HEATING = [ "clima.wz_heizung", "clima.sz_heizung", "clima.k_heizung" ]
 CLUSTER_ENTITIES_MEDIA= [ "media_player.bad", "media_player.kueche", "media_player.schlafzimmer", "media_player.wohnzimmer", "media_player.uberall" ]
 CLUSTER_ENTITIES_LIGHT = [ "light.wz_beleuchtung", "light.sz_beleuchtung", "light.k_beleuchtung", "light.g_beleuchtung" ]
-CLUSTER_ENTITIES = [ "switch.bett", "switch.sofa", "switch.heizdecke" ]
+CLUSTER_ENTITIES_SWITCHES = [ "switch.bett", "switch.sofa", "switch.heizdecke" ]
 CLUSTER_ENTITIES_TV = [ "media.wz_fernseher", "media.sz_fernseher" ]
 
 # Services

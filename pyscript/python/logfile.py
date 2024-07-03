@@ -1,10 +1,20 @@
-import logging
-from logging.handlers import RotatingFileHandler
 import os
+import sys
+
+base = '/homeassistant/pyscript'
+dirs = ['', 'apps', 'modules', 'python', 'scripts', 'test']
+
+for d in dirs:
+  path = os.path.join(base, d)
+  if path not in sys.path:
+    sys.path.append(path)
+
+import logging
 from pathlib import Path
 
-PATH_DIR_PY_LOG = "/config/pyscript/logs/"
-LOG_LOGFILE_FORMAT = "%(asctime)s  %(message)s"
+from constants.config import LOG_DEBUG_FILE, PATH_DIR_LOG
+
+LOG_LOGFILE_FORMAT = "%(asctime)s: %(message)s"
 
 class Logfile:
   _logger = None
@@ -24,22 +34,13 @@ class Logfile:
   @classmethod
   def _get_debug_logger(cls):
     if cls._logger is None:
-      cls._logger = cls._create_logger(name="debug")
+      cls._logger = cls._create_logger(name=LOG_DEBUG_FILE)
     return cls._logger
 
   @staticmethod
   def _create_logger(name):
-    logfile = Path(PATH_DIR_PY_LOG, f"{name}.log")
-    
-    if logfile.exists():
-      for i in range(2, 1, -1):
-        old = logfile.with_suffix(f".log.{i}")
-        new = logfile.with_suffix(f".log.{i+1}")
-        if old.exists():
-          old.rename(new)
-      logfile.rename(logfile.with_suffix(".log.1"))
-    
-    handler = RotatingFileHandler(logfile, mode='w+', maxBytes=1024 * 1024, backupCount=3, encoding='utf-8')
+    logfile = Path(PATH_DIR_LOG, f"{name}.log")
+    handler = logging.FileHandler(logfile, mode='w+')
     handler.setFormatter(logging.Formatter(LOG_LOGFILE_FORMAT))
     logger = logging.getLogger(name)
     logger.addHandler(handler)
@@ -64,10 +65,72 @@ class Logfile:
         logger.info(message)
     elif isinstance(message, list):
       for msg in message:
-        if msg: logger.info(msg)
+        if msg: logger.info(message)
 
   def close(self):
     if hasattr(self, 'history'):
       if self.history:
-        return " | ".join(str(item) for item in self.history)
+        self.history = " | ".join([str(item) for item in self.history])
     return {}
+
+# from datetime import datetime
+# import aiofiles
+# import os
+# from pathlib import Path
+# import logging
+# from logging.handlers import RotatingFileHandler
+
+# from constants.config import *
+# from constants.mappings import EVENT_FOLDER_WATCHER
+# from ha_helper import log_rotate
+# from utils import *
+
+# class Logfile:
+#   _debug_logger = None
+
+#   def __init__(self, ctx=None):
+#     self._logger = self._get_file_logger(ctx) if ctx else self._get_debug_logger()
+#     self.history = []
+
+#   def _get_file_logger(self, ctx):
+#     self.name = ctx.split(".")[1]
+#     return self._create_logger(self.name)
+  
+#   @classmethod
+#   def _get_debug_logger(cls):
+#     if cls._debug_logger is None:
+#       cls._debug_logger = cls._create_logger("debug")
+#     return cls._debug_logger
+
+#   @staticmethod
+#   def _create_logger(name):
+#     log_rotate(Path(PATH_DIR_PY_LOG, f"{name}.log"))
+#     logfile = Path(PATH_DIR_PY_LOG, f"{name}.log")
+#     handler = RotatingFileHandler(logfile, mode='w+', maxBytes=1024 * 1024, backupCount=1, encoding='utf-8')
+#     handler.setFormatter(logging.Formatter(LOG_LOGFILE_FORMAT))
+#     logger = logging.getLogger(name)
+#     logger.addHandler(handler)
+#     logger.setLevel(logging.DEBUG)
+#     logger.propagate = False
+#     return logger
+
+#   def log(self, message=None):
+#     if message:
+#       if isinstance(message, str):
+#         self._logger.info(message)
+#         self.history.append(message)
+#       elif isinstance(message, list):
+#         for msg in message:
+#           self.log(str(msg))
+
+#   @classmethod
+#   def debug(cls, message=None):
+#     if message:
+#       if isinstance(message, str):
+#         cls._get_debug_logger().info(message)
+#       elif isinstance(message, list):
+#         for msg in message:
+#           cls.debug(str(msg))
+
+#   def close(self):
+#     return ", ".join([str(item) for item in self.history]) if self.history else ""

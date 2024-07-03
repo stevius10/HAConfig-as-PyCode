@@ -16,7 +16,7 @@ def turnoff(away=False):
 def turnoff_away():
   turnoff(away=True)
 
-@service # air management service
+@service
 def turnoff_air(entity=None):
   if not entity:
     turnoff_air(entity=CLUSTER_ENTITIES_AIR)
@@ -31,7 +31,7 @@ def turnoff_heating(entity=None, away=False):
     turnoff_heating(entity=CLUSTER_ENTITIES_HEATING, away=away)
   if isinstance(entity, str):
     if not away: 
-      climate.air_control_turn_off(entity_id=entity)
+      climate.turn_off(entity_id=entity)
   if isinstance(entity, list):
     for item in entity:
       turnoff_heating(entity=item, away=away)

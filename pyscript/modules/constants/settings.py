@@ -63,7 +63,7 @@ SERVICE_SCRAPE_HOUSING_PROVIDERS = {
 
  "gewobag": { # approved 210624
     "url": f"https://www.gewobag.de/fuer-mieter-und-mietinteressenten/mietangebote/?bezirke%5B%5D=charlottenburg-wilmersdorf-charlottenburg&bezirke%5B%5D=friedrichshain-kreuzberg&bezirke%5B%5D=friedrichshain-kreuzberg-friedrichshain&bezirke%5B%5D=friedrichshain-kreuzberg-kreuzberg&bezirke%5B%5D=mitte&bezirke%5B%5D=mitte-gesundbrunnen&bezirke%5B%5D=mitte-wedding&bezirke%5B%5D=neukoelln&bezirke%5B%5D=neukoelln-buckow&bezirke%5B%5D=neukoelln-rudow&bezirke%5B%5D=pankow-prenzlauer-berg&bezirke%5B%5D=tempelhof-schoeneberg-schoeneberg&nutzungsarten%5B%5D=wohnung&gesamtmiete_von=&gesamtmiete_bis={SERVICE_SCRAPE_HOUSING_FILTER_RENT}&gesamtflaeche_von={SERVICE_SCRAPE_HOUSING_FILTER_AREA}&gesamtflaeche_bis=&zimmer_von={SERVICE_SCRAPE_HOUSING_FILTER_ROOMS}&zimmer_bis=&keinwbs=0&sort-by=recent",
-    "structure": { "item": ".filtered-mietangebote .angebot-content", "address_selector": "addr12ess", "rent_selector": ".angebot-kosten td", "size_selector": ".angebot-area td", "rooms_selector": "", "details_selector": ".angebot-title" } },
+    "structure": { "item": ".filtered-mietangebote .angebot-content", "address_selector": "address", "rent_selector": ".angebot-kosten td", "size_selector": ".angebot-area td", "rooms_selector": "", "details_selector": ".angebot-title" } },
 
   "wbm": { # approved 190624
     "url": "https://www.wbm.de/wohnungen-berlin/angebote/",

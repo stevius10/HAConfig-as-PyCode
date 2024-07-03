@@ -5,8 +5,7 @@ from utils import *
 
 
 @service
-def test():
-  sys.path.insert(0, "/config/pyscript")
+def run_tests():
   from logfile import Logfile # req. sys setup 
   logfile = Logfile(ctx=pyscript.get_global_ctx())
   try: 

@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
@@ -23,6 +24,7 @@ def event_system_started(delay=SYSTEM_CONFIG_EVENT_STARTED_DELAY):
 
 @event_trigger(EVENT_SYSTEM_STARTED)
 @debugged
+@service
 def ha_setup():
   ha_setup_environment()
   ha_setup_files()
@@ -45,9 +47,9 @@ def ha_setup_files(files=SYSTEM_FILES):
 @pyscript_executor
 def ha_setup_links(links=SYSTEM_LINKS):
   for source, target in links.items():
-    tmp_target = f"{target}.tmp"
-    os.symlink(source, tmp_target)
-    os.rename(tmp_target, target)  # workaround to overwrite symlink
+    if not os.path.isdir(target) and os.path.islink(target):
+      os.unlink(target)
+    os.symlink(source, target)
 
 def ha_setup_logging():  # sync. task due logging scope
   logger.set_level(**{LOG_LOGGER_SYS: LOG_LOGGING_LEVEL})

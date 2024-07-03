@@ -189,8 +189,9 @@ template:
     - name: Luftqualität
       unique_id: sensor.luftqualitat
       state: |
-        {{ states('sensor.wz_luft') | round(0) }}/{{ states('sensor.sz_luft') | round(0) }}
-    
+        {% set wz_luft = states('sensor.wz_luft') | int(default=0) | round(0) %}
+        {% set sz_luft = states('sensor.sz_luft') | int(default=0) | round(0) %}
+        {{ wz_luft }}/{{ sz_luft }}    
     # Helper
     - name: None
       unique_id: sensor.none

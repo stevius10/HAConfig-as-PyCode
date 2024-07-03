@@ -132,14 +132,14 @@ template_badges_services:
         name: Alles aus- schalten
         tap_action:
           action: call-service
-          service: pyscript.script_off
+          service: pyscript.turnoff
         hold_action:
           action: more-info
         double_tap_action:
           action: call-service
           service: homeassistant.turn_off
           data:
-            entity_id: pyscript.script_off
+            entity_id: pyscript.uturnoff
             
 template_badges_system: 
   card:

@@ -5,21 +5,20 @@ from constants.expressions import *
 from constants.secrets import *
 from utils import *
 
-
 @service(supports_response="optional")
 @time_trigger(EXPR_TIME_SERVICE_GIT_CRON)
 @state_active(str(SERVICE_GIT_SYNC_ENABLED))
 @logged
-def service_git_sync(
+def sync_git(
   key_path=SERVICE_GIT_SETTINGS_CREDENTIALS, 
   config_path=SERVICE_GIT_SETTINGS_CONFIG,
   branch = SERVICE_GIT_REPO_BRANCH, 
   message = SERVICE_GIT_REPO_MESSAGE
 ):
-  return dict(git_sync(pyscript.get_global_ctx(), config_path, key_path, branch, message))
+  return dict(sync(pyscript.get_global_ctx(), config_path, key_path, branch, message))
  
 @pyscript_executor
-def git_sync(name, config_path, key_path, branch, message):
+def sync(name, config_path, key_path, branch, message):
   
   from logfile import Logfile # req. sys setup 
   logfile = Logfile(ctx=name)

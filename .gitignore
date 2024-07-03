@@ -28,5 +28,8 @@ www/community/*
 !.gitignore
 
 **/__pycache__/
+**/.idea/
 
 **/*.log
+**/*.log.*
+**/*.pyc
