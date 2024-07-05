@@ -1,7 +1,6 @@
-from constants.entities import AUTO_PRESENCE_ENTITIES
+from constants.data import DATA_PRESENCE
+from constants.entities import ENTITIES_PRESENCE
 from constants.mappings import PERSISTENCE_ENTITY_AUTO_PRESENCE
-from constants.settings import AUTO_PRESENCE_TRANSITION
-
 from utils import *
 
 trigger = []
@@ -13,7 +12,7 @@ def presence_factory(room, action):
     state.persist(PERSISTENCE_ENTITY_AUTO_PRESENCE)
     homeassistant.update_entity(entity_id=entity)
 
-  @state_trigger([expr(entity, str(condition.get('condition'))) for entity, condition in AUTO_PRESENCE_ENTITIES.get(room).get('indicators').items()], state_hold=AUTO_PRESENCE_ENTITIES.get(room).get('indicators').get('duration'))
+  @state_trigger([expr(entity, str(condition.get('condition'))) for entity, condition in ENTITIES_PRESENCE.get(room).get('indicators').items()], state_hold=ENTITIES_PRESENCE.get(room).get('indicators').get('duration'))
   @logged
   def presence(var_name=None):
     indicator_weight = weight(room, 'indicators')
@@ -32,15 +31,15 @@ def persist(room, action):
   state.persist(PERSISTENCE_ENTITY_AUTO_PRESENCE)
 
 def weight(room, category):
-  return 0 # sum([item.get('weight', 1) for item in AUTO_PRESENCE_ENTITIES[room][category].values()]) # TODO: if eval(item['condition'])])
+  return 0 # sum([item.get('weight', 1) for item in ENTITIES_PRESENCE[room][category].values()]) # TODO: if eval(item['condition'])])
   
 def transition(room, action):
-  for transition in AUTO_PRESENCE_TRANSITION.get(room, {}).get(action, []):
+  for transition in DATA_PRESENCE.get(room, {}).get(action, []):
     if eval(transition['condition']):
       transition['action']()
       
 # Initialization
 
-for room in AUTO_PRESENCE_ENTITIES:
+for room in ENTITIES_PRESENCE:
   presence_factory(room, 'on')
   presence_factory(room, 'off')

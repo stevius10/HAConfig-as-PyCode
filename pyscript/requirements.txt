@@ -1,4 +1,6 @@
 asyncio
 aiofiles
 importlib
+regex
+pytest
 requests

@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-from tests.mocks.mock_trigger import MockTrigger
+from mocks.mock_trigger import MockTrigger
 
 
 class TestAutoEntities(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestAutoEntities(unittest.TestCase):
     service = MagicMock()
     timer = MagicMock()
 
-  @patch('auto_entities.AUTO_ENTITIES')
+  @patch('auto_entities.ENTITIES_AUTO')
   def test_default_factory(self, mock_auto_entities):
     from auto_entities import default_factory
     
@@ -36,7 +36,7 @@ class TestAutoEntities(unittest.TestCase):
     
     service.call.assert_called_once_with('light', 'turn_off', entity_id='light.test')
 
-  @patch('auto_entities.AUTO_ENTITIES')
+  @patch('auto_entities.ENTITIES_AUTO')
   def test_timeout_factory(self, mock_auto_entities):
     from auto_entities import timeout_factory
     
@@ -64,7 +64,7 @@ class TestAutoEntities(unittest.TestCase):
         func('switch.test', 'off')
         timer.cancel.assert_called_once_with(entity_id='timer.test')
 
-  @patch('auto_entities.AUTO_ENTITIES')
+  @patch('auto_entities.ENTITIES_AUTO')
   def test_timeout_factory_system_events(self, mock_auto_entities):
     from auto_entities import timeout_factory
     

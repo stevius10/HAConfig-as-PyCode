@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-from tests.mocks.mock_trigger import MockTrigger
+from mocks.mock_trigger import MockTrigger
 
 
 class TestAutoControl(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestAutoControl(unittest.TestCase):
     service = MagicMock()
     scene = MagicMock()
 
-  @patch('auto_control.AUTO_CONTROL_ENTITIES')
+  @patch('auto_control.ENTITIES_CONTROL')
   @patch('auto_control.expr')
   def test_on_press_factory_integration(self, mock_expr, mock_auto_control_entities):
     from auto_control import on_press_factory

@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-from tests.mocks.mock_trigger import MockTrigger
+from mocks.mock_trigger import MockTrigger
 
 
 class TestAutoMotion(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestAutoMotion(unittest.TestCase):
     time_active = MagicMock()
     scene = MagicMock()
 
-  @patch('auto_motion.AUTO_MOTION_ENTITIES')
+  @patch('auto_motion.ENTITIES_MOTION')
   def test_on_motion_factory_integration(self, mock_auto_motion_entities):
     from auto_motion import on_motion_factory
     mock_auto_motion_entities.return_value = {
@@ -31,7 +31,7 @@ class TestAutoMotion(unittest.TestCase):
         self.assertEqual(self.mock_trigger.triggers[0][0], 'state_trigger')
         self.assertEqual(self.mock_trigger.triggers[1][0], 'time_active')
 
-  @patch('auto_motion.AUTO_MOTION_ENTITIES')
+  @patch('auto_motion.ENTITIES_MOTION')
   def test_off_motion_factory_integration(self, mock_auto_motion_entities):
     from auto_motion import off_motion_factory
     mock_auto_motion_entities.return_value = {
@@ -46,7 +46,7 @@ class TestAutoMotion(unittest.TestCase):
       self.assertEqual(self.mock_trigger.triggers[0][0], 'state_trigger')
       scene.turn_on.assert_not_called()
 
-  @patch('auto_motion.AUTO_MOTION_ENTITIES')
+  @patch('auto_motion.ENTITIES_MOTION')
   @patch('auto_motion.sun')
   def test_on_motion_factory_with_sun_condition(self, mock_sun, mock_auto_motion_entities):
     from auto_motion import on_motion_factory
@@ -62,7 +62,7 @@ class TestAutoMotion(unittest.TestCase):
       self.mock_trigger.simulate_trigger('state_trigger', 'binary_sensor.test_motion', 'on')
       scene.turn_on.assert_called_once_with(entity_id='scene.test_on')
 
-  @patch('auto_motion.AUTO_MOTION_ENTITIES')
+  @patch('auto_motion.ENTITIES_MOTION')
   def test_off_motion_factory_with_transition(self, mock_auto_motion_entities):
     from auto_motion import off_motion_factory
     mock_auto_motion_entities.return_value = {
@@ -77,7 +77,7 @@ class TestAutoMotion(unittest.TestCase):
       task.air_control_sleep.assert_called_once_with(20)
       scene.turn_on.assert_called_once_with(entity_id='scene.test_off')
 
-  @patch('auto_motion.AUTO_MOTION_ENTITIES')
+  @patch('auto_motion.ENTITIES_MOTION')
   def test_on_motion_factory_without_sun_diff(self, mock_auto_motion_entities):
     from auto_motion import on_motion_factory
     mock_auto_motion_entities.return_value = {
@@ -90,7 +90,7 @@ class TestAutoMotion(unittest.TestCase):
       self.mock_trigger.simulate_trigger('state_trigger', 'binary_sensor.test_motion', 'on')
       scene.turn_on.assert_called_once_with(entity_id='scene.test_on')
 
-  @patch('auto_motion.AUTO_MOTION_ENTITIES')
+  @patch('auto_motion.ENTITIES_MOTION')
   def test_off_motion_factory_without_transition(self, mock_auto_motion_entities):
     from auto_motion import off_motion_factory
     mock_auto_motion_entities.return_value = {

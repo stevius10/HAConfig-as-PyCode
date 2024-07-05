@@ -1,11 +1,10 @@
 import os
-import shutil
-import sys
 
+import sys
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 
-from constants.config import *
-from constants.mappings import EVENT_SYSTEM_STARTED
+from constants.config import CFG_EVENT_STARTED_DELAY, CFG_PATH_DIR_PY_NATIVE, CFG_SYSTEM_ENVIRONMENT, CFG_SYSTEM_FILES, CFG_SYSTEM_LINKS
+from constants.mappings import MAP_EVENT_SYSTEM_STARTED
 from utils import *
 
 trigger = []
@@ -14,15 +13,15 @@ trigger = []
 
 @time_trigger
 @event_trigger(EVENT_HOMEASSISTANT_STARTED)
-def event_system_started(delay=SYSTEM_CONFIG_EVENT_STARTED_DELAY): 
-  if PATH_DIR_PY_NATIVE not in sys.path:
-    sys.path.append(PATH_DIR_PY_NATIVE)
+def event_system_started(delay=CFG_EVENT_STARTED_DELAY):
+  if CFG_PATH_DIR_PY_NATIVE not in sys.path:
+    sys.path.append(CFG_PATH_DIR_PY_NATIVE)
   task.sleep(delay)
-  event.fire(EVENT_SYSTEM_STARTED)
+  event.fire(MAP_EVENT_SYSTEM_STARTED)
 
 # Setup
 
-@event_trigger(EVENT_SYSTEM_STARTED)
+@event_trigger(MAP_EVENT_SYSTEM_STARTED)
 @debugged
 @service
 def ha_setup():
@@ -34,22 +33,22 @@ def ha_setup():
 # Tasks
 
 @pyscript_executor
-def ha_setup_environment(variables=SYSTEM_ENVIRONMENT):
+def ha_setup_environment(variables=CFG_SYSTEM_ENVIRONMENT):
   for variable, value in variables.items():
     os.environ[variable] = value
 
 @pyscript_executor
-def ha_setup_files(files=SYSTEM_FILES):
+def ha_setup_files(files=CFG_SYSTEM_FILES):
   from filesystem import cp
   for src, dest in files.items():
     cp(src, dest)
 
 @pyscript_executor
-def ha_setup_links(links=SYSTEM_LINKS):
+def ha_setup_links(links=CFG_SYSTEM_LINKS):
   for source, target in links.items():
     if not os.path.isdir(target) and os.path.islink(target):
       os.unlink(target)
     os.symlink(source, target)
 
 def ha_setup_logging():  # sync. task due logging scope
-  logger.set_level(**{LOG_LOGGER_SYS: LOG_LOGGING_LEVEL})
+  logger.set_level(**{CFG_LOG_LOGGER: CFG_LOG_LEVEL})

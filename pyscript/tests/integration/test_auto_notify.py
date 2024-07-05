@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-from tests.mocks.mock_trigger import MockTrigger
+from mocks.mock_trigger import MockTrigger
 
 
 class TestAutoNotify(unittest.TestCase):
@@ -14,14 +14,14 @@ class TestAutoNotify(unittest.TestCase):
     service = MagicMock()
     shortcut = MagicMock()
 
-  @patch('auto_notify.EVENT_HOUSING_INITIALIZED')
+  @patch('auto_notify.MAP_EVENT_HOUSING_INITIALIZED')
   def test_init_housing_integration(self, mock_event):
     from auto_notify import init_housing
     init_housing()
     event.trigger.assert_called_once_with(mock_event)
 
-  @patch('auto_notify.PERSISTENCE_SCRAPE_HOUSING_SENSOR_PREFIX', 'v_scrape_')
-  @patch('auto_notify.SERVICE_SCRAPE_HOUSING_PROVIDERS')
+  @patch('auto_notify.PERSISTENCE_PREFIX_SENSOR_SCRAPE_HOUSING', 'v_scrape_')
+  @patch('auto_notify.DATA_SCRAPE_HOUSING_PROVIDERS')
   @patch('auto_notify.state_trigger', new=MockTrigger().state_trigger)
   def test_notify_housing_integration(self, mock_providers, mock_prefix):
     from auto_notify import notify_housing

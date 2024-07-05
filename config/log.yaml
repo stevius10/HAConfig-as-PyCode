@@ -50,9 +50,10 @@ recorder:
     - switch.sofa
     - switch.heizdecke
     entity_globs:
-    - sensor.*temperature
     - fritz_box_*_durchsatz
     - sensor.system_monitor_*
+    - sensor.*temperature
+    - pyscript.*
 
 system_log:
   max_entries: 3

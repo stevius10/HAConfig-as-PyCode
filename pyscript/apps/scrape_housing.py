@@ -5,15 +5,17 @@ import regex as re
 import requests
 from bs4 import BeautifulSoup
 
-from constants.config import SERVICE_SCRAPE_HOUSING_ENABLED
-from constants.expressions import *
-from constants.mappings import *
-from constants.settings import *
+from constants.config import CFG_SERVICE_ENABLED_SCRAPE_HOUSING
+from constants.data import DATA_SCRAPE_HOUSING_PROVIDERS
+from constants.expressions import EXPR_TIME_SCRAPE_HOUSINGS_UPDATE, EXPR_TIME_GENERAL_WORKTIME
+from constants.mappings import PERSISTENCE_PREFIX_SENSOR_SCRAPE_HOUSING
+from constants.settings import SET_SCRAPE_HOUSING_BLACKLIST, SET_SCRAPE_HOUSING_DELAY_RANDOM_MIN, \
+  SET_SCRAPE_HOUSING_DELAY_RANDOM_MAX, SET_SCRAPE_HOUSING_FILTER_RENT
 from utils import *
 
 trigger = []
 
-housing_provider = SERVICE_SCRAPE_HOUSING_PROVIDERS
+housing_provider = DATA_SCRAPE_HOUSING_PROVIDERS
 
 # Function
 
@@ -24,10 +26,10 @@ def filtering(apartment):
   if apartment.get("address") is None:
     return None
   if apartment.get("rent") is not None:
-    if re.findall(r'\d', apartment["rent"]) and not (400 < int(''.join(re.findall(r'\d', apartment["rent"])[:3])) < SERVICE_SCRAPE_HOUSING_FILTER_RENT):
+    if re.findall(r'\d', apartment["rent"]) and not (400 < int(''.join(re.findall(r'\d', apartment["rent"])[:3])) < SET_SCRAPE_HOUSING_FILTER_RENT):
       return None
   if apartment.get("text") is not None:
-    for blacklist_item in SERVICE_SCRAPE_HOUSING_BLACKLIST_DETAILS:
+    for blacklist_item in SET_SCRAPE_HOUSING_BLACKLIST:
       if re.search(r'\b' + re.escape(blacklist_item.lower()) + r'\b', apartment["text"].lower()):
         return None
   return {k: v for k, v in apartment.items() if v is not None}
@@ -91,14 +93,14 @@ def scrape_housing_factory(provider):
   def scrape_housing_init():
     state.persist(get_entity(provider), default_value="")
 
-  @time_trigger(EXPR_TIME_UPDATE_SENSORS_HOUSING)
-  @state_active(str(SERVICE_SCRAPE_HOUSING_ENABLED))
+  @time_trigger(EXPR_TIME_SCRAPE_HOUSINGS_UPDATE)
+  @state_active(str(CFG_SERVICE_ENABLED_SCRAPE_HOUSING))
   @time_active(EXPR_TIME_GENERAL_WORKTIME)
   @logged
   @service
   def scrape_housing(provider=provider, event_trigger=None):
     if event_trigger: 
-      task.sleep(random.randint(SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SERVICE_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
+      task.sleep(random.randint(SET_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SET_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
     
     structure = housing_provider[provider]["structure"]
     apartments = scrape(fetch(provider), 
@@ -128,7 +130,7 @@ for provider in housing_provider.keys():
 # Helper
 
 def get_entity(provider):
-  return f"pyscript.{PERSISTENCE_SCRAPE_HOUSING_SENSOR_PREFIX}_{provider}"
+  return f"pyscript.{PERSISTENCE_PREFIX_SENSOR_SCRAPE_HOUSING}_{provider}"
 
 def get_or_default(element, selector, default=None):
   if not selector:

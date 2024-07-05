@@ -21,7 +21,7 @@ class TestAirControl(unittest.TestCase):
       }
     }
 
-  @patch('air_control.AIR_CONTROL_ENTITIES', new_callable=PropertyMock)
+  @patch('air_control.ENTITIES_SERVICE_AIR_CONTROL', new_callable=PropertyMock)
   def test_threshold_on(self, mock_entities):
     from air_control import threshold_on
     mock_entities.return_value = self.entities
@@ -30,7 +30,7 @@ class TestAirControl(unittest.TestCase):
     fan.set_percentage.assert_called_once()
     task.air_control_sleep.assert_called_once()
 
-  @patch('air_control.AIR_CONTROL_ENTITIES', new_callable=PropertyMock)
+  @patch('air_control.ENTITIES_SERVICE_AIR_CONTROL', new_callable=PropertyMock)
   def test_threshold_off(self, mock_entities):
     from air_control import air_control_threshold_off
     mock_entities.return_value = self.entities
@@ -39,7 +39,7 @@ class TestAirControl(unittest.TestCase):
     fan.air_control_turn_off.assert_called_once()
     task.air_control_sleep.assert_called_once()
 
-  @patch('air_control.AIR_CONTROL_ENTITIES', new_callable=PropertyMock)
+  @patch('air_control.ENTITIES_SERVICE_AIR_CONTROL', new_callable=PropertyMock)
   def test_clean(self, mock_entities):
     from air_control import air_control_clean
     mock_entities.return_value = self.entities
@@ -48,7 +48,7 @@ class TestAirControl(unittest.TestCase):
     task.air_control_sleep.assert_called_once()
     fan.set_percentage.assert_called()
 
-  @patch('air_control.AIR_CONTROL_ENTITIES', new_callable=PropertyMock)
+  @patch('air_control.ENTITIES_SERVICE_AIR_CONTROL', new_callable=PropertyMock)
   def test_sleep(self, mock_entities):
     from air_control import air_control_sleep
     mock_entities.return_value = self.entities

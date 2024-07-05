@@ -1,11 +1,12 @@
-from constants.config import *
+from constants.config import DEFAULT_NOTIFICATION_TARGET
+from constants.data import DATA_DEVICES
 
 from utils import *
 
 @logged
 @service
 def notify(message, data=None, target=DEFAULT_NOTIFICATION_TARGET, default=True):
-  devices = DEVICES.get(target) if target else [target for targets in DEVICES.values() for target in targets]
+  devices = DATA_DEVICES.get(target) if target else [target for targets in DATA_DEVICES.values() for target in targets]
 
   if default:
     devices = [device for device in devices if device.get("default")]

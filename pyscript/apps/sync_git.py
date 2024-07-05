@@ -1,19 +1,20 @@
 import subprocess
 
-from constants.config import SERVICE_GIT_SYNC_ENABLED
+from constants.config import CFG_SERVICE_ENABLED_SYNC_GIT
 from constants.expressions import *
 from constants.secrets import *
 from utils import *
 
+
 @service(supports_response="optional")
-@time_trigger(EXPR_TIME_SERVICE_GIT_CRON)
-@state_active(str(SERVICE_GIT_SYNC_ENABLED))
+@time_trigger(EXPR_TIME_SERVICE_GIT)
+@state_active(str(CFG_SERVICE_ENABLED_SYNC_GIT))
 @logged
 def sync_git(
-  key_path=SERVICE_GIT_SETTINGS_CREDENTIALS, 
-  config_path=SERVICE_GIT_SETTINGS_CONFIG,
-  branch = SERVICE_GIT_REPO_BRANCH, 
-  message = SERVICE_GIT_REPO_MESSAGE
+  key_path=SEC_SERVICE_GIT_SETTINGS_CREDENTIALS,
+  config_path=SEC_SERVICE_GIT_SETTINGS_CONFIG,
+  branch = SEC_SERVICE_GIT_REPO_BRANCH,
+  message = SEC_SERVICE_GIT_REPO_MESSAGE
 ):
   return dict(sync(pyscript.get_global_ctx(), config_path, key_path, branch, message))
  
@@ -21,7 +22,7 @@ def sync_git(
 def sync(name, config_path, key_path, branch, message):
   
   from logfile import Logfile # req. sys setup 
-  logfile = Logfile(ctx=name)
+  logfile = Logfile(name)
   
   commands  = [
       f"git config --local include.path '{config_path}'", f"eval $(ssh-agent); ssh-add {key_path}", 

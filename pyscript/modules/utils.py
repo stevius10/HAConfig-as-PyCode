@@ -1,8 +1,9 @@
 import importlib
 
-from constants.config import LOG_LOGGER_SYS, LOG_LOGGING_LEVEL, LOG_DEBUG_FUNCTION_STARTED
-from constants.mappings import STATES_HA_UNDEFINED
+from constants.config import CFG_LOG_LOGGER, CFG_LOG_LEVEL, CFG_LOGFILE_DEBUG_FUNCTION_STARTED
+from constants.mappings import MAP_STATE_HA_UNDEFINED
 from exceptions import ForwardException
+
 
 # Logging
 
@@ -12,15 +13,18 @@ def debug(msg="", title=""):
     if title: 
       msg = f"[{title}] {msg}"
     logfile.Logfile.debug(msg)
-  except Exception as e: raise e
+  except ModuleNotFoundError: 
+    pass
+  except Exception as e:
+    raise e
 
-def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL, **kwargs):
+def log(msg="", title="", logger=CFG_LOG_LOGGER, level=CFG_LOG_LEVEL, **kwargs):
   if title: 
     msg = f"[{title}] {msg}"
   if msg: 
-    system_log.write(message=msg, logger=logger, level=level)
+    system_log.write(message=str(msg), logger=logger, level=level)
 
-def _monitored(func, log_func, debug_function_started=LOG_DEBUG_FUNCTION_STARTED):
+def _monitored(func, log_func, debug_function_started=CFG_LOGFILE_DEBUG_FUNCTION_STARTED):
   def wrapper(*args, **kwargs):
     if kwargs.get('context'): del kwargs['context']
     context = ".".join([func.global_ctx_name, func.name])
@@ -54,7 +58,7 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
   conditions = []
   if defined:
     conditions.append(f"{entity} is not None")
-    states_undefined_str = ", ".join([f'\"{state}\"' for state in STATES_HA_UNDEFINED])
+    states_undefined_str = ", ".join([f'\"{state}\"' for state in MAP_STATE_HA_UNDEFINED])
     conditions.append(f"{entity} not in [{states_undefined_str}]")
       
   if expression:
@@ -93,12 +97,12 @@ def logs(obj):
       attrs = []
       for key in attributes.keys():
         attrs.append(f"{key}={logs(attributes.get(key, ''))}")
-      return f"{type(obj).__name__}({', '.join(attrs)})"
+      return f"{type(obj).name}({', '.join(attrs)})"
     except TypeError:
       return str(obj)
 
 def log_func_format(func, args, kwargs, result=None):
   log_func_format_args = ", ".join([str(arg) if arg else "" for arg in args]) if args else None
-  log_func_format_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if k is not "context"]) if kwargs else None
+  log_func_format_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if k != "context"]) if kwargs else None
   log_func_format_arg = ", ".join([str(arg) if arg is not None else "" for arg in [log_func_format_args, log_func_format_kwargs] if arg])
   return f"{func.name}" + f"({log_func_format_arg})" + (f": \n-> {result}" if result else "")

@@ -1,11 +1,12 @@
-from constants.entities import AUTO_ENTITIES
-from constants.mappings import EVENT_SYSTEM_STARTED, PERSISTENCE_GENERAL_TIMER_PREFIX, SERVICE_HA_TURN_OFF, STATES_HA_UNDEFINED
+import re
 
+from constants.entities import ENTITIES_AUTO
+from constants.mappings import MAP_EVENT_SYSTEM_STARTED, PERSISTENCE_PREFIX_PREFIX, MAP_SERVICE_HA_TURNOFF
 from utils import *
 
-entities = AUTO_ENTITIES
-
 trigger = []
+
+entities = ENTITIES_AUTO
 
 # Default 
 
@@ -21,12 +22,12 @@ def default_factory(entity, func):
 def timeout_factory(entity, default, delay=0):
   entity_name = entity.split(".")[1]
   entity_timer = f"timer.{entity_name}"
-  entity_persisted = f"pyscript.{PERSISTENCE_GENERAL_TIMER_PREFIX}_{entity_name}"
+  entity_persisted = f"pyscript.{PERSISTENCE_PREFIX_PREFIX}_{entity_name}"
 
   @state_trigger(expr(entity, expression=default, comparator="!=", defined=True), state_hold_false=1)
   @debugged
   def start_timer(delay=delay, trigger_type=None, var_name=None):
-    if state.get(entity) != default and state.get(entity) not in STATES_HA_UNDEFINED:
+    if state.get(entity) != default and state.get(entity) not in MAP_STATE_HA_UNDEFINED:
       timer.start(entity_id=entity_timer, duration=delay)
   trigger.append(start_timer)
 
@@ -49,9 +50,9 @@ def timeout_factory(entity, default, delay=0):
     state.persist(entity_persisted, "idle")
     homeassistant.update_entity(entity_id=entity_persisted)
 
-  @event_trigger(EVENT_SYSTEM_STARTED)
+  @event_trigger(MAP_EVENT_SYSTEM_STARTED)
   def timer_restore():
-    if state.get(entity_persisted):
+    if state.get(entity_persisted) and re.match(r'^\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?$', state.get(entity_persisted)): # 'HH:MM', 'HH:MM:SS', 'HH:MM:SS.F'
       start_timer(delay=str(state.get(entity_persisted)))
       log(f"timer '{entity_timer}' restored with duration {state.getattr(entity_timer).get('remaining')}")
     state.set(entity_persisted, "")
@@ -70,7 +71,7 @@ def timeout_factory(entity, default, delay=0):
 for entity in entities:
   if "delay" not in entities[entity]:
     if "func" not in entities[entity]:
-      entities_default[entity]["func"] = SERVICE_HA_TURN_OFF
+      entities_default[entity]["func"] = MAP_SERVICE_HA_TURNOFF
     default_factory(entity, entities.get(entity)['func'])
   else: 
     timeout_factory(entity, entities[entity]["default"], entities[entity]["delay"])
