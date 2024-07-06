@@ -1,107 +1,78 @@
 import io
 import os
 import unittest
-
 import sys
-
 from utils import *
-
 
 @service
 def run_tests():
-  from logfile import Logfile # req. sys setup 
-  logfile = Logfile(ctx=pyscript.get_global_ctx())
-  try: 
-    import os
-    import sys
-    
+  from logfile import Logfile
+  logfile = Logfile(name=pyscript.get_global_ctx())
+  try:
     logfile.log(test_unit())
     # logfile.log(test_integration())
     # logfile.log(test_functional())
-  except e: 
+  except Exception as e:
     log(str(e))
   finally:
     return logfile.close()
-    
+
 @logged
 @service
 def test_unit():
-  
-  base = '/config/pyscript'
-  dirs = ['', 'apps', 'modules', 'python', 'scripts', 'tests']
-  
-  for d in dirs:
-    path = os.path.join(base, d)
-    if path not in sys.path:
-      sys.path.append(path)
+  base = '/config/pyscript/tests/unit'
+  if base not in sys.path:
+    sys.path.append(base)
 
-  from unit.test_unit import TestUnit
-  # from unit.test_modules import TestConstants, TestUtils
-  # from unit.test_apps import TestScrape, TestServices, TestSyncGit
-  # from unit.test_python import TestFilesystem, TestLogfile
-  # from unit.test_scripts import TestHaSystem, TestHaUtils
-
-  suite = unittest.TestSuite()
-  suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestUnit))
-  # suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestUtils))
-  # suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestScrape))
-  # suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestServices))
-  # suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestSyncGit))
-  # suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestFilesystem))
-  # suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestLogfile))
-  # suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestHaSystem))
-  # suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestHaUtils))
+  loader = unittest.TestLoader()
+  suite = loader.discover(start_dir=base, pattern='test_*.py')
 
   output = io.StringIO()
   runner = unittest.TextTestRunner(stream=output, verbosity=2)
   result = runner.run(suite)
-  
+
   return {
     "tests": result.testsRun,
     "errors": len(result.errors),
     "details": {f"{test}": str(error) for test, error in result.errors}
   }
 
-# @logged
-# @service
-# def test_integration():
-#   from integration.test_auto_entities import TestAutoEntities
-#   from integration.test_auto_motion import TestAutoMotion
-#   from integration.test_auto_notify import TestAutoNotify
-#   from integration.test_auto_control import TestAutoControl
+@logged
+@service
+def test_integration():
+  base = '/config/pyscript/tests/integration'
+  if base not in sys.path:
+    sys.path.append(base)
 
-#   suite = unittest.TestSuite()
-#   suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestAutoEntities))
-#   suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestAutoMotion))
-#   suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestAutoNotify))
-#   suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestAutoControl))
+  loader = unittest.TestLoader()
+  suite = loader.discover(start_dir=base, pattern='test_*.py')
 
-#   output = io.StringIO()
-#   runner = unittest.TextTestRunner(stream=output, verbosity=2)
-#   result = runner.run(suite)
-  
-#   return {
-#     "tests": result.testsRun,
-#     "errors": len(result.errors),
-#     "details": {f"{test}": str(error) for test, error in result.errors}
-#   }
+  output = io.StringIO()
+  runner = unittest.TextTestRunner(stream=output, verbosity=2)
+  result = runner.run(suite)
 
-# @logged
-# @service
-# def test_functional():
-#   from functional.test_air_control import TestAirControl
-#   from functional.test_off import TestOff
+  return {
+    "tests": result.testsRun,
+    "errors": len(result.errors),
+    "details": {f"{test}": str(error) for test, error in result.errors}
+  }
 
-#   suite = unittest.TestSuite()
-#   suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestAirControl))
-#   suite.addTest(unittest.TestLoader.loadTestsFromTestCase(TestOff))
+@logged
+@service
+def test_functional():
+  base = '/config/pyscript/tests/functional'
+  if base not in sys.path:
+    sys.path.append(base)
 
-#   output = io.StringIO()
-#   runner = unittest.TextTestRunner(stream=output, verbosity=2)
-#   result = runner.run(suite)
-  
-#   return {
-#     "tests": result.testsRun,
-#     "errors": len(result.errors),
-#     "details": {f"{test}: {str(error)}" for test, error in result.errors}
-#   }
+  loader = unittest.TestLoader()
+  suite = loader.discover(start_dir=base, pattern='test_*.py')
+
+  output = io.StringIO()
+  runner = unittest.TextTestRunner(stream=output, verbosity=2)
+  result = runner.run(suite)
+
+  return {
+    "tests": result.testsRun,
+    "errors": len(result.errors),
+    "details": {f"{test}": str(error) for test, error in result.errors}
+  }

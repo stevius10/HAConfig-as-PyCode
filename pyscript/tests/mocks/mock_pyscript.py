@@ -1,3 +1,6 @@
+import os
+import sys
+
 class MockPyscript:
   def __init__(self):
     self.global_vars = {}
@@ -6,6 +9,27 @@ class MockPyscript:
     self.states = {}
     self.timers = {}
     self.events = []
+    self.config = {
+      'allow_all_imports': True,
+      'hass_is_global': True
+    }
+    self.setup_environment()
+
+  def setup_environment(self):
+    os.environ['HASS_CONFIG'] = '/config'
+    pyscript_paths = [
+      '/config/pyscript',
+      '/config/pyscript/apps',
+      '/config/pyscript/modules',
+      '/config/pyscript/scripts',
+      '/config/pyscript/tests',
+      '/config/pyscript/tests/unit',
+      '/config/pyscript/tests/integration',
+      '/config/pyscript/tests/functional'
+    ]
+    for path in pyscript_paths:
+      if path not in sys.path:
+        sys.path.append(path)
 
   def call_service(self, domain, service, **kwargs):
     if domain in self.services and service in self.services[domain]:

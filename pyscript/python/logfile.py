@@ -33,6 +33,9 @@ class Logfile:
   @staticmethod
   def _create_logger(name):
     logfile = Path(CFG_PATH_DIR_LOG, f"{name}.log")
+    logger = logging.getLogger(name)
+    if logger.hasHandlers():
+      logger.handlers.clear()
     handler = logging.FileHandler(logfile, mode='w+')
     handler.setFormatter(logging.Formatter(CFG_LOGFILE_FORMAT))
     logger = logging.getLogger(name)

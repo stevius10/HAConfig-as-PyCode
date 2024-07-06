@@ -17,16 +17,17 @@ def presence_factory(room, action):
   def presence(var_name=None):
     indicator_weight = weight(room, 'indicators')
     exclusion_weight = weight(room, 'exclusions')
-    if action == 'on' and indicator_weight >= 1 and exclusion_weight == 0:
+    if indicator_weight >= 1 and exclusion_weight == 0:
       persist(room, 'on')
       transition(room, 'on')
-    elif action == 'off' and (indicator_weight < 1 or exclusion_weight > 0):
-      persist(room, 'on')
+    elif indicator_weight < 1 or exclusion_weight > 0:
+      persist(room, 'off')
       transition(room, 'off')
   trigger.append(presence)
 
 def persist(room, action):
-  state.set(PERSISTENCE_ENTITY_AUTO_PRESENCE, "'{}'".format(str(state.get(f"{entity}.wohnzimmer")) or str(state.get(f"{entity}.schlafzimmer"))), attributes={room: action})
+  state.set(PERSISTENCE_ENTITY_AUTO_PRESENCE, "'{}'".format(str(state.get(f"{PERSISTENCE_ENTITY_AUTO_PRESENCE}.wohnzimmer") == "on") or \
+      str(state.get(f"'{PERSISTENCE_ENTITY_AUTO_PRESENCE}.schlafzimmer'") == "on")), attributes={room: action})
   homeassistant.update_entity(entity_id=PERSISTENCE_ENTITY_AUTO_PRESENCE)
   state.persist(PERSISTENCE_ENTITY_AUTO_PRESENCE)
 

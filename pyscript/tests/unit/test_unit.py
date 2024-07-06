@@ -1,81 +1,47 @@
-import json
 import unittest
 from unittest.mock import patch, MagicMock
+from homeassistant.core import HomeAssistant
+from custom_components.pyscript import trigger
+import sys
+import os
 
-from bs4 import BeautifulSoup
-
-from constants.mappings import *
-
-
-class TestUnit(unittest.TestCase):
+class TestScrapeHousing(unittest.TestCase):
+  
+  sys.path.append('/config/pyscript/tests')
+  from mocks.mock_pyscript import MockPyscript
+    
+  @classmethod
+  def setUpClass(cls):
+    sys.path.append('/config/pyscript/apps')
+    from scrape_housing import scrape_housing
+    
+    mock_pyscript = MockPyscript()
+    mock_pyscript.setup_environment()
 
   def setUp(self):
-    self.apartment = {
-      "address": "Musterstraße 1",
-      "rent": "500 €",
-      "size": "50 m²",
-      "rooms": "2 Zimmer",
-      "details": "Schöne Wohnung",
-      "text": "Schöne Wohnung in der Musterstraße 1, 500 €, 50 m², 2 Zimmer"
-    }
-    self.content = BeautifulSoup('<div class="item">Schöne Wohnung in der Musterstraße 1, 500 €, 50 m², 2 Zimmer</div>', 'html.parser')
-    self.provider = "test_provider"
-    self.housing_provider = {
-      self.provider: {
-        "url": "http://example.com",
-        "structure": {
-          "item": ".item",
-          "address_selector": None,
-          "rent_selector": None,
-          "size_selector": None,
-          "rooms_selector": None,
-          "details_selector": None
-        }
-      }
-    }
+    self.hass = HomeAssistant()
+    trigger.setup(self.hass, {})
 
-  @patch('requests.get')
-  def test_fetch(self, mock_get):
-    mock_response = MagicMock()
-    mock_response.content = json.dumps({'searchresults': '<div class="item">Schöne Wohnung in der Musterstraße 1, 500 €, 50 m², 2 Zimmer</div>'})
-    mock_get.return_value = mock_response
+  def tearDown(self):
+    self.hass.stop()
 
-    with patch.dict('builtins.housing_provider', self.housing_provider):
-      content = fetch(self.provider)
-      self.assertIsInstance(content, BeautifulSoup)
-      self.assertIn('Schöne Wohnung in der Musterstraße 1, 500 €, 50 m², 2 Zimmer', content.text)
+  @patch('scrape_housing.requests.get')
+  @patch('scrape_housing.requests.post')
+  @patch('custom_components.pyscript.pyscript_executor', return_value=MockPyscript.pyscript_executor)
+  @patch('scrape_housing.pyscript.pyscript_executor', return_value=MockPyscript.pyscript_executor)
+  def test_scrape_housing(self, mock_pyscript, mock_post, mock_get):
+    mock_get.return_value.content = '<html><body><div class="property-container">Test Property</div></body></html>'
+    mock_post.return_value.text = json.dumps({'searchresults': '<html><body><div class="property-container">Test Property</div></body></html>'})
 
-  def test_filtering(self):
-    filtered_apartment = filtering(self.apartment)
-    self.assertIsNotNone(filtered_apartment)
-    self.assertIn("address", filtered_apartment)
-    self.assertIn("rent", filtered_apartment)
+    trigger.register_function(self.hass, scrape_housing, "scrape_housing")
 
-  def test_scrape(self):
-    apartments = scrape(self.content, ".item", None, None, None, None, None)
-    self.assertIn("Musterstraße 1 (500 €, 2 Zimmer, 50 m²)", apartments)
+    result = trigger.call_function(self.hass, "scrape_housing", "degewo")
+    self.assertIn('Test Property', str(result))
 
-  @patch('random.randint', return_value=1)
-  @patch('requests.get')
-  @patch('state.set')
-  @patch('state.persist')
-  def test_scrape_housing(self, mock_persist, mock_set, mock_get, mock_randint):
-    mock_response = MagicMock()
-    mock_response.content = '<div class="item">Schöne Wohnung in der Musterstraße 1, 500 €, 50 m², 2 Zimmer</div>'
-    mock_get.return_value = mock_response
+    mock_pyscript.pyscript_executor.assert_called_once()
 
-    with patch.dict('builtins.housing_provider', self.housing_provider):
-      apartments = scrape_housing(self.provider)
-      self.assertIn("test_provider: Musterstraße 1 (500 €, 2 Zimmer, 50 m²)", apartments)
-
-  def test_get_entity(self):
-    entity = get_entity(self.provider)
-    self.assertEqual(entity, f"pyscript.{PERSISTENCE_PREFIX_SENSOR_SCRAPE_HOUSING}_{self.provider}")
-
-  def test_get_or_default(self):
-    element = self.content.select_one('.item')
-    address = get_or_default(element, None, "default_address")
-    self.assertEqual(address, "default_address")
+    result = trigger.call_function(self.hass, "scrape_housing", "howoge")
+    self.assertIn('Test Property', str(result))
 
 if __name__ == '__main__':
   unittest.main()

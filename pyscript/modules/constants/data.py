@@ -37,12 +37,12 @@ DATA_PRESENCE = {
 
 DATA_SUBPROCESS_SERVICES = {
   "compile": {
-    "commands": [
-      "cd /config",
-      "git ls-files -oc --exclude-standard",
-      "git ls-files -oc --exclude-standard | grep -v '^www/' | while read -r file; do echo -e '# $file\n'; cat $file; echo -e '\n---\n'; done"
-    ]
-  },
+  "commands": [
+    "cd /config",
+    "git ls-files -oc --exclude-standard pyscript",
+    "git ls-files -oc --exclude-standard pyscript | grep -v '^www/' | while read -r file; do if [ -f \"$file\" ]; then echo -e \"# $file\\n\"; cat \"$file\"; echo -e '\\n---\\n'; else echo \"# $file (deleted)\"; fi; done"
+  ]
+},
   "backup": {
     "commands": [
       "apk add rsync; ulimit -n 4096",

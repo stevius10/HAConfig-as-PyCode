@@ -27,7 +27,7 @@ def log(msg="", title="", logger=CFG_LOG_LOGGER, level=CFG_LOG_LEVEL, **kwargs):
 def _monitored(func, log_func, debug_function_started=CFG_LOGFILE_DEBUG_FUNCTION_STARTED):
   def wrapper(*args, **kwargs):
     if kwargs.get('context'): del kwargs['context']
-    context = ".".join([func.global_ctx_name, func.name])
+    context = ".".join([func.global_ctx_name, func.name]) if hasattr(func, 'global_ctx_name') and hasattr(func, 'name') else ""
     if debug_function_started:
       debug(f"{log_func_format(func, args, kwargs)}", title=context)
     try:
@@ -105,4 +105,4 @@ def log_func_format(func, args, kwargs, result=None):
   log_func_format_args = ", ".join([str(arg) if arg else "" for arg in args]) if args else None
   log_func_format_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if k != "context"]) if kwargs else None
   log_func_format_arg = ", ".join([str(arg) if arg is not None else "" for arg in [log_func_format_args, log_func_format_kwargs] if arg])
-  return f"{func.name}" + f"({log_func_format_arg})" + (f": \n-> {result}" if result else "")
+  return f"{func.name if hasattr(func, 'name') else ''}" + f"({log_func_format_arg})" + (f": \n-> {result}" if result else "")
