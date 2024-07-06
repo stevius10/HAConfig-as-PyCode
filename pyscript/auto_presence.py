@@ -26,8 +26,8 @@ def presence_factory(room, action):
   trigger.append(presence)
 
 def persist(room, action):
-  state.set(str(PERSISTENCE_ENTITY_AUTO_PRESENCE), str(state.get(f"'{PERSISTENCE_ENTITY_AUTO_PRESENCE}.wohnzimmer'") == "on") or \
-      str(state.get(f"'{PERSISTENCE_ENTITY_AUTO_PRESENCE}.schlafzimmer'") == "on"), attributes={room: action})
+  state.set(f"'{PERSISTENCE_ENTITY_AUTO_PRESENCE}'", (state.get(f"'{PERSISTENCE_ENTITY_AUTO_PRESENCE}.wohnzimmer'") or \
+      state.get(f"'{PERSISTENCE_ENTITY_AUTO_PRESENCE}.schlafzimmer'")), attributes={room: action})
   homeassistant.update_entity(entity_id=PERSISTENCE_ENTITY_AUTO_PRESENCE)
   state.persist(str(PERSISTENCE_ENTITY_AUTO_PRESENCE))
 
