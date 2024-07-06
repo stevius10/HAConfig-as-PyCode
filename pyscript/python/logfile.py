@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 sys.path.append('/config/pyscript/modules/')
-from constants.config import CFG_LOGFILE_DEBUG_FILE, CFG_LOGFILE_FORMAT, CFG_LOGFILE_SIZE, CFG_PATH_DIR_LOG
+from constants.config import CFG_LOGFILE_DEBUG_FILE, CFG_LOGFILE_FORMAT, CFG_LOGFILE_LOG_SIZE, CFG_PATH_DIR_LOG
 
 class Logfile:
   _logger = None
@@ -64,7 +64,7 @@ class Logfile:
 
   def close(self):
     if hasattr(self, 'history'):
-      self.history = " | ".join([str(item) for item in self.history]) if self.history else ""
+      self.history = ", ".join([str(item) for item in self.history]) if self.history else ""
     else: 
       self.history = ""
-    return { "file": self.logfile.as_posix(), "result": self.history[:CFG_LOGFILE_SIZE]}
+    return { "file": self.logfile.as_posix(), "result": self.history[:CFG_LOGFILE_LOG_SIZE]}

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from constants.expressions import EXPR_TIME_SERVICE_FILEBACKUP
 from constants.secrets import SEC_DEVICES
 from constants.settings import SET_SUBPROCESS_FILEBACKUP_FOLDER, SET_SUBPROCESS_FILEBACKUP_RETENTION, \
@@ -36,20 +38,13 @@ DATA_PRESENCE = {
 }
 
 DATA_SUBPROCESS_SERVICES = {
-  "compile": {
-  "commands": [
-    "cd /config",
-    "git ls-files -oc --exclude-standard pyscript",
-    "git ls-files -oc --exclude-standard pyscript | grep -v '^www/' | while read -r file; do if [ -f \"$file\" ]; then echo -e \"# $file\\n\"; cat \"$file\"; echo -e '\\n---\\n'; else echo \"# $file (deleted)\"; fi; done"
-  ]
-},
   "backup": {
     "commands": [
       "apk add rsync; ulimit -n 4096",
-      f"backup_folder=\"{SET_SUBPROCESS_FILEBACKUP_FOLDER}/$(date +\"%d-%m-%Y\")\"",
-      f"/usr/bin/find {SET_SUBPROCESS_FILEBACKUP_FOLDER} -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1",
-      f"/usr/bin/find {SET_SUBPROCESS_FILEBACKUP_FOLDER} -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r \"{{}}\" \\; 2>&1",
-      f"rsync -av --exclude='.git/' --exclude='/homeassistant/.git/' --exclude='.storage/xiaomi_miot' --exclude='/homeassistant/.storage/xiaomi_miot' /config/ {SET_SUBPROCESS_FILEBACKUP_FOLDER} 2>&1"
+      f'backup_folder="{SET_SUBPROCESS_FILEBACKUP_FOLDER}/{datetime.now().strftime("%Y-%m-%d_%H-%M")}" && mkdir -p "$backup_folder" && '
+      f'/usr/bin/find "$backup_folder" -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1 && '
+      f'/usr/bin/find "$backup_folder" -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r "{{}}" \\; 2>&1 && '
+      f'rsync -av --exclude=\'.git/\' --exclude=\'/homeassistant/.git/\' --exclude=\'.storage/xiaomi_miot\' --exclude=\'/homeassistant/.storage/xiaomi_miot\' /config/ "$backup_folder" 2>&1'
     ],
     "trigger": EXPR_TIME_SERVICE_FILEBACKUP
   }
