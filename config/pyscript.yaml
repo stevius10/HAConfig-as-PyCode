@@ -6,10 +6,6 @@ pyscript:
     - name: app_debug
     air_control: 
     - name: air_control
-    init_subprocess: 
-    - name: init_subprocess
-    run_tests:
-    - name: run_tests
     scrape_housing: 
     - name: scrape_housing
     sync_git: 
