@@ -9,7 +9,7 @@ def presence_factory(room, action):
   
   @time_trigger('startup')
   def presence_init(): 
-    state.persist(PERSISTENCE_ENTITY_AUTO_PRESENCE)
+    state.persist(str(PERSISTENCE_ENTITY_AUTO_PRESENCE))
     homeassistant.update_entity(entity_id=entity)
 
   @state_trigger([expr(entity, str(condition.get('condition'))) for entity, condition in ENTITIES_PRESENCE.get(room).get('indicators').items()], state_hold=ENTITIES_PRESENCE.get(room).get('indicators').get('duration'))
@@ -26,10 +26,10 @@ def presence_factory(room, action):
   trigger.append(presence)
 
 def persist(room, action):
-  state.set(PERSISTENCE_ENTITY_AUTO_PRESENCE, "'{}'".format(str(state.get(f"{PERSISTENCE_ENTITY_AUTO_PRESENCE}.wohnzimmer") == "on") or \
-      str(state.get(f"'{PERSISTENCE_ENTITY_AUTO_PRESENCE}.schlafzimmer'") == "on")), attributes={room: action})
+  state.set(str(PERSISTENCE_ENTITY_AUTO_PRESENCE), str(state.get(f"'{PERSISTENCE_ENTITY_AUTO_PRESENCE}.wohnzimmer'") == "on") or \
+      str(state.get(f"'{PERSISTENCE_ENTITY_AUTO_PRESENCE}.schlafzimmer'") == "on"), attributes={room: action})
   homeassistant.update_entity(entity_id=PERSISTENCE_ENTITY_AUTO_PRESENCE)
-  state.persist(PERSISTENCE_ENTITY_AUTO_PRESENCE)
+  state.persist(str(PERSISTENCE_ENTITY_AUTO_PRESENCE))
 
 def weight(room, category):
   return 0 # sum([item.get('weight', 1) for item in ENTITIES_PRESENCE[room][category].values()]) # TODO: if eval(item['condition'])])
