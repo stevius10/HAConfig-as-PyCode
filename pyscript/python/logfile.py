@@ -68,8 +68,8 @@ class Logfile:
       if history_len > CFG_LOGFILE_LOG_SIZE:
         cut_size = int(CFG_LOGFILE_LOG_SIZE * 0.5)
         removed_lines = history_len - CFG_LOGFILE_LOG_SIZE
-        self.history = self.history[:cut_size] + ['... [um {} Zeilen gekürzt] ...'.format(removed_lines)] + self.history[-cut_size:]
-      self.history = ", ".join(self.history) if self.history else ""
+        self.history = self.history[:cut_size] + [f'... [um {removed_lines} Zeilen gekürzt] ...'] + self.history[-cut_size:]
+      self.history = ", ".join(str(item) for item in self.history) if self.history else ""
     else: 
       self.history = ""
-    return { "file": self.logfile.as_posix(), "result": f"{self.history[:CFG_LOGFILE_LOG_SIZE]}..." }
+    return { "file": self.logfile.as_posix(), "result": self.history }
