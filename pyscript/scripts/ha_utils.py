@@ -1,11 +1,11 @@
-from constants.config import DEFAULT_NOTIFICATION_TARGET
+from constants.config import CFG_NOTIFICATION_TARGET_DEFAULT
 from constants.data import DATA_DEVICES
 
 from utils import *
 
 @logged
 @service
-def notify(message, data=None, target=DEFAULT_NOTIFICATION_TARGET, default=True):
+def notify(message, data=None, target=CFG_NOTIFICATION_TARGET_DEFAULT, default=True):
   devices = DATA_DEVICES.get(target) if target else [target for targets in DATA_DEVICES.values() for target in targets]
 
   if default:
@@ -16,7 +16,7 @@ def notify(message, data=None, target=DEFAULT_NOTIFICATION_TARGET, default=True)
 
 @debugged
 @service
-def shortcut(message, shortcut, input=None, target=DEFAULT_NOTIFICATION_TARGET, **kwargs):
+def shortcut(message, shortcut, input=None, target=CFG_NOTIFICATION_TARGET_DEFAULT, **kwargs):
   
   data = { "shortcut": { "name": shortcut, "input": input } }
 

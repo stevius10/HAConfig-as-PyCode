@@ -4,8 +4,8 @@ from datetime import datetime
 
 import aiofiles
 
-from constants.config import CFG_LOG_SIZE, CFG_LOG_SETTINGS_DELAY_BLOCK, CFG_LOG_FILE, CFG_LOG_HISTORY_SUFFIX, \
-  CFG_LOG_TAIL, CFG_LOG_HISTORY_SIZE, CFG_LOG_ARCHIV_SIZE, CFG_PATH_LOG, CFG_LOG_SETTINGS_IO_RETRY
+from constants.config import CFG_LOG_SIZE, CFG_LOG_SETTINGS_DELAY_BLOCK, CFG_LOG_HISTORY_SUFFIX, \
+  CFG_LOG_TAIL, CFG_LOG_HISTORY_SIZE, CFG_LOG_ARCHIV_SIZE, CFG_PATH_FILE_LOG, CFG_LOG_SETTINGS_IO_RETRY
 from constants.mappings import MAP_EVENT_FOLDER_WATCHER
 from exceptions import IORetriesExceededException
 from utils import *
@@ -30,7 +30,7 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
 
 @debugged
 @service
-async def log_truncate(logfile=CFG_LOG_FILE, log_size_truncated=CFG_LOG_SIZE, log_tail_size=CFG_LOG_TAIL, log_history_size=CFG_LOG_HISTORY_SIZE):
+async def log_truncate(logfile=CFG_PATH_FILE_LOG, log_size_truncated=CFG_LOG_SIZE, log_tail_size=CFG_LOG_TAIL, log_history_size=CFG_LOG_HISTORY_SIZE):
   history_file=f"{logfile}.{CFG_LOG_HISTORY_SUFFIX}"
   
   logs = log_read(logfile, lines=True)
@@ -48,7 +48,7 @@ async def log_truncate(logfile=CFG_LOG_FILE, log_size_truncated=CFG_LOG_SIZE, lo
 
 @debugged
 @service
-def log_rotate(logfile=CFG_PATH_LOG):
+def log_rotate(logfile=CFG_PATH_FILE_LOG):
   history_file = f"{logfile}.{CFG_LOG_HISTORY_SUFFIX}"
   archive_file = f"{logfile}.{CFG_LOG_ARCHIV_SIZE}"
 

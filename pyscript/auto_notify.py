@@ -1,4 +1,4 @@
-from constants.config import DEFAULT_NOTIFICATION_TARGET
+from constants.config import CFG_NOTIFICATION_TARGET_DEFAULT
 from constants.data import DATA_SCRAPE_HOUSING_PROVIDERS
 from constants.mappings import PERSISTENCE_PREFIX_SENSOR_SCRAPE_HOUSING, MAP_SERVICE_SCRAPE_HOUSING_SHORTCUT_NAME
 
@@ -23,7 +23,7 @@ def compare(old, new):
 
 @state_trigger(expr(entity=[name for name in state.names() if PERSISTENCE_PREFIX_SENSOR_SCRAPE_HOUSING in name]))
 @logged
-def notify_housing(target=DEFAULT_NOTIFICATION_TARGET, default=True, var_name=None, value=None, old_value=None):
+def notify_housing(target=CFG_NOTIFICATION_TARGET_DEFAULT, default=True, var_name=None, value=None, old_value=None):
   if value and value not in MAP_STATE_HA_UNDEFINED:
     diff = compare(old_value, value)
   if diff:

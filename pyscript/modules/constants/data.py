@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from constants.expressions import EXPR_TIME_SERVICE_FILEBACKUP
+from constants.expressions import EXPR_TIME_FILEBACKUP
 from constants.secrets import SEC_DEVICES
 from constants.settings import SET_SUBPROCESS_FILEBACKUP_FOLDER, SET_SUBPROCESS_FILEBACKUP_RETENTION, \
   SET_SCRAPE_HOUSING_FILTER_AREA, SET_SCRAPE_HOUSING_FILTER_RENT, SET_SCRAPE_HOUSING_FILTER_ROOMS
@@ -38,17 +38,27 @@ DATA_PRESENCE = {
 }
 
 DATA_SUBPROCESS_SERVICES = {
-  "backup": {
+  "filebackup": {
     "commands": [
       "apk add rsync; ulimit -n 4096",
       f'backup_folder="{SET_SUBPROCESS_FILEBACKUP_FOLDER}/{datetime.now().strftime("%Y-%m-%d_%H-%M")}" && mkdir -p "$backup_folder" && '
       f'/usr/bin/find "$backup_folder" -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1 && '
       f'/usr/bin/find "$backup_folder" -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r "{{}}" \\; 2>&1 && '
-      f'rsync -av --exclude=\'.git/\' --exclude=\'/homeassistant/.git/\' --exclude=\'.storage/xiaomi_miot\' --exclude=\'/homeassistant/.storage/xiaomi_miot\' /config/ "$backup_folder" 2>&1'
+      f'rsync -azv --partial --ignore-existing --exclude=\'.git/\' --exclude=\'/homeassistant/.git/\' --exclude=\'.storage/xiaomi_miot\' --exclude=\'/homeassistant/.storage/xiaomi_miot\' /config/ "$backup_folder" 2>&1'
     ],
-    "trigger": EXPR_TIME_SERVICE_FILEBACKUP
+    "trigger": EXPR_TIME_FILEBACKUP
+  },
+  "compile": {
+    "commands": [
+      "cd /config",
+      "echo '\n--- Projektstruktur:\n'; git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v '^templates/' | grep -v '^pyscript/www/'", 
+      "echo '\n--- Quelltext:\'; git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v '^templates/' | grep -v '^pyscript/www/' | grep -v -E '\\.(png|jpg|jpeg|json|yaml|)$' | while read -r file; do echo - Datei: \"$file\"; cat \"/config/$file\"; echo '\n--------\n'; done",
+      # "echo '\n--- Pyscript (Extern):\n'; find /config/custom_components/pyscript -type f -name '*.py' | grep -v '__pycache__/' | while read -r file; do echo -e \"- Datei: $file\\n\"; cat \"$file\"; echo '\n--------\n'; done"
+    ]
   }
 }
+
+
 
 # Application
 
@@ -57,7 +67,7 @@ DATA_SCRAPE_HOUSING_PROVIDERS = {
               "structure": { "item": ".properties-container .property-container", "address_selector": ".property-subtitle", "rent_selector": ".property-rent", "size_selector": ".property-size", "rooms_selector": ".property-rooms", "details_selector": ".property-actions a"  } },
   "friedrichsheim": { "url": "https://www.friedrichsheim-eg.de/category/freie-wohnungen/",
                       "structure": { "item": "#main h2.entry-title", "address_selector": "*", "rent_selector": None, "size_selector": None, "rooms_selector": None, "details_selector": None } },
-  "howoge": { "url": "https://www.howoge.de/immobiliensuche/wohnungssuche.html?tx_howrealestate_json_list%5Bpage%5D=1&tx_howrealestate_json_list%5Blimit%5D=12&tx_howrealestate_json_list%5Blang%5D=&tx_howrealestate_json_list%5Brooms%5D=&tx_howrealestate_json_list%5Bkiez%5D%5B%5D=Charlottenburg-Wilmersdorf&tx_howrealestate_json_list%5Bkiez%5D%5B%5D=Neukoelln&tx_howrealestate_json_list%5Bkiez%5D%5B%5D=Tempelhof-Schöneberg&tx_howrealestate_json_list%5Bkiez%5D%5B%5D=Mitte&tx_howrealestate_json_list%5Bkiez%5D%5B%5D=Friedrichshain-Kreuzberg",
+  "howoge": { "url": "https://www.howoge.de/immobiliensuche/wohnungssuche.html?tx_howrealestate_json_list%5Bpage%5D=1&tx_howrealestate_json_list%5Blimit%5D=12&tx_howrealestate_json_list%5Blang%5D=&tx_howrealestate_json_list%5Brooms%5D=&tx_howrealestate_json_list%5Bkiez%5D%5B%5D=Charlottenburg-Wilmersdorf&tx_howrealestate_json_list%5Bkiez%5D%5B%5D=Neukoelln&tx_howrealestate_json_list%5Bkiez%5D%5B%5D=Tempelhof-SchÃ¶neberg&tx_howrealestate_json_list%5Bkiez%5D%5B%5D=Mitte&tx_howrealestate_json_list%5Bkiez%5D%5B%5D=Friedrichshain-Kreuzberg",
               "structure": { "item": ".tx-howsite-flats .list-entry", "address_selector": ".address", "rent_selector": ".price", "size_selector": None, "rooms_selector": ".rooms", "details_selector": ".wbs" } },
 
 
@@ -74,4 +84,3 @@ DATA_SCRAPE_HOUSING_PROVIDERS = {
       "url": "https://www.wbm.de/wohnungen-berlin/angebote/",
       "structure": { "item": ".openimmo-search-list-item", "address_selector": ".address", "rent_selector": ".main-property-rent", "size_selector": ".main-property-size", "rooms_selector": ".main-property-rooms", "details_selector": "h2 .check-property-list" } }
 }
-

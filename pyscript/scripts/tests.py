@@ -1,78 +1,47 @@
-import io
-import os
-import unittest
-import sys
 from utils import *
 
+@logged
 @service
 def run_tests():
   from logfile import Logfile
-  logfile = Logfile(name=pyscript.get_global_ctx())
+  logfile = Logfile(name="tests")
+
   try:
-    logfile.log(test_unit())
-    # logfile.log(test_integration())
-    # logfile.log(test_functional())
+    logfile.log(__run_test("tmp"))
   except Exception as e:
     log(str(e))
+    logfile.log(str(e))
   finally:
     return logfile.close()
 
-@logged
-@service
-def test_unit():
-  base = '/config/pyscript/tests/unit'
-  if base not in sys.path:
-    sys.path.append(base)
+@pyscript_executor
+def __run_test(test_type):
+  from contextlib import redirect_stdout
+  import io
+  import os
+  import sys
+  import unittest
 
-  loader = unittest.TestLoader()
-  suite = loader.discover(start_dir=base, pattern='test_*.py')
+  os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 
-  output = io.StringIO()
-  runner = unittest.TextTestRunner(stream=output, verbosity=2)
-  result = runner.run(suite)
+  f = io.StringIO()
+  with redirect_stdout(f):
+    try:
+      base_path = "/config/pyscript"
+      for subdir in ['apps', 'modules', 'scripts', 'tests']:
+        path = os.path.join(base_path, subdir)
+        if path not in sys.path:
+          sys.path.insert(0, path)
 
-  return {
-    "tests": result.testsRun,
-    "errors": len(result.errors),
-    "details": {f"{test}": str(error) for test, error in result.errors}
-  }
-
-@logged
-@service
-def test_integration():
-  base = '/config/pyscript/tests/integration'
-  if base not in sys.path:
-    sys.path.append(base)
-
-  loader = unittest.TestLoader()
-  suite = loader.discover(start_dir=base, pattern='test_*.py')
-
-  output = io.StringIO()
-  runner = unittest.TextTestRunner(stream=output, verbosity=2)
-  result = runner.run(suite)
-
-  return {
-    "tests": result.testsRun,
-    "errors": len(result.errors),
-    "details": {f"{test}": str(error) for test, error in result.errors}
-  }
-
-@logged
-@service
-def test_functional():
-  base = '/config/pyscript/tests/functional'
-  if base not in sys.path:
-    sys.path.append(base)
-
-  loader = unittest.TestLoader()
-  suite = loader.discover(start_dir=base, pattern='test_*.py')
-
-  output = io.StringIO()
-  runner = unittest.TextTestRunner(stream=output, verbosity=2)
-  result = runner.run(suite)
-
-  return {
-    "tests": result.testsRun,
-    "errors": len(result.errors),
-    "details": {f"{test}": str(error) for test, error in result.errors}
-  }
+      loader = unittest.TestLoader()
+      suite = loader.discover(test_path)
+      
+      runner = unittest.TextTestRunner(stream=f, verbosity=3)
+      result = runner.run(suite)
+      
+      output = f.getvalue()
+      if not result.wasSuccessful():
+        return f"Tests failed\n{output}"
+    except Exception as e:
+      return f"Exception occurred: {str(e)}"
+  return f.getvalue()

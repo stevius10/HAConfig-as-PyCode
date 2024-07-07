@@ -14,13 +14,15 @@ entities = ENTITIES_SERVICE_AIR_CONTROL
 @state_active(f"{EXPR_STATE_AIR_AUTOMATION_SEASON} and {expr([entity['fan'] for entity in entities.values()], STATE_OFF)}" if CFG_SERVICE_ENABLED_AIR_CONTROL else "False")
 @time_active(EXPR_TIME_AIR_AUTOMATION)
 @debugged
-def air_control_threshold_on(var_name=None): air_control_sleep(entities.get(var_name.split(".")[1]).get("fan"))
+def air_control_threshold_on(var_name=None):
+  air_control_sleep(entities.get(var_name.split(".")[1]).get("fan"))
 
-@state_trigger(expr([entity["sensor"] for entity in entities.values()], SET_AIR_CONTROL_THRESHOLD_STOP, comparator=">"))
+@state_trigger(expr([entity["sensor"] for entity in entities.values()], SET_AIR_CONTROL_THRESHOLD_STOP, comparator="<"))
 @state_active(f"{EXPR_STATE_AIR_AUTOMATION_SEASON} and {expr([entity['fan'] for entity in entities.values()], STATE_ON)}" if CFG_SERVICE_ENABLED_AIR_CONTROL else "False")
 @time_active(EXPR_TIME_AIR_AUTOMATION)
 @debugged
-def air_control_threshold_off(var_name=None): air_control_turn_off(entities.get(var_name.split(".")[1]).get("fan"))
+def air_control_threshold_off(var_name=None): 
+  air_control_turn_off(entities.get(var_name.split(".")[1]).get("fan"))
 
 # Functional
 

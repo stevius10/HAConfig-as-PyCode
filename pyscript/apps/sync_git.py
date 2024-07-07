@@ -7,7 +7,7 @@ from utils import *
 
 
 @service(supports_response="optional")
-@time_trigger(EXPR_TIME_SERVICE_GIT)
+@time_trigger(EXPR_TIME_SYNC_GIT)
 @state_active(str(CFG_SERVICE_ENABLED_SYNC_GIT))
 @logged
 def sync_git(

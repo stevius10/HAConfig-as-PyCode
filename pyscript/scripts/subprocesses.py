@@ -1,12 +1,12 @@
 import subprocess
+from datetime import datetime
 
-from constants.data import DATA_SUBPROCESS_SERVICES
 from utils import *
+from constants.data import DATA_SUBPROCESS_SERVICES
 
 trigger = []
-services = DATA_SUBPROCESS_SERVICES
 
-# Factory
+services = DATA_SUBPROCESS_SERVICES
 
 @debugged
 def subprocess_factory(service):
@@ -14,10 +14,11 @@ def subprocess_factory(service):
   service = services.get(service)
   commands = service.get("commands")
   statement = service.get("statement")
+  trigger_expr = service.get("trigger")
 
   @logged
   @service(f"pyscript.subprocess_{name}")
-  def execute_subprocess():
+  def execute_subprocess(return_command=False):
     from logfile import Logfile
     logfile = Logfile(name=name)
     
@@ -25,17 +26,24 @@ def subprocess_factory(service):
       try:
         result = task.executor(subprocess.run,
           command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-          shell=True, check=False, text=True
-        )
-        logfile.log([command, result.stdout, result.stderr])
+          shell=True, check=False, text=True)
+        
+        logfile.log([command if return_command else None, result.stdout, result.stderr])
       except subprocess.CalledProcessError as e:
-        logfile.log([e, command, result.stdout, result.stderr])
-    
+        raise e
     return logfile.close()
 
-  if statement:
-    execute_subprocess = eval(f"{statement}(execute_subprocess)")
+  if trigger_expr:
+    exec(f"""@time_trigger('{trigger_expr}')
+def decorated_execute_subprocess(): return execute_subprocess()
+    """, globals())
+    decorated_execute_subprocess = globals()['decorated_execute_subprocess']
+    trigger.append(decorated_execute_subprocess)
   trigger.append(execute_subprocess)
+
+  if statement:
+    exec(f"{statement}(execute_subprocess)", globals())
+    execute_subprocess = globals()['execute_subprocess']
 
 # Initialization
 
