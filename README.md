@@ -26,10 +26,9 @@ For integration purposes:
 
 For service-based purposes:
 - **`sync_git.py`**: Enables automatic synchronization of the configuration to this Git repository.
-- **`subprocesses.py`**: Manages and executes subprocesses based on predefined schedules and commands. It implements two services by taking a list of shell commands from `/pyscript/modules/data.py`. For example:
+- **`subprocesses.py`**: Manages and executes subprocesses based on predefined schedules and commands. Implements services by taking a list of shell commands from `/pyscript/modules/data.py`: 
   - **File Backup Service**: Runs a backup of Home Assistant configuration files at scheduled intervals.
-  - **Compile Service**: Compiles and structures the project files, listing the project structure and contents at specified times.
-  The functionality is triggered using `time_trigger` to schedule the execution of these services.
+  - **Compile Service**: Compiles and structures the project files, listing the project structure and content for code sharing, e. g. AI based programming.
 
 ### Modules
 

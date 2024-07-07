@@ -17,13 +17,13 @@ def subprocess_factory(service):
   trigger_expr = service.get("trigger")
 
   @logged
-  @service(f"pyscript.subprocess_{name}")
-  def execute_subprocess(return_command=False):
-    from logfile import Logfile
-    logfile = Logfile(name=name)
-    
+  @service(f"pyscript.subprocess_{service_name}")
+  def execute_subprocess(return_command=False, **kwargs):
+    logfile = Logfile(name=service_name)
+
     for command in commands:
       try:
+        command = command.format(**kwargs)
         result = task.executor(subprocess.run,
           command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
           shell=True, check=False, text=True)

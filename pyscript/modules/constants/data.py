@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from constants.expressions import EXPR_TIME_FILEBACKUP
+from constants.expressions import EXPR_TIME_FILEBACKUP, EXPR_TIME_SYNC_GIT
 from constants.secrets import SEC_DEVICES
 from constants.settings import SET_SUBPROCESS_FILEBACKUP_FOLDER, SET_SUBPROCESS_FILEBACKUP_RETENTION, \
   SET_SCRAPE_HOUSING_FILTER_AREA, SET_SCRAPE_HOUSING_FILTER_RENT, SET_SCRAPE_HOUSING_FILTER_ROOMS
@@ -38,6 +38,13 @@ DATA_PRESENCE = {
 }
 
 DATA_SUBPROCESS_SERVICES = {
+  "compile": {
+    "commands": [
+      "cd /config",
+      "echo '\n--- Projektstruktur:\n'; git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v '^templates/' | grep -v '^pyscript/www/'", 
+      "echo '\n--- Quelltext:\'; git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v '^templates/' | grep -v '^pyscript/www/' | grep -v -E '\\.(png|jpg|jpeg|json|yaml|)$' | while read -r file; do echo - Datei: \"$file\"; cat \"/config/$file\"; echo '\n--------\n'; done",
+    ]
+  },
   "filebackup": {
     "commands": [
       "apk add rsync; ulimit -n 4096",
@@ -45,16 +52,20 @@ DATA_SUBPROCESS_SERVICES = {
       f'/usr/bin/find "$backup_folder" -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1 && '
       f'/usr/bin/find "$backup_folder" -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r "{{}}" \\; 2>&1 && '
       f'rsync -azv --partial --ignore-existing --exclude=\'.git/\' --exclude=\'/homeassistant/.git/\' --exclude=\'.storage/xiaomi_miot\' --exclude=\'/homeassistant/.storage/xiaomi_miot\' /config/ "$backup_folder" 2>&1'
-    ],
-    "trigger": EXPR_TIME_FILEBACKUP
+    ], "trigger": EXPR_TIME_FILEBACKUP
   },
-  "compile": {
+  "sync-git": {
     "commands": [
-      "cd /config",
-      "echo '\n--- Projektstruktur:\n'; git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v '^templates/' | grep -v '^pyscript/www/'", 
-      "echo '\n--- Quelltext:\'; git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v '^templates/' | grep -v '^pyscript/www/' | grep -v -E '\\.(png|jpg|jpeg|json|yaml|)$' | while read -r file; do echo - Datei: \"$file\"; cat \"/config/$file\"; echo '\n--------\n'; done",
-      # "echo '\n--- Pyscript (Extern):\n'; find /config/custom_components/pyscript -type f -name '*.py' | grep -v '__pycache__/' | while read -r file; do echo -e \"- Datei: $file\\n\"; cat \"$file\"; echo '\n--------\n'; done"
-    ]
+      "git config --local include.path '{config_path}'", 
+      "eval $(ssh-agent); ssh-add {key_path}", 
+      "git stash", 
+      "git pull origin {branch}", 
+      "git checkout {branch}", 
+      "git stash apply",
+      "git add .", 
+      "git commit -m '{message}'", 
+      "git push origin {branch}"
+    ], "trigger": EXPR_TIME_SYNC_GIT
   }
 }
 
