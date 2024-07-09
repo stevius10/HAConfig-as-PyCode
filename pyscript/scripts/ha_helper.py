@@ -47,7 +47,7 @@ async def log_truncate(logfile=CFG_PATH_FILE_LOG, log_size_truncated=CFG_LOG_SIZ
 @service
 def log_rotate(logfile=CFG_PATH_FILE_LOG):
   history_file = f"{logfile}.{CFG_LOG_HISTORY_SUFFIX}"
-  archive_file = f"{logfile}.{CFG_LOG_ARCHIV_SIZE}"
+  archive_file = f"{logfile}.{CFG_LOG_ARCHIV_SUFFIX}"
 
   try:
     if os.path.exists(history_file):

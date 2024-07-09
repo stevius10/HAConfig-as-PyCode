@@ -1,5 +1,8 @@
+import os
 import unittest
 from unittest.mock import patch, Mock
+
+os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 
 class TestAirDebug(unittest.TestCase):
 
@@ -22,8 +25,6 @@ class TestAirDebug(unittest.TestCase):
 
     cls.patcher.start()
     
-    os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
-
   @classmethod
   def tearDownClass(cls):
       cls.patcher.stop()

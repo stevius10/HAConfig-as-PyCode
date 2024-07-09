@@ -49,7 +49,6 @@ def scrape_housing_factory(provider):
 @time_trigger(EXPR_TIME_SCRAPE_HOUSINGS_UPDATE)
 @state_active(str(CFG_SERVICE_ENABLED_SCRAPE_HOUSING))
 @time_active(EXPR_TIME_GENERAL_WORKTIME)
-@logged
 @service
 def scrape_housings(housing_provider=housing_provider, event_trigger=None):
   results_housing = []

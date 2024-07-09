@@ -27,14 +27,8 @@ def __run_test(test_type):
   f = io.StringIO()
   with redirect_stdout(f):
     try:
-      base_path = "/config/pyscript"
-      for subdir in ['apps', 'modules', 'scripts', 'tests']:
-        path = os.path.join(base_path, subdir)
-        if path not in sys.path:
-          sys.path.insert(0, path)
-
       loader = unittest.TestLoader()
-      suite = loader.discover(test_path)
+      suite = loader.discover(f"/config/pyscript/tests/{test_type}")
       
       runner = unittest.TextTestRunner(stream=f, verbosity=3)
       result = runner.run(suite)

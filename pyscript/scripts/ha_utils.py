@@ -30,7 +30,7 @@ def shortcut(message, shortcut, input=None, target=CFG_NOTIFICATION_TARGET_DEFAU
 
 # Persistence
 
-@logged
+@debugged
 @service
 def persistence(entity, value=None, default="", result=True, **kwargs): 
 

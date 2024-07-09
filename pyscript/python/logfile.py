@@ -60,40 +60,23 @@ class Logfile:
       elif isinstance(message, list):
         for msg in message:
           cls.debug(msg)
-
+  
   def close(self):
     try:
       if hasattr(self, 'history'):
-        total_chars = sum(len(item) for item in self.history)
-        if total_chars > CFG_LOGFILE_LOG_SIZE:
-          half_max_chars = (CFG_LOGFILE_LOG_SIZE - len("... [Zeichen gekürzt] ...")) // 2
-          start_part, end_part = [], []
-          start_length, end_length = 0, 0
-  
-          for item in self.history:
-            if start_length + len(item) < half_max_chars:
-              start_part.append(item)
-              start_length += len(item)
-            else:
-              break
-  
-          for item in reversed(self.history):
-            if end_length + len(item) < half_max_chars:
-              end_part.append(item)
-              end_length += len(item)
-            else:
-              break
-  
-          removed_chars = total_chars - start_length - end_length
-          self.history = start_part + [f"... [{removed_chars} Zeichen gekürzt] ..."] + list(reversed(end_part))
+        total_lines = len(self.history)
+        if total_lines > CFG_LOGFILE_LOG_SIZE:
+          half_max_lines = (CFG_LOGFILE_LOG_SIZE - 1) // 2
+          self.history = (
+            self.history[:half_max_lines] +
+            [f"... [{total_lines - 2 * half_max_lines} Zeilen gekürzt] ..."] +
+            self.history[-half_max_lines:]
+          )
         else:
           self.history = ", ".join(self.history)
-      else:
-        self.history = ""
-      return {"file": Path(CFG_PATH_DIR_LOG, f"{self.name}.log").as_posix(), "result": self.history}
     except Exception as e:
-      return {"error": str(e)}
-
+      print(f"Error: {e}")
+        
 '''
   def close(self):
     if hasattr(self, 'history'):

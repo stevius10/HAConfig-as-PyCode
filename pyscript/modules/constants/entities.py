@@ -2,6 +2,7 @@
 
 ENTITIES_AUTO = {
   "climate.k": { "default": "off", "func": "climate.turn_off" },
+  # note: media_player.schlafzimmer.volume_level: { "default": ["< 40"], "func": "mediaplayer.set_volume(CFG_ENTITIES_VOLUME_MAX)" },
   "media_player.schlafzimmer": { "default": ["off", "paused"], "delay": 4800 },
   "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
   "switch.bett": { "default": "off", "delay": 1800 },
