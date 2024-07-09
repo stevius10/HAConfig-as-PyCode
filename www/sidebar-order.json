@@ -1,13 +1,13 @@
 {
   "order": [
     {
-      "item": "logbook",
-      "name": "Ereignisse"
-    },
-    {
-      "item": "file editor", 
+      "item": "filebrowser", 
       "icon": "mdi:file",
       "name": "Editor"
+    },
+    {
+      "item": "logbook",
+      "name": "Ereignisse"
     },
     {
       "item": "code", 
@@ -58,7 +58,10 @@
       "item": "Einstellungen",
       "bottom": true
     },
-    
+    {
+      "item": "file editor", 
+      "hide": true
+    },
     {
       "item": "energy",
       "hide": true
@@ -89,10 +92,6 @@
     },
     {
       "item": "calendar",
-      "hide": true
-    },
-    {
-      "item": "to-do-liste",
       "hide": true
     }
 

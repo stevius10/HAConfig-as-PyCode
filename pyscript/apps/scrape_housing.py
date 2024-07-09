@@ -1,6 +1,5 @@
 import json
 import random
-
 import regex as re
 import requests
 from bs4 import BeautifulSoup
@@ -8,16 +7,63 @@ from bs4 import BeautifulSoup
 from constants.config import CFG_SERVICE_ENABLED_SCRAPE_HOUSING
 from constants.data import DATA_SCRAPE_HOUSING_PROVIDERS
 from constants.expressions import EXPR_TIME_SCRAPE_HOUSINGS_UPDATE, EXPR_TIME_GENERAL_WORKTIME
-from constants.mappings import PERSISTENCE_PREFIX_SENSOR_SCRAPE_HOUSING
+from constants.mappings import MAP_EVENT_SYSTEM_STARTED, MAP_PERSISTENCE_PREFIX_SCRAPE_HOUSING
 from constants.settings import SET_SCRAPE_HOUSING_BLACKLIST, SET_SCRAPE_HOUSING_DELAY_RANDOM_MIN, \
   SET_SCRAPE_HOUSING_DELAY_RANDOM_MAX, SET_SCRAPE_HOUSING_FILTER_RENT
+
 from utils import *
 
 trigger = []
 
 housing_provider = DATA_SCRAPE_HOUSING_PROVIDERS
 
-# Function
+# Factory
+
+def scrape_housing_factory(provider):
+
+  @event_trigger(MAP_EVENT_SYSTEM_STARTED)
+  @time_trigger('shutdown')
+  def scrape_housing_persistence():
+    if service.has_service("pyscript", "persistence"):
+      service.call(domain="pyscript", name="persistence", entity=get_entity(provider))
+
+  @debugged
+  @service(supports_response=True)
+  def scrape_housing(provider=provider):
+    structure = housing_provider[provider]["structure"]
+    apartments = scrape(fetch(provider), 
+      structure["item"], structure["address_selector"], structure["rent_selector"],
+      structure["size_selector"], structure["rooms_selector"], structure["details_selector"])
+      
+    if service.has_service("pyscript", "persistence"):
+      service.call("pyscript", "persistence", entity=get_entity(provider), value=apartments[:254], attributes={'url': housing_provider.get(provider).get('url')})
+    
+    return { get_entity(provider): 
+      { "value": apartments[:254], "url": housing_provider.get(provider).get('url') } }
+
+  trigger.append(scrape_housing)
+
+
+# Automation
+
+@time_trigger(EXPR_TIME_SCRAPE_HOUSINGS_UPDATE)
+@state_active(str(CFG_SERVICE_ENABLED_SCRAPE_HOUSING))
+@time_active(EXPR_TIME_GENERAL_WORKTIME)
+@logged
+@service
+def scrape_housings(housing_provider=housing_provider, event_trigger=None):
+  results_housing = []
+  
+  if event_trigger: 
+    task.sleep(random.randint(SET_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SET_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
+
+  for provider in housing_provider.keys():
+    result_housing = service.call("pyscript", "scrape_housing", provider=provider, return_response=True)
+    results_housing.append(result_housing)
+
+  return results_housing
+
+# Functional
 
 @debugged
 def filtering(apartment):
@@ -84,53 +130,10 @@ def fetch(provider):
     content = BeautifulSoup(response.content, 'html.parser')
   return content
 
-# Factory
-
-def scrape_housing_factory(provider):
-
-  @time_trigger('startup')
-  @time_trigger('shutdown')
-  def scrape_housing_init():
-    state.persist(get_entity(provider), default_value="")
-
-  @time_trigger(EXPR_TIME_SCRAPE_HOUSINGS_UPDATE)
-  @state_active(str(CFG_SERVICE_ENABLED_SCRAPE_HOUSING))
-  @time_active(EXPR_TIME_GENERAL_WORKTIME)
-  @logged
-  @service
-  def scrape_housing(provider=provider, event_trigger=None):
-    if event_trigger: 
-      task.sleep(random.randint(SET_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SET_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
-    
-    structure = housing_provider[provider]["structure"]
-    apartments = scrape(fetch(provider), 
-      structure["item"], structure["address_selector"], structure["rent_selector"],
-      structure["size_selector"], structure["rooms_selector"], structure["details_selector"])
-    
-    state.set(get_entity(provider), apartments[:254], attributes={'url': housing_provider.get(provider).get('url')})
-    state.persist(get_entity(provider))
-    
-    if apartments: 
-      return f"{provider}: {str(apartments)}"
-
-  trigger.append(scrape_housing)
-
-# Initialization
-
-@logged
-@service
-def scrape_housings(housing_provider=housing_provider):
-  for provider in housing_provider.keys():
-    pyscript.scrape_housing(provider=provider, blocking=False, return_response=False)
-  return
-
-for provider in housing_provider.keys():
-  scrape_housing_factory(provider)
-
 # Helper
 
 def get_entity(provider):
-  return f"pyscript.{PERSISTENCE_PREFIX_SENSOR_SCRAPE_HOUSING}_{provider}"
+  return f"pyscript.{MAP_PERSISTENCE_PREFIX_SCRAPE_HOUSING}_{provider}"
 
 def get_or_default(element, selector, default=None):
   if not selector:
@@ -146,3 +149,8 @@ def get_or_default_format(text):
   text = text.replace("\n", ", ")
   text = text.replace(" | ", ", ")
   return text
+
+# Initialization
+
+for provider in housing_provider.keys():
+  scrape_housing_factory(provider)

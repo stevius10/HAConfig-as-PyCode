@@ -1,6 +1,6 @@
 from constants.data import DATA_PRESENCE
 from constants.entities import ENTITIES_PRESENCE
-from constants.mappings import PERSISTENCE_ENTITY_AUTO_PRESENCE
+from constants.mappings import MAP_PERSISTENCE_ENTITY_PRESENCE
 from utils import *
 
 trigger = []
@@ -21,19 +21,19 @@ def presence_factory(room):
 
   @time_trigger('startup')
   def presence_init():
-    existing_attributes = state.get(f"{PERSISTENCE_ENTITY_AUTO_PRESENCE}", {}).get('attributes', {})
+    existing_attributes = state.get(f"{MAP_PERSISTENCE_ENTITY_PRESENCE}", {}).get('attributes', {})
     initial_attributes = {room: existing_attributes.get(room, 'off') for room in ENTITIES_PRESENCE}
-    state.persist(f"{PERSISTENCE_ENTITY_AUTO_PRESENCE}", default_value="", attributes=initial_attributes)
-    homeassistant.update_entity(entity_id=PERSISTENCE_ENTITY_AUTO_PRESENCE)
+    state.persist(f"{MAP_PERSISTENCE_ENTITY_PRESENCE}", default_value="", attributes=initial_attributes)
+    homeassistant.update_entity(entity_id=MAP_PERSISTENCE_ENTITY_PRESENCE)
 
 def update_presence(room, action):
-  current_state = state.get(f"{PERSISTENCE_ENTITY_AUTO_PRESENCE}", {})
+  current_state = state.get(f"{MAP_PERSISTENCE_ENTITY_PRESENCE}", {})
   attributes = current_state.get('attributes', {}) if current_state else {}
   attributes[room] = action
   global_state = 'on' if any(status == 'on' for status in attributes.values()) else 'off'
-  state.set(f"{PERSISTENCE_ENTITY_AUTO_PRESENCE}", global_state, attributes=attributes)
-  homeassistant.update_entity(entity_id=PERSISTENCE_ENTITY_AUTO_PRESENCE)
-  state.persist(f"{PERSISTENCE_ENTITY_AUTO_PRESENCE}")
+  state.set(f"{MAP_PERSISTENCE_ENTITY_PRESENCE}", global_state, attributes=attributes)
+  homeassistant.update_entity(entity_id=MAP_PERSISTENCE_ENTITY_PRESENCE)
+  state.persist(f"{MAP_PERSISTENCE_ENTITY_PRESENCE}")
   
   for transition in DATA_PRESENCE.get(room, {}).get(action, []):
     if eval(transition['condition']):

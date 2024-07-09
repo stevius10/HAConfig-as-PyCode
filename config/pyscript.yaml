@@ -8,5 +8,5 @@ pyscript:
     - name: air_control
     scrape_housing: 
     - name: scrape_housing
-    sync_git: 
-    - name: sync_git
+    subprocesses: 
+    - name: subprocesses

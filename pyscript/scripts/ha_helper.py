@@ -1,15 +1,12 @@
-
+import aiofiles
 import os
 from datetime import datetime
 
-import aiofiles
-
-from constants.config import CFG_LOG_SIZE, CFG_LOG_SETTINGS_DELAY_BLOCK, CFG_LOG_HISTORY_SUFFIX, \
-  CFG_LOG_TAIL, CFG_LOG_HISTORY_SIZE, CFG_LOG_ARCHIV_SIZE, CFG_PATH_FILE_LOG, CFG_LOG_SETTINGS_IO_RETRY
+from constants.config import *
 from constants.mappings import MAP_EVENT_FOLDER_WATCHER
+
 from exceptions import IORetriesExceededException
 from utils import *
-
 
 @event_trigger(MAP_EVENT_FOLDER_WATCHER)
 @time_trigger('shutdown')

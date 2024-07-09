@@ -18,6 +18,7 @@ logger:
     homeassistant.components.google_assistant.http: 
       - "googleapis.com"
     homeassistant.components.websocket_api.http.connection:
+      - "not found"
       - "Unexpected error inside websocket API"
     homeassistant.helpers.script.websocket_api_script:
       - "Service not found for call_service"
@@ -32,6 +33,7 @@ logger:
     habluetooth.scanner:
       - "org.bluez.Error.InProgress"
     py.warnings:
+      - "EvalFuncVar.__call__"
       - "Unverified HTTPS request"
     root:
       - "Ical data was modified"

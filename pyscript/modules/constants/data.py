@@ -1,9 +1,9 @@
 from datetime import datetime
 
 from constants.expressions import EXPR_TIME_FILEBACKUP, EXPR_TIME_SYNC_GIT
-from constants.secrets import SEC_DEVICES
-from constants.settings import SET_SUBPROCESS_FILEBACKUP_FOLDER, SET_SUBPROCESS_FILEBACKUP_RETENTION, \
-  SET_SCRAPE_HOUSING_FILTER_AREA, SET_SCRAPE_HOUSING_FILTER_RENT, SET_SCRAPE_HOUSING_FILTER_ROOMS
+from constants.secrets import *
+from constants.settings import *
+
 from utils import expr
 
 # Automation
@@ -54,22 +54,21 @@ DATA_SUBPROCESS_SERVICES = {
       f'rsync -azv --partial --ignore-existing --exclude=\'.git/\' --exclude=\'/homeassistant/.git/\' --exclude=\'.storage/xiaomi_miot\' --exclude=\'/homeassistant/.storage/xiaomi_miot\' /config/ "$backup_folder" 2>&1'
     ], "trigger": EXPR_TIME_FILEBACKUP
   },
-  "sync-git": {
+  "gitsync": {
     "commands": [
-      "git config --local include.path '{config_path}'", 
-      "eval $(ssh-agent); ssh-add {key_path}", 
+      f"git config --local include.path '{SEC_SUBPROCESS_GIT_SETTINGS_CONFIG}'", 
+      f"eval $(ssh-agent); ssh-add {SEC_SUBPROCESS_GIT_SETTINGS_CREDENTIALS}", 
       "git stash", 
-      "git pull origin {branch}", 
-      "git checkout {branch}", 
+      f"git pull origin {SEC_SUBPROCESS_GIT_REPO_BRANCH}", 
+      f"git checkout {SEC_SUBPROCESS_GIT_REPO_BRANCH}", 
       "git stash apply",
       "git add .", 
-      "git commit -m '{message}'", 
-      "git push origin {branch}"
-    ], "trigger": EXPR_TIME_SYNC_GIT
+      f"git commit -m '{SEC_SUBPROCESS_GIT_REPO_MESSAGE}'", 
+      f"git push origin {SEC_SUBPROCESS_GIT_REPO_BRANCH}"
+    ],
+    "trigger": EXPR_TIME_SYNC_GIT
   }
 }
-
-
 
 # Application
 

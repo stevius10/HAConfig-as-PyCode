@@ -1,7 +1,8 @@
 import re
 
 from constants.entities import ENTITIES_AUTO
-from constants.mappings import MAP_EVENT_SYSTEM_STARTED, PERSISTENCE_PREFIX_PREFIX, MAP_SERVICE_HA_TURNOFF
+from constants.mappings import MAP_EVENT_SYSTEM_STARTED, MAP_PERSISTENCE_PREFIX_TIMER, MAP_SERVICE_HA_TURNOFF, MAP_STATE_HA_TIMER_IDLE
+
 from utils import *
 
 trigger = []
@@ -22,7 +23,7 @@ def default_factory(entity, func):
 def timeout_factory(entity, default, delay=0):
   entity_name = entity.split(".")[1]
   entity_timer = f"timer.{entity_name}"
-  entity_persisted = f"pyscript.{PERSISTENCE_PREFIX_PREFIX}_{entity_name}"
+  entity_persisted = f"pyscript.{MAP_PERSISTENCE_PREFIX_TIMER}_{entity_name}"
 
   @state_trigger(expr(entity, expression=default, comparator="!=", defined=True), state_hold_false=1)
   @debugged
@@ -45,27 +46,30 @@ def timeout_factory(entity, default, delay=0):
 
   # Handle system based events 
 
-  @time_trigger('startup')
-  def timer_init(): 
-    state.persist(entity_persisted, "idle")
-    homeassistant.update_entity(entity_id=entity_persisted)
+  @event_trigger(MAP_EVENT_SYSTEM_STARTED)
+  @logged
+  def timer_init():
+    if service.has_service("pyscript", "persistence"):
+      service.call("pyscript", "persistence", default=MAP_STATE_HA_TIMER_IDLE)
 
   @event_trigger(MAP_EVENT_SYSTEM_STARTED)
+  @logged
   def timer_restore():
-    if state.get(entity_persisted) and re.match(r'^\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?$', state.get(entity_persisted)): # 'HH:MM', 'HH:MM:SS', 'HH:MM:SS.F'
-      start_timer(delay=str(state.get(entity_persisted)))
-      log(f"timer '{entity_timer}' restored with duration {state.getattr(entity_timer).get('remaining')}")
+    duration = state.get(entity_persisted) if state.get(entity_persisted) else ""
     state.set(entity_persisted, "")
+
+    if duration and re.match(r'^\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?$', duration): # 'HH:MM', 'HH:MM:SS', 'HH:MM:SS.F'
+      start_timer(delay=duration)
+      return f"[{entity_timer}] restored with duration {duration}"
+    return None
 
   @time_trigger('shutdown')
   def timer_persist():
-    if entity_persisted and state.get(entity_timer):
-      timer.pause(entity_id=entity_timer)
-      homeassistant.update_entity(entity_id=entity_timer)
-      state.set(entity_persisted, state.getattr(entity_timer).get('remaining'))
-      homeassistant.update_entity(entity_id=entity_persisted)
-      state.persist(entity_persisted)
-          
+    timer.pause(entity_id=entity_timer) # refresh timer remaining
+    homeassistant.update_entity(entity_id=entity_timer)
+    if service.has_service("pyscript", "persistence"):
+      service.call("pyscript", "persistence", entity=entity_persisted, value=state.getattr(entity_timer).get('remaining'), result=False)
+
 # Initialization
 
 for entity in entities:

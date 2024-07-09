@@ -1,59 +1,16 @@
 import importlib
 
-from constants.config import CFG_LOG_LOGGER, CFG_LOG_LEVEL, CFG_LOGFILE_DEBUG_FUNCTION_STARTED
+from constants.config import CFG_LOG_LOGGER, CFG_LOG_LEVEL, CFG_LOGFILE_DEBUG_FUNCTION_STARTED, CFG_LOGFILE_IMPORT_RETRIES
 from constants.mappings import MAP_STATE_HA_UNDEFINED
 from exceptions import ForwardException
 
-
-# Logging
-
-def debug(msg="", title=""):
-  try: # Avoid validation before sys.path appended
-    logfile = importlib.import_module("logfile")
-    if title: 
-      msg = f"[{title}] {msg}"
-    logfile.Logfile.debug(msg)
-  except ModuleNotFoundError: 
-    pass
-  except Exception as e:
-    raise e
-
-def log(msg="", title="", logger=CFG_LOG_LOGGER, level=CFG_LOG_LEVEL, **kwargs):
-  if title: 
-    msg = f"[{title}] {msg}"
-  if msg: 
-    system_log.write(message=str(msg), logger=logger, level=level)
-
-def _monitored(func, log_func, debug_function_started=CFG_LOGFILE_DEBUG_FUNCTION_STARTED):
-  def wrapper(*args, **kwargs):
-    if kwargs.get('context'): del kwargs['context']
-    context = ".".join([func.global_ctx_name, func.name]) if hasattr(func, 'global_ctx_name') and hasattr(func, 'name') else ""
-    if debug_function_started:
-      debug(f"{log_func_format(func, args, kwargs)}", title=context)
-    try:
-      result = func(*args, **kwargs)
-    except Exception as e:
-      raise ForwardException(e, context)
-    finally:
-      if log_func == "log":
-        log(log_func_format(func, args, kwargs, result), title=context)
-      debug(log_func_format(func, args, kwargs, result), title=context)
-    return result
-  return wrapper
-
-def debugged(func):
-  return _monitored(func, "debug")
-
-def logged(func):
-  return _monitored(func, "log")
-
-# Expressions
-
-@debugged
 def expr(entity, expression="", comparator="==", defined=True, operator='or'):
-  if isinstance(entity, (list, dict)):
-    items = [f"({expr(item, expression, comparator, defined)})" for item in entity]
-    return f" {operator} ".join(items)
+  if entity and not isinstance(entity, str):
+    if isinstance(entity, list):
+      items = [f"({expr(item, expression, comparator, defined)})" for item in entity]
+    if isinstance(entity, dict):
+      items = [f"({expr(key, value, expression, comparator, defined)})" for key, value in entity.items()]
+    return f" {operator} ".join(items) if items else None
 
   conditions = []
   if defined:
@@ -78,7 +35,62 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
 
   return " and ".join(conditions)
 
+# Logging
+
+def debug(msg="", title=""):
+  if title: 
+    msg = f"[{title}] {msg}"
+  if msg:
+    logfile = importlib.import_module("logfile")
+    logfile.Logfile.debug(msg)
+
+def log(msg="", title="", logger=CFG_LOG_LOGGER, level=CFG_LOG_LEVEL, **kwargs):
+  if title: 
+    msg = f"[{title}] {msg}"
+  if msg: 
+    system_log.write(message=str(msg), logger=logger, level=level)
+
+# Monitoring 
+
+def _monitored(func, log_func, debug_function_started=CFG_LOGFILE_DEBUG_FUNCTION_STARTED):
+  def wrapper(*args, **kwargs):
+    if kwargs.get('context'): del kwargs['context']
+    context = ".".join([func.global_ctx_name, func.name]) if hasattr(func, 'global_ctx_name') and hasattr(func, 'name') else ""
+    if debug_function_started:
+      debug(f"{log_func_format(func, args, kwargs)}", title=context)
+    try:
+      result = func(*args, **kwargs)
+    except Exception as e:
+      raise ForwardException(e, context)
+    finally:
+      if result and log_func == "log":
+        log(log_func_format(func, args, kwargs, result), title=context)
+      debug(log_func_format(func, args, kwargs, result), title=context)
+    return result
+  return wrapper
+
+def debugged(func):
+  return _monitored(func, "debug")
+
+def logged(func):
+  return _monitored(func, "log")
+
 # Utility
+
+def logfile_init(name=None):
+  for attempt in range(CFG_LOGFILE_IMPORT_RETRIES):
+    try:
+      logfile = importlib.import_module("logfile")
+      if name:
+        return logfile.Logfile(name)
+      return logfile
+    except ModuleNotFoundError:
+      if attempt < CFG_LOGFILE_IMPORT_RETRIES - 1:
+        task.sleep(1)
+      else:
+        raise
+    except Exception as e:
+      raise e
 
 def logs(obj):
   if isinstance(obj, str):
