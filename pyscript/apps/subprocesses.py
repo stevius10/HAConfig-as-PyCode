@@ -16,8 +16,8 @@ def subprocess_factory(service):
   commands = service.get("commands")
   statement = service.get("statement")
 
-  # @logged
-  @service(f"pyscript.subprocess_{name}")
+  @logged
+  @service(f"pyscript.subprocess_{name}", supports_response="optional")
   def execute_subprocess():
     from logfile import Logfile
     logfile = Logfile(name=name)
