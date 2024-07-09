@@ -3,12 +3,7 @@ import os
 from pathlib import Path
 import sys
 
-from constants.config import CFG_LOGFILE_DEBUG_FILE #, CFG_LOGFILE_FORMAT, CFG_LOGFILE_LOG_SIZE, CFG_PATH_DIR_LOG
-
-# CFG_LOGFILE_DEBUG_FILE="debug.log"
-CFG_LOGFILE_FORMAT = "%(asctime)s: %(message)s"
-CFG_LOGFILE_LOG_SIZE = 1000
-CFG_PATH_DIR_LOG = "/config/logs/"
+from constants.config import CFG_LOGFILE_DEBUG_FILE, CFG_LOGFILE_FORMAT, CFG_LOGFILE_LOG_SIZE, CFG_PATH_DIR_LOG
 
 os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
 
@@ -67,79 +62,6 @@ class Logfile:
           cls.debug(msg)
 
   def close(self):
-    if hasattr(self, 'history'):
-      self.history = ", ".join([str(item) for item in self.history]) if self.history else ""
-    else: 
-      self.history = ""
-    return { "file": self.logfile.as_posix(), "result": self.history[:CFG_LOGFILE_LOG_SIZE]}
-    
-'''
-class Logfile:
-
-  _logger = None
-
-  def __init__(self, name=None):
-    if name is not None:
-      if not name.isalpha(): 
-        name = name.split(".")[1]
-      self.name = name
-      self._logger = self._get_file_logger()
-    else:
-      self._logger = self._get_debug_logger()
-
-  def _get_file_logger(self):
-    self.history = []
-    self.logfile = Path(CFG_PATH_DIR_LOG, f"{self.name}.log")
-    return self._create_logger(name=self.name)
-      
-  @classmethod
-  def _get_debug_logger(cls):
-    if cls._logger is None:
-      cls._logger = cls._create_logger(name=CFG_LOGFILE_DEBUG_FILE)
-    return cls._logger
-
-  @staticmethod
-  def _create_logger(name):
-    try:
-      logger = logging.getLogger(name)
-      if not logger.hasHandlers():
-        handler = logging.FileHandler(Path(CFG_PATH_DIR_LOG, f"{name}.log"), mode='w+')
-        handler.setFormatter(logging.Formatter(CFG_LOGFILE_FORMAT))
-        logger.addHandler(handler)
-        logger.setLevel(logging.DEBUG)
-        logger.propagate = False
-      return logger
-    except Exception as e:
-      print(f"Exception in _create_logger: {e}", file=sys.stdout)
-      # Fehler ignorieren, um den Code nicht zu unterbrechen
-      return None
-
-  def log(self, message):
-    try:
-      if self._logger is not None:
-        if isinstance(message, str):
-          self._logger.info(message)
-        elif isinstance(message, list):
-          for msg in message:
-            self.log(msg)
-    except Exception as e:
-      print(f"Exception in log: {e}", file=sys.stdout)
-      # Fehler ignorieren, um den Code nicht zu unterbrechen
-
-  @classmethod
-  def debug(cls, message):
-    try:
-      logger = cls._get_debug_logger()
-      if logger is not None:
-        if isinstance(message, str):
-          logger.info(message)
-        elif isinstance(message, list):
-          for msg in message:
-            cls.debug(msg)
-    except Exception as e:
-      print(f"[logfile] {e}", file=sys.stdout)
-
-  def close(self):
     try:
       if hasattr(self, 'history'):
         total_chars = sum(len(item) for item in self.history)
@@ -171,4 +93,12 @@ class Logfile:
       return {"file": Path(CFG_PATH_DIR_LOG, f"{self.name}.log").as_posix(), "result": self.history}
     except Exception as e:
       return {"error": str(e)}
+
+'''
+  def close(self):
+    if hasattr(self, 'history'):
+      self.history = ", ".join([str(item) for item in self.history]) if self.history else ""
+    else: 
+      self.history = ""
+    return { "file": self.logfile.as_posix(), "result": self.history[:CFG_LOGFILE_LOG_SIZE]}
 '''

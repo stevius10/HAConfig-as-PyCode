@@ -27,8 +27,8 @@ def scrape_housing_factory(provider):
     if service.has_service("pyscript", "persistence"):
       service.call(domain="pyscript", name="persistence", entity=get_entity(provider))
 
-  @debugged
-  @service(supports_response="optional")
+  @logged
+  @service(supports_response='optional')
   def scrape_housing(provider=provider):
     structure = housing_provider[provider]["structure"]
     apartments = scrape(fetch(provider), 
@@ -38,8 +38,8 @@ def scrape_housing_factory(provider):
     if service.has_service("pyscript", "persistence"):
       service.call("pyscript", "persistence", entity=get_entity(provider), value=apartments[:254], attributes={'url': housing_provider.get(provider).get('url')})
     
-    return { get_entity(provider): 
-      { "value": apartments[:254], "url": housing_provider.get(provider).get('url') } }
+      return { get_entity(provider): 
+        { "value": apartments[:254], "url": housing_provider.get(provider).get('url') } } if apartments else {}
 
   trigger.append(scrape_housing)
 
