@@ -28,7 +28,7 @@ def scrape_housing_factory(provider):
       service.call(domain="pyscript", name="persistence", entity=get_entity(provider))
 
   @debugged
-  @service(supports_response=True)
+  @service(supports_response="optional")
   def scrape_housing(provider=provider):
     structure = housing_provider[provider]["structure"]
     apartments = scrape(fetch(provider), 
