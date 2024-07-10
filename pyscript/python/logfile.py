@@ -1,7 +1,8 @@
+import json
 import logging
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from constants.config import CFG_LOGFILE_DEBUG_FILE, CFG_LOGFILE_FORMAT, CFG_LOGFILE_LOG_SIZE, CFG_PATH_DIR_LOG
 
@@ -44,44 +45,42 @@ class Logfile:
     return logger
 
   def log(self, message=None):
-    if message: 
+    if message:
       if isinstance(message, str):
-        self._logger.info(message)
-        self.history.append(message)
+        if '\n' in message:
+          for msg in message.split('\n'):
+            self.log(msg)
+        else:
+          self._logger.info(message)
+          self.history.append(message)
       elif isinstance(message, list):
         for msg in message:
           self.log(msg)
 
   @classmethod
   def debug(cls, message=None):
-    if message: 
+    if message:
       if isinstance(message, str):
-        cls._get_debug_logger().info(message)
+        if '\n' in message:
+          for msg in message.split('\n'):
+            cls.debug(msg)
+        else:
+          cls._get_debug_logger().info(message)
       elif isinstance(message, list):
         for msg in message:
           cls.debug(msg)
-  
+          
   def close(self):
     try:
       if hasattr(self, 'history'):
-        total_lines = len(self.history)
-        if total_lines > CFG_LOGFILE_LOG_SIZE:
-          half_max_lines = (CFG_LOGFILE_LOG_SIZE - 1) // 2
-          self.history = (
-            self.history[:half_max_lines] +
-            [f"... [{total_lines - 2 * half_max_lines} Zeilen gekürzt] ..."] +
-            self.history[-half_max_lines:]
-          )
-        else:
-          self.history = ", ".join(self.history)
+        lines = len(self.history)
+        if lines > CFG_LOGFILE_LOG_SIZE:
+          lines_half = CFG_LOGFILE_LOG_SIZE // 2
+          lines_half_start = self.history[:lines_half]
+          lines_half_stop = self.history[-lines_half:]
+          self.history = lines_half_start + [f"... [{lines - len(lines_half_start) - len(lines_half_stop)} lines] ..."] + lines_half_stop
+        self.history = " ".join(self.history)
+
+      return { "file": Path(CFG_PATH_DIR_LOG, f"{self.name}.log").as_posix(), "result": self.history }
     except Exception as e:
-      print(f"Error: {e}")
-        
-'''
-  def close(self):
-    if hasattr(self, 'history'):
-      self.history = ", ".join([str(item) for item in self.history]) if self.history else ""
-    else: 
-      self.history = ""
-    return { "file": self.logfile.as_posix(), "result": self.history[:CFG_LOGFILE_LOG_SIZE]}
-'''
+      return str(e)

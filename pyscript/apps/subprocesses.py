@@ -18,7 +18,7 @@ def subprocess_factory(service):
 
   @logged
   @service(f"pyscript.subprocess_{name}", supports_response="optional")
-  def execute_subprocess():
+  def execute_subprocess(log_command=False):
     from logfile import Logfile
     logfile = Logfile(name=name)
     
@@ -28,7 +28,7 @@ def subprocess_factory(service):
           command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
           shell=True, check=False, text=True
         )
-        logfile.log([command, result.stdout, result.stderr])
+        logfile.log([command if log_command else "", result.stdout, result.stderr])
       except subprocess.CalledProcessError as e:
         logfile.log([e, command, result.stdout, result.stderr])
     

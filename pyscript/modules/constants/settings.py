@@ -16,7 +16,11 @@ SET_AIR_CONTROL_TIMEOUT_CLEAN = 600
 SET_AIR_CONTROL_TIMEOUT_HELPER = 240
 SET_AIR_CONTROL_WAIT_ACTIVE_DELAY = 3
 
-SET_SCRAPE_HOUSING_BLACKLIST = ["WBS erforderlich", "mit WBS", "WBS 160"]
+SET_SCRAPE_HOUSING_BLACKLIST = [
+  "WBS erforderlich", "mit WBS", "WBS 160", "Wohnberechtigungsschein erforderlich", 
+  "nur mit WBS", "nur WBS", "nur mit Wohnberechtigungsschein", "mit Wohnberechtigungsschein", 
+  "WBS 140", "WBS Pflicht", "WBS benötigt", "nur für WBS Inhaber", "wbs pflichtig", "wbs-pflichtig"
+]
 SET_SCRAPE_HOUSING_DELAY_RANDOM_MIN = 60
 SET_SCRAPE_HOUSING_DELAY_RANDOM_MAX = 600
 SET_SCRAPE_HOUSING_FILTER_AREA = 50
