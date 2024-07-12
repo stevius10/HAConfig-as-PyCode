@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 
@@ -9,7 +10,7 @@ services = DATA_SUBPROCESS_SERVICES
 
 # Factory
 
-# @debugged
+@logged
 def subprocess_factory(service):
   name = service
   service = services.get(service)
@@ -18,10 +19,11 @@ def subprocess_factory(service):
 
   @logged
   @service(f"pyscript.subprocess_{name}", supports_response="optional")
-  def execute_subprocess(log_command=False):
-    from logfile import Logfile
-    logfile = Logfile(name=name)
-    
+  def execute_subprocess(name=name, log_command=False):
+    try: from logfile import Logfile
+    except: pass
+    logfile = Logfile(os.path.splitext(os.path.basename(name))[0])
+
     for command in commands:
       try:
         result = task.executor(subprocess.run,

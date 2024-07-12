@@ -5,9 +5,9 @@ from utils import *
 def run_tests():
   from logfile import Logfile
   logfile = Logfile(name="tests")
-
   try:
-    logfile.log(__run_test("tmp"))
+    test_results = __run_test("tmp")
+    logfile.log(test_results)
   except Exception as e:
     log(str(e))
     logfile.log(str(e))
@@ -32,10 +32,6 @@ def __run_test(test_type):
       
       runner = unittest.TextTestRunner(stream=f, verbosity=3)
       result = runner.run(suite)
-      
-      output = f.getvalue()
-      if not result.wasSuccessful():
-        return f"Tests failed\n{output}"
     except Exception as e:
       return f"Exception occurred: {str(e)}"
   return f.getvalue()

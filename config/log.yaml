@@ -20,6 +20,8 @@ logger:
     homeassistant.components.websocket_api.http.connection:
       - "not found"
       - "Unexpected error inside websocket API"
+    homeassistant.helpers.entity:
+      - "Update for * fails"
     homeassistant.helpers.script.websocket_api_script:
       - "Service not found for call_service"
     custom_components.tapo.coordinators:

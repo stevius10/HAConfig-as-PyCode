@@ -34,7 +34,7 @@ def ha_setup_init_native(path=CFG_PATH_DIR_PY):
 # Setup
 
 @event_trigger(MAP_EVENT_SETUP_STARTED)
-# @debugged
+@debugged
 @service
 def ha_setup():
   ha_setup_environment()

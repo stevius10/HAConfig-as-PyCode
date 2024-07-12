@@ -1,8 +1,10 @@
+from constants.settings import SET_ENTITIES_GLOBAL_VOLUME_MAX
+
 # Automation
 
 ENTITIES_AUTO = {
-  "climate.k": { "default": "off", "func": "climate.turn_off" },
-  # note: media_player.schlafzimmer.volume_level: { "default": ["< 40"], "func": "mediaplayer.set_volume(CFG_ENTITIES_VOLUME_MAX)" },
+  "climate.k": { "default": "off", "call": "climate.turn_off" },
+  # "media_player.schlafzimmer.volume_level": { "default": [f"< {SET_ENTITIES_GLOBAL_VOLUME_MAX}"], "call": f"media_player.volume_set(entity_id='media_player.schlafzimmer', volume_level={SET_ENTITIES_GLOBAL_VOLUME_MAX})" },
   "media_player.schlafzimmer": { "default": ["off", "paused"], "delay": 4800 },
   "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
   "switch.bett": { "default": "off", "delay": 1800 },

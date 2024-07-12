@@ -41,8 +41,10 @@ def debug(msg="", title=""):
   if title: 
     msg = f"[{title}] {msg}"
   if msg:
-    logfile = importlib.import_module("logfile")
-    logfile.Logfile.debug(msg)
+    try: 
+      from logfile import Logfile
+      Logfile.logfile.log(msg, title)
+    except: pass
 
 def log(msg="", title="", logger=CFG_LOG_LOGGER, level=CFG_LOG_LEVEL, **kwargs):
   if title: 
@@ -77,20 +79,22 @@ def logged(func):
 
 # Utility
 
+'''
 def logfile_init(name=None):
   for attempt in range(CFG_LOGFILE_IMPORT_RETRIES):
     try:
-      logfile = importlib.import_module("logfile")
+      importlib.import_module("logfile")
+      logfile = Logfile(name)
       if name:
-        return logfile.Logfile(name)
+        return logfile(name)
       return logfile
     except ModuleNotFoundError:
       if attempt < CFG_LOGFILE_IMPORT_RETRIES - 1:
-        task.sleep(1)
-      else:
-        raise
-    except Exception as e:
-      raise e
+        task.sleep(3)
+        if CFG_PATH_DIR_PY_NATIVE not in sys.path: sys.path.append(CFG_PATH_DIR_PY_NATIVE)
+      # else:
+        # raise exception
+'''
 
 def logs(obj):
   if isinstance(obj, str):
