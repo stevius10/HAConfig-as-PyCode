@@ -1,18 +1,18 @@
 {
   "order": [
     {
-      "item": "filebrowser", 
-      "icon": "mdi:file",
+      "item": "file editor", 
+      "icon": "mdi:note-edit",
       "name": "Editor"
+    },
+    {
+      "item": "filebrowser", 
+      "icon": "mdi:folder",
+      "name": "Dateien"
     },
     {
       "item": "logbook",
       "name": "Ereignisse"
-    },
-    {
-      "item": "code", 
-      "icon": "mdi:microsoft-visual-studio-code",
-      "name": "Entwicklung"
     },
     {
       "item": "adguard", 
@@ -23,15 +23,6 @@
       "item": "zigbee", 
       "icon": "mdi:access-point-network",
       "name": "Heimnetz"
-    },
-    {
-      "item": "hacs", 
-      "icon": "mdi:source-repository",
-      "name": "Community"
-    },
-    {
-      "item": "terminal", 
-      "name": "Konsole"
     },
     {
       "new_item": true,
@@ -59,7 +50,15 @@
       "bottom": true
     },
     {
-      "item": "file editor", 
+      "item": "backups",
+      "hide": true
+    },
+    {
+      "item": "browser",
+      "hide": true
+    },
+    {
+      "item": "calendar",
       "hide": true
     },
     {
@@ -67,7 +66,11 @@
       "hide": true
     },
     {
-      "item": "browser",
+      "item": "hacs",
+      "hide": true
+    },
+    {
+      "item": "history",
       "hide": true
     },
     {
@@ -83,15 +86,7 @@
       "hide": true
     },
     {
-      "item": "history",
-      "hide": true
-    },
-    {
-      "item": "backups",
-      "hide": true
-    },
-    {
-      "item": "calendar",
+      "item": "terminal",
       "hide": true
     }
 

@@ -7,33 +7,15 @@ from utils import *
 
 trigger = []
 
-ENTITIES_AUTO = {
-  "climate.k": { "default": "off", "call": "climate.turn_off" },
-  "media_player.schlafzimmer.volume_level": { "default": [f"< {SET_ENTITIES_GLOBAL_VOLUME_MAX}"], "call": f"media_player.volume_set(entity_id='media_player.schlafzimmer', volume_level={SET_ENTITIES_GLOBAL_VOLUME_MAX})" },
-  "media_player.schlafzimmer": { "default": ["off", "paused"], "delay": 4800 },
-  "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
-  "switch.bett": { "default": "off", "delay": 1800 },
-  "switch.heizdecke": { "default": "off", "delay": 1800 }, 
-  "switch.sofa": { "default": "off", "delay": 1800 }, 
-  "fan.wz_ventilator": { "default": "off", "delay": 7200 }, 
-  "fan.sz_ventilator": { "default": "off", "delay": 7200 }, 
-  "fan.wz_luft": { "default": "off", "delay": 21600 }, 
-  "fan.sz_luft": { "default": "off", "delay": 21600 }, 
-  "switch.wz_luftung": { "default": "off", "delay": 600 },
-  "switch.sz_luftung": { "default": "off", "delay": 600 }
-}
-
 entities = ENTITIES_AUTO
 
 # Default 
 
-def default_factory(entity, call):
-  @state_trigger(f"{entity} != '{entities.get(entity)['default']}'" if isinstance(entities.get(entity)['default'], str) else f"{entity} not in {entities.get(entity)['default']}", state_hold=1)
-  @debugged
-  def default(call=call, entity=entity):
-    call = entities.get(entity)['call']
-    eval(f"service.call(call.split('.')[0], call.split('.')[1], entity_id='{entity}')")
-  trigger.append(default)
+def default_factory(entity, default, call, params):
+  @state_trigger(f"{entity} {'!=' if isinstance(default, str) else 'not in'} {repr(default)}")
+  def default():
+    params = ", ".join(f"{k}={v}" for k, v in params.items())
+    eval(f"service.call('{call.split('.')[0]}', '{call.split('.')[1]}', {params})")
 
 # Timeout
 
@@ -93,6 +75,6 @@ for entity in entities:
   if "delay" not in entities[entity]:
     if "expr" not in entities[entity]:
       entities[entity]["expr"] = MAP_SERVICE_HA_TURNOFF
-    default_factory(entity, entities.get(entity)['call'])
+    default_factory(entity, entities.get(entity)['default'], entities.get(entity)['call'], entities.get(entity)['params'])
   else: 
     timeout_factory(entity, entities[entity]["default"], entities[entity]["delay"])

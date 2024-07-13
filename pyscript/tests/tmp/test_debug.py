@@ -2,28 +2,20 @@ import os
 import unittest
 from unittest.mock import patch, Mock
 
-os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
-
 class TestAirDebug(unittest.TestCase):
+
+  os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 
   @classmethod
   def setUpClass(cls):
-    from tests.mocks.mock_pyscript import MockPyscript
-    cls.mock_pyscript = Mock()
+    from mocks.mock_pyscript import MockPyscript
+    cls.mock_pyscript = MockPyscript()
     
-    cls.patcher = patch('service', new=cls.mock_pyscript.service)
-    cls.patcher = patch('pyscript.service', new=cls.mock_pyscript.service)
-    cls.patcher = patch('custom_components.pyscript.service', new=cls.mock_pyscript.service)
-    cls.patcher = patch('air_control', new=cls.mock_pyscript.service)
-    cls.patcher = patch('apps.air_control', new=cls.mock_pyscript.service)
-    cls.patcher = patch('pyscript.apps.air_control', new=cls.mock_pyscript.service)
-    cls.patcher = patch('service', new=cls.mock_pyscript.service)
-    cls.patcher = patch('service', new=cls.mock_pyscript.service)
-    cls.patcher = patch('service', new=cls.mock_pyscript.service)
-    cls.patcher = patch('service', new=cls.mock_pyscript.service)
-    cls.patcher = patch('service', new=cls.mock_pyscript.service)
+    # cls.patcher = patch('custom_components.pyscript.service', new=cls.mock_pyscript.service)
+    # cls.patcher = patch('custom_components.pyscript', new=cls.mock_pyscript)
+    cls.patcher = patch('air_control.pyscript', new=cls.mock_pyscript)
+    # cls.patcher = patch('air_control.pyscript.service', new=cls.mock_pyscript.service)
 
-    cls.patcher.start()
     
   @classmethod
   def tearDownClass(cls):
