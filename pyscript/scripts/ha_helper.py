@@ -87,11 +87,11 @@ async def log_read(logfile, lines=False):
     try:
       if lines is False:
         async with aiofiles.open(logfile, mode='r') as l:
-          content = await l.read()
+          content = l.read()
           return content.splitlines() if '\n' in content else content
       else:
         async with aiofiles.open(logfile, mode='r') as l:
-          return await l.readlines()
+          return l.readlines()
     except Exception as e:
       exception = e
   if exception:
@@ -104,45 +104,12 @@ async def log_write(logfile, content, mode='w+'):
     try:
       async with aiofiles.open(logfile, mode=mode) as l:
         if isinstance(content, list):
-          await l.writelines([f"{line}\n" for line in content])
+          l.writelines([f"{line}\n" for line in content])
         else:
-          await l.write(content)
+          l.write(content)
       return True
     except Exception as e:
       exception = e
   if exception:
     raise IORetriesExceededException(exception)
   return False
-
-# async def log_read(logfile, lines=False):
-#   exception = None
-#   for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
-#     try:
-#       if lines is False:
-#         async with aiofiles.open(logfile, mode='r') as l:
-#           content = l.read()
-#           return content.splitlines() if '\n' in content else content
-#       else:
-#         async with aiofiles.open(logfile, mode='r') as l:
-#           return l.readlines()
-#     except Exception as e:
-#       exception = e
-#   if exception:
-#     raise IORetriesExceededException(exception)
-#   return ""
-
-# async def log_write(logfile, content, mode='w+'):
-#   exception = None
-#   for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
-#     try:
-#       async with aiofiles.open(logfile, mode=mode) as l:
-#         if isinstance(content, list):
-#           l.writelines([f"{line}\n" for line in content])
-#         else:
-#           l.write(content)
-#       return True
-#     except Exception as e:
-#       exception = e
-#   if exception:
-#     raise IORetriesExceededException(exception)
-#   return False
