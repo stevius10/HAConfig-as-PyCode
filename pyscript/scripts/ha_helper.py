@@ -87,11 +87,11 @@ async def log_read(logfile, lines=False):
     try:
       if lines is False:
         async with aiofiles.open(logfile, mode='r') as l:
-          content = l.read()
+          content = await l.read()
           return content.splitlines() if '\n' in content else content
       else:
         async with aiofiles.open(logfile, mode='r') as l:
-          return l.readlines()
+          return await l.readlines()
     except Exception as e:
       exception = e
   if exception:
@@ -104,9 +104,9 @@ async def log_write(logfile, content, mode='w+'):
     try:
       async with aiofiles.open(logfile, mode=mode) as l:
         if isinstance(content, list):
-          l.writelines([f"{line}\n" for line in content])
+          await l.writelines([f"{line}\n" for line in content])
         else:
-          l.write(content)
+          await l.write(content)
       return True
     except Exception as e:
       exception = e
