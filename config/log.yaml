@@ -20,6 +20,10 @@ logger:
     homeassistant.components.websocket_api.http.connection:
       - "not found"
       - "Unexpected error inside websocket API"
+    homeassistant.components.homeassistant.hassio:
+      - "/addons"
+    homeassistant.components.homeassistant.hassio.handlers:
+      - "/addons"
     homeassistant.helpers.entity:
       - "Update for * fails"
     homeassistant.helpers.script.websocket_api_script:
