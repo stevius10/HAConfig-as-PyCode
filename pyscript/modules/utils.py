@@ -1,6 +1,7 @@
 import importlib
+import sys 
 
-from constants.config import CFG_LOG_LOGGER, CFG_LOG_LEVEL, CFG_LOGFILE_DEBUG_FUNCTION_STARTED, CFG_LOGFILE_IMPORT_RETRIES
+from constants.config import CFG_LOG_LOGGER, CFG_LOG_LEVEL, CFG_LOGFILE_DEBUG_FUNCTION_STARTED, CFG_LOGFILE_IMPORT_RETRIES, CFG_PATH_DIR_PY_NATIVE
 from constants.mappings import MAP_STATE_HA_UNDEFINED
 from exceptions import ForwardException
 
@@ -41,10 +42,8 @@ def debug(msg="", title=""):
   if title: 
     msg = f"[{title}] {msg}"
   if msg:
-    try: 
-      from logfile import Logfile
-      Logfile.logfile.log(msg, title)
-    except: pass
+    logfile = get_logfile()
+    logfile.debug(msg)
 
 def log(msg="", title="", logger=CFG_LOG_LOGGER, level=CFG_LOG_LEVEL, **kwargs):
   if title: 
@@ -79,22 +78,17 @@ def logged(func):
 
 # Utility
 
-'''
-def logfile_init(name=None):
+def get_logfile(name=None):
+  logfile = None
   for attempt in range(CFG_LOGFILE_IMPORT_RETRIES):
     try:
-      importlib.import_module("logfile")
-      logfile = Logfile(name)
-      if name:
-        return logfile(name)
+      from logfile import Logfile
+      logfile = Logfile(name if name else None)
       return logfile
-    except ModuleNotFoundError:
-      if attempt < CFG_LOGFILE_IMPORT_RETRIES - 1:
-        task.sleep(3)
-        if CFG_PATH_DIR_PY_NATIVE not in sys.path: sys.path.append(CFG_PATH_DIR_PY_NATIVE)
-      # else:
-        # raise exception
-'''
+    except Exception as e:
+      if attempt < CFG_LOGFILE_IMPORT_RETRIES - 1: 
+        task.sleep(3); continue
+      else: raise e
 
 def logs(obj):
   if isinstance(obj, str):

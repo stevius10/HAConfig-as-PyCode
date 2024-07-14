@@ -1,8 +1,11 @@
 import os
 import subprocess
 import sys
+from datetime import datetime
 
 from constants.data import DATA_SUBPROCESS_SERVICES
+from constants.mappings import MAP_EVENT_SYSTEM_STARTED
+
 from utils import *
 
 trigger = []
@@ -20,9 +23,7 @@ def subprocess_factory(service):
   @logged
   @service(f"pyscript.subprocess_{name}", supports_response="optional")
   def execute_subprocess(name=name, log_command=False):
-    try: from logfile import Logfile
-    except: pass
-    logfile = Logfile(os.path.splitext(os.path.basename(name))[0])
+    logfile = get_logfile(pyscript.get_global_ctx())
 
     for command in commands:
       try:
@@ -33,14 +34,18 @@ def subprocess_factory(service):
         logfile.log([command if log_command else "", result.stdout, result.stderr])
       except subprocess.CalledProcessError as e:
         logfile.log([e, command, result.stdout, result.stderr])
-    
-    return logfile.close()
 
+    return logfile.close()
+    
   if statement:
-    execute_subprocess = eval(f"{statement}(execute_subprocess)")
-  trigger.append(execute_subprocess)
+    trigger.append(execute_subprocess)
+    # trigger.append(f"{statement}\ndef execute_subprocess_{name}_decorated(name='{name}', log_command=False):\n  return execute_subprocess(name, log_command)")
+  else:
+    trigger.append(execute_subprocess)
 
 # Initialization
 
-for service in services.keys():
-  subprocess_factory(service)
+@event_trigger(MAP_EVENT_SYSTEM_STARTED)
+def init():
+  for service in services.keys():
+    subprocess_factory(service)

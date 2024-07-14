@@ -11,51 +11,49 @@ trigger = []
 
 # Initialization
 
+# @pyscript_executor # code redundancy suppress to pass code runtime wise
+# def ha_setup_init_native(path=CFG_PATH_DIR_PY):
+#   os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
+#   sys.path.extend([path for path in [os.path.join(CFG_PATH_DIR_PY, subdir) for subdir in os.listdir(CFG_PATH_DIR_PY) if os.path.isdir(os.path.join(CFG_PATH_DIR_PY, subdir))] if path not in sys.path])
+#   return [path for path in sys.path]
+
 @time_trigger
 @event_trigger(EVENT_HOMEASSISTANT_STARTED)
-# @logged
+@logged
 def event_setup_init(delay=CFG_EVENT_STARTED_DELAY):
   os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
   sys.path.extend([path for path in [os.path.join(CFG_PATH_DIR_PY, subdir) for subdir in os.listdir(CFG_PATH_DIR_PY) if os.path.isdir(os.path.join(CFG_PATH_DIR_PY, subdir))] if path not in sys.path])
-  ha_setup_init_native()
+  # ha_setup_init_native()
   
   task.sleep(delay)
   event.fire(MAP_EVENT_SETUP_STARTED)
   
   return [path for path in sys.path]
 
-@pyscript_executor # code redundancy suppress to pass code runtime wise
-def ha_setup_init_native(path=CFG_PATH_DIR_PY):
-  os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
-  log(str([path for path in sys.path]))
-  sys.path.extend([path for path in [os.path.join(CFG_PATH_DIR_PY, subdir) for subdir in os.listdir(CFG_PATH_DIR_PY) if os.path.isdir(os.path.join(CFG_PATH_DIR_PY, subdir))] if path not in sys.path])
-  return [path for path in sys.path]
-
 # Setup
 
 @event_trigger(MAP_EVENT_SETUP_STARTED)
-@debugged
+@logged
 @service
 def ha_setup():
-  ha_setup_environment()
-  ha_setup_files()
-  ha_setup_links()
-  ha_setup_logging()
-
+  results = ha_setup_environment(), ha_setup_files(), ha_setup_links()
   event.fire(MAP_EVENT_SYSTEM_STARTED)
+  return results
 
 # Tasks
   
-@pyscript_executor
+# @pyscript_executor
 def ha_setup_environment(variables=CFG_SYSTEM_ENVIRONMENT):
   for variable, value in variables.items():
     os.environ[variable] = value
+  return [f"{key}: {value}" for key, value in os.environ.items()]
 
 @pyscript_executor
 def ha_setup_files(files=CFG_SYSTEM_FILES):
   from filesystem import cp
   for src, dest in files.items():
     cp(src, dest)
+  return [path for path in sys.path]
 
 @pyscript_executor
 def ha_setup_links(links=CFG_SYSTEM_LINKS):
@@ -63,6 +61,4 @@ def ha_setup_links(links=CFG_SYSTEM_LINKS):
     if not os.path.isdir(target) and os.path.islink(target):
       os.unlink(target)
     os.symlink(source, target)
-
-def ha_setup_logging():  # sync. task due logging scope
-  logger.set_level(**{CFG_LOG_LOGGER: CFG_LOG_LEVEL})
+  return [f"{source} <- {target}" for source, target in links.items()]
