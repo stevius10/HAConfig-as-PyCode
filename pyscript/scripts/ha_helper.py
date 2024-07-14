@@ -36,7 +36,7 @@ async def log_truncate(logfile=CFG_PATH_FILE_LOG, log_size_truncated=CFG_LOG_SIZ
   if logs is not None and len(logs) > log_size_truncated: 
     logs_trunc = logs[:-log_tail_size]
     logs_truncated = logs[-log_tail_size:]
-    logs_truncated.extend(f"\n# {len(logs_truncated)} / {log_size_truncated} at {datetime.now()}\n")
+    logs_truncated.append(f"\n# {len(logs_truncated)} / {log_size_truncated} at {datetime.now()}\n")
     log_write(logfile, logs_truncated)
 
     if history is not None and len(history) > 0: 
@@ -87,11 +87,11 @@ async def log_read(logfile, lines=False):
     try:
       if lines is False:
         async with aiofiles.open(logfile, mode='r') as l:
-          content = l.read()
+          content = await l.read()
           return content.splitlines() if '\n' in content else content
       else:
         async with aiofiles.open(logfile, mode='r') as l:
-          return l.readlines()
+          return await l.readlines()
     except Exception as e:
       exception = e
   if exception:
@@ -104,12 +104,45 @@ async def log_write(logfile, content, mode='w+'):
     try:
       async with aiofiles.open(logfile, mode=mode) as l:
         if isinstance(content, list):
-          l.writelines([f"{line}\n" for line in content])
+          await l.writelines([f"{line}\n" for line in content])
         else:
-          l.write(content)
+          await l.write(content)
       return True
     except Exception as e:
       exception = e
   if exception:
     raise IORetriesExceededException(exception)
   return False
+
+# async def log_read(logfile, lines=False):
+#   exception = None
+#   for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
+#     try:
+#       if lines is False:
+#         async with aiofiles.open(logfile, mode='r') as l:
+#           content = l.read()
+#           return content.splitlines() if '\n' in content else content
+#       else:
+#         async with aiofiles.open(logfile, mode='r') as l:
+#           return l.readlines()
+#     except Exception as e:
+#       exception = e
+#   if exception:
+#     raise IORetriesExceededException(exception)
+#   return ""
+
+# async def log_write(logfile, content, mode='w+'):
+#   exception = None
+#   for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
+#     try:
+#       async with aiofiles.open(logfile, mode=mode) as l:
+#         if isinstance(content, list):
+#           l.writelines([f"{line}\n" for line in content])
+#         else:
+#           l.write(content)
+#       return True
+#     except Exception as e:
+#       exception = e
+#   if exception:
+#     raise IORetriesExceededException(exception)
+#   return False
