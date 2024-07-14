@@ -38,10 +38,11 @@ def subprocess_factory(service):
     return logfile.close()
     
   if statement:
-    trigger.append(execute_subprocess)
-    # trigger.append(f"{statement}\ndef execute_subprocess_{name}_decorated(name='{name}', log_command=False):\n  return execute_subprocess(name, log_command)")
+    exec("\n".join(["@service", str(statement), f"def execute_subprocess_{name}(name='{name}'):\n  return execute_subprocess({name})"]))
   else:
-    trigger.append(execute_subprocess)
+    exec(f"@service\ndef execute_subprocess_{name}(name='{name}', log_command=False):\n  return execute_subprocess_{name}, log_command")
+
+  trigger.append(f"execute_subprocess_{name}")
 
 # Initialization
 
