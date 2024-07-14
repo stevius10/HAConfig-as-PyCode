@@ -1,4 +1,4 @@
-from constants.settings import SET_ENTITIES_GLOBAL_VOLUME_MAX
+from constants.settings import SET_CONTROL_ON_LONG_DURATION, SET_ENTITIES_GLOBAL_VOLUME_MAX
 
 # Automation
 
@@ -24,8 +24,8 @@ ENTITIES_MOTION = {
 }
 
 ENTITIES_CONTROL = {
-  'sensor.wz_schalter_action': { 'on': 'scene.wz_indirekt', 'off': ['scene.wz_aus', 'scene.k_aus'], 'up': 'scene.wz_hell', 'down': 'scene.wz_schwach' }, 
-  'sensor.sz_schalter_action': { 'on': 'scene.sz_indirekt', 'off': 'scene.sz_aus', 'up': 'scene.sz_hell', 'down': 'scene.sz_schwach' },
+  'sensor.wz_schalter_action': { 'on': 'scene.wz_indirekt', 'off': ['scene.wz_aus', 'scene.k_aus'], 'up': 'scene.wz_hell', 'down': 'scene.wz_schwach', 'on_long': { 'scene': 'scene.wz_long', 'duration': SET_CONTROL_ON_LONG_DURATION } }, 
+  'sensor.sz_schalter_action': { 'on': 'scene.sz_indirekt', 'off': 'scene.sz_aus', 'up': 'scene.sz_hell', 'down': 'scene.sz_schwach', 'on_long': { 'scene': 'scene.sz_long', 'duration': SET_CONTROL_ON_LONG_DURATION } },
   'sensor.g_schalter_action': { 'single': 'scene.g_indirekt', 'double': 'scene.g_aus', 'long': '' }
 }
 

@@ -1,7 +1,7 @@
 from constants.entities import ENTITIES_MOTION
 from constants.expressions import EXPR_TIME_MOTION_DAY
 from constants.mappings import STATE_ON, STATE_OFF
-from constants.settings import AUTO_MOTION_TIMEOUT
+from constants.settings import SET_MOTION_TIMEOUT
 
 from utils import *
 
@@ -18,7 +18,7 @@ def on_motion_factory(entity):
 
 def off_motion_factory(entity):
 
-  @state_trigger(expr(entity, STATE_OFF), state_hold=AUTO_MOTION_TIMEOUT)
+  @state_trigger(expr(entity, STATE_OFF), state_hold=SET_MOTION_TIMEOUT)
   def off_motion(var_name=None):
     transition = float(ENTITIES_MOTION.get(var_name, {}).get("transition", 0))
     scene.turn_on(entity_id=ENTITIES_MOTION.get(var_name, {}).get("off"), transition=transition)
