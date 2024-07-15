@@ -9,6 +9,8 @@ from utils import *
 
 from exceptions import IORetriesExceededException
 
+# Automation
+
 @event_trigger(MAP_EVENT_FOLDER_WATCHER)
 @time_trigger('shutdown')
 @task_unique("ha_log_truncate", kill_me=True)
@@ -18,6 +20,7 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
     if trigger_type == "event" and event_type == "modified": 
       log_truncate(log_size_truncated=CFG_LOG_SIZE)
     if trigger_type == "time": 
+      log_rotate()
       log_truncate(log_size_truncated=0)
       system_log.clear()
   except Exception as e: 
@@ -43,7 +46,6 @@ async def log_truncate(logfile=CFG_PATH_FILE_LOG, log_size_truncated=CFG_LOG_SIZ
       logs_trunc.extend(history)
       file_write(history_file, logs_trunc[-log_history_size:])
 
-@time_trigger('shutdown')
 @debugged
 @service
 def log_rotate(logfile=CFG_PATH_FILE_LOG):
@@ -80,34 +82,35 @@ def log_rotate(logfile=CFG_PATH_FILE_LOG):
   except Exception as e:
     raise e
 
-# Helper 
+# Helper
 
-async def file_read(logfile, lines=False):
+def file_read(logfile, lines=False):
   exception = None
   for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
     try:
       if lines is False:
         async with aiofiles.open(logfile, mode='r') as l:
           content = l.read()
-          return content.splitlines() if '\n' in content else content
+        return content.splitlines() if '\n' in content else content
       else:
         async with aiofiles.open(logfile, mode='r') as l:
-          return l.readlines()
+          content = l.readlines()
+        return content
     except Exception as e:
       exception = e
   if exception:
     raise IORetriesExceededException(exception)
   return ""
 
-async def file_write(logfile, content, mode='w+'):
+async def file_write(logfile, lines, mode='w+'):
   exception = None
   for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
     try:
       async with aiofiles.open(logfile, mode=mode) as l:
-        if isinstance(content, list):
-          l.writelines([f"{line}\n" for line in content])
+        if isinstance(lines, list):
+          await l.writelines([line + '\n' for line in lines])
         else:
-          l.write(content)
+          await l.write(lines)
       return True
     except Exception as e:
       exception = e

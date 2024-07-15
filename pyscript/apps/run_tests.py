@@ -34,4 +34,4 @@ def __run_test(test_type):
       result = runner.run(suite)
     except Exception as e:
       return f"Exception occurred: {str(e)}"
-  return f.getvalue()
+  return { "result" : f.getvalue() }
