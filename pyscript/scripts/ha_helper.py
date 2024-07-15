@@ -39,7 +39,7 @@ async def log_truncate(logfile=CFG_PATH_FILE_LOG, log_size_truncated=CFG_LOG_SIZ
   if logs is not None and len(logs) > log_size_truncated: 
     logs_trunc = logs[:-log_tail_size]
     logs_truncated = logs[-log_tail_size:]
-    logs_truncated.append(f"\n# {len(logs_truncated)} / {log_size_truncated} at {datetime.now()}\n")
+    logs_truncated.append(f"\n# {len(logs)} / {len(logs_truncated)} at {datetime.now()}\n")
     file_write(logfile, logs_truncated)
 
     if history is not None and len(history) > 0: 
