@@ -52,7 +52,7 @@ DATA_SUBPROCESS_SERVICES = {
       f'/usr/bin/find "$backup_folder" -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1 && '
       f'/usr/bin/find "$backup_folder" -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r "{{}}" \\; 2>&1 && '
       f'rsync -azv --partial --ignore-existing --exclude=\'.git/\' --exclude=\'/homeassistant/.git/\' --exclude=\'.storage/xiaomi_miot\' --exclude=\'/homeassistant/.storage/xiaomi_miot\' /config/ "$backup_folder" 2>&1'
-    ], "statement": f"@time_trigger('{EXPR_TIME_FILEBACKUP}')"
+    ], "statement": f"@time_trigger({EXPR_TIME_FILEBACKUP})"
   },
   "gitsync": {
     "commands": [
@@ -91,20 +91,20 @@ DATA_SCRAPE_HOUSING_PROVIDERS = {
 
   "wbm": { # approved 190624
     "url": "https://www.wbm.de/wohnungen-berlin/angebote/",
-    "structure": { "item": ".openimmo-search-list-item", "address_selector": ".address", "rent_selector": ".main-property-rent", "size_selector": ".main-property-size", "rooms_selector": ".main-property-rooms", "details_selector": "h2 .check-property-list" } },
+    "structure": { "item": ".openimmo-search-list-item", "address_selector": ".address", "rent_selector": ".main-property-rent", "size_selector": ".main-property-size", "rooms_selector": ".main-property-rooms", "details_selector": "h2 .check-property-list" } }
   
   # Forward 
   
-  "zvg": { "forward": "person", 
-    "url": "https://www.zvg-portal.de/index.php?button=Termine%20suchen",
-    "structure": {
-      "item": "tr:has(td:-soup-contains('Nürnberg'))",
-      "address_selector": "td:-soup-contains('Lage') + td",
-      "rent_selector": "td:-soup-contains('Verkehrswert') + td b p",
-      "size_selector": None,
-      "rooms_selector": None,
-      "details_selector": "td:-soup-contains('Termin') + td b"
-    },
-    "request_data": { "Land": "Bayern", "Gericht": "Nürnberg" }
-  }
+#   "zvg": { "forward": "person", 
+#     "url": "https://www.zvg-portal.de/index.php?button=Termine%20suchen",
+#     "structure": {
+#       "item": "tr:has(td:-soup-contains('Nürnberg'))",
+#       "address_selector": "td:-soup-contains('Lage') + td",
+#       "rent_selector": "td:-soup-contains('Verkehrswert') + td b p",
+#       "size_selector": None,
+#       "rooms_selector": None,
+#       "details_selector": "td:-soup-contains('Termin') + td b"
+#     },
+#     "request_data": { "Land": "Bayern", "Gericht": "Nürnberg" }
+#   }
 }

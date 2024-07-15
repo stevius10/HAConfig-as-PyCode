@@ -2,38 +2,35 @@ import os
 import unittest
 import aiofiles
 import asyncio
-from unittest.mock import patch, AsyncMock, mock_open
-import importlib
+from unittest.mock import patch, AsyncMock, mock_open, MagicMock
 
-from mocks.mock_pyscript import MockPyscript
+# Mock event_trigger decorator
+def mock_event_trigger(event_type, expr=None):
+  def decorator(func):
+    def wrapper(*args, **kwargs):
+      return func(*args, **kwargs)
+    return wrapper
+  return decorator
 
 os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 
 class TestHaHelper(unittest.TestCase):
+
   @classmethod
   def setUpClass(cls):
     print("Setting up class TestHaHelper")
     cls.mock_pyscript = MockPyscript()
     cls.mock_pyscript_event_trigger = cls.mock_pyscript.event_trigger
 
-    # Debugging-Ausgabe hinzufügen
-    print("Checking custom_components.pyscript.trigger")
-    try:
-      trigger_module = importlib.import_module('custom_components.pyscript.trigger')
-      print("Module imported successfully")
-      print("Available attributes in trigger module:", dir(trigger_module))
-      if hasattr(trigger_module, 'event_trigger'):
-        print("event_trigger is available in trigger module")
-      else:
-        print("event_trigger is NOT available in trigger module")
-    except ImportError as e:
-      print(f"Error importing module: {e}")
-
     cls.patches = [
-      patch('custom_components.pyscript.trigger.event_trigger', new=cls.mock_pyscript.event_trigger),
-      patch('ha_helper.pyscript.event_trigger', new=cls.mock_pyscript.event_trigger),
-      patch('ha_helper.event_trigger', new=cls.mock_pyscript.event_trigger),
-      patch('ha_helper.pyscript.event_trigger', new=cls.mock_pyscript.event_trigger)
+      patch.dict('custom_components.pyscript.trigger.__dict__', {'event_trigger': mock_event_trigger}),
+      patch.dict('custom_components.pyscript.__init__.__dict__', {'event_trigger': mock_event_trigger}),
+      patch.dict('custom_components.pyscript.decorator.__dict__', {'event_trigger': mock_event_trigger}),
+      patch.dict('pyscript.trigger.__dict__', {'event_trigger': mock_event_trigger}),
+      patch.dict('pyscript.__init__.__dict__', {'event_trigger': mock_event_trigger}),
+      patch.dict('pyscript.decorator.__dict__', {'event_trigger': mock_event_trigger}),
+      patch('custom_components.pyscript.trigger.AstEval', new=MagicMock()),
+      patch('custom_components.pyscript.trigger.Event.notify_add', new=MagicMock())
     ]
 
     for p in cls.patches:
@@ -44,7 +41,8 @@ class TestHaHelper(unittest.TestCase):
     from constants.config import (
       CFG_LOG_SIZE, CFG_LOG_TAIL, CFG_LOG_HISTORY_SIZE, CFG_PATH_FILE_LOG, 
       CFG_LOG_HISTORY_SUFFIX, CFG_LOG_ARCHIV_SUFFIX, CFG_LOG_SETTINGS_IO_RETRY, 
-      CFG_LOG_SETTINGS_DELAY_BLOCK, CFG_LOG_ARCHIV_SIZE)
+      CFG_LOG_SETTINGS_DELAY_BLOCK, CFG_LOG_ARCHIV_SIZE
+    )
 
     cls.ha_log_truncate = ha_log_truncate
     cls.log_truncate = log_truncate
@@ -70,6 +68,17 @@ class TestHaHelper(unittest.TestCase):
   def tearDown(self):
     print("Tearing down a test method")
     self.loop.close()
+
+  def test_my_event_handler(self):
+    print("Running test_my_event_handler")
+
+    @mock_event_trigger("my_event", "data == 'some_value'")
+    def my_event_handler(**kwargs):
+      print(f"Event data: {kwargs}")
+
+    # Simulate the event trigger
+    event_data = {"data": "some_value"}
+    my_event_handler(**event_data)
 
   def test_ha_log_truncate_event(self):
     print("Running test_ha_log_truncate_event")

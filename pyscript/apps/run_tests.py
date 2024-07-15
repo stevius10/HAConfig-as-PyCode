@@ -12,7 +12,7 @@ def run_tests():
     log(str(e))
     logfile.log(str(e))
   finally:
-    return logfile.close()
+    return { "result": logfile.close() }
 
 @pyscript_executor
 def __run_test(test_type):
@@ -34,4 +34,4 @@ def __run_test(test_type):
       result = runner.run(suite)
     except Exception as e:
       return f"Exception occurred: {str(e)}"
-  return { "result" : f.getvalue() }
+  return f.getvalue() 

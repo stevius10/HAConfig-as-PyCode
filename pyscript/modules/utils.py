@@ -76,6 +76,30 @@ def debugged(func):
 def logged(func):
   return _monitored(func, "log")
 
+# Persistence
+
+def store(entity, value=None, default="", result=True, **kwargs): 
+
+  if not value: # store and restore persistence
+    state.persist(entity, default)
+  else: # set persistence
+    if value: 
+      state.set(entity, value)
+      state.persist(entity)
+    if hasattr(kwargs, "attributes"):
+      attributes = kwargs.get('attributes')
+      if isinstance(attributes, dict):
+        for attribute in attributes:
+          state.set(f"{entity}.{attribute}", attributes.get(attribute))
+    state.persist(entity)
+  if result: 
+    homeassistant.update_entity(entity_id=entity) # avoid on shutdown 
+
+    return str(state.get(entity))
+
+  else: 
+    return ""
+
 # Utility
 
 def get_logfile(name=None):

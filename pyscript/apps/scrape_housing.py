@@ -19,11 +19,11 @@ housing_provider = DATA_SCRAPE_HOUSING_PROVIDERS
 def scrape_housing_factory(provider):
   @event_trigger(MAP_EVENT_SYSTEM_STARTED)
   @time_trigger('shutdown')
-  def scrape_housing_persistence():
-    if service.has_service("pyscript", "persistence"):
-      service.call(domain="pyscript", name="persistence", entity=get_entity(provider))
+  def scrape_housing_store():
+    store(entity=get_entity(provider))
 
   @service(f"pyscript.scrape_housing_{provider}", supports_response="optional")
+  @logged
   def scrape_housing():
     structure = housing_provider[provider]["structure"]
     try:
@@ -31,8 +31,8 @@ def scrape_housing_factory(provider):
       apartments_result = apartments[:254] if apartments else ""
       
       attributes = {'url': housing_provider.get(provider).get('url')}
-      service.call("pyscript", "persistence", 
-          entity=get_entity(provider), value=apartments_result, attributes=attributes)
+
+      store(entity=get_entity(provider), value=apartments_result, attributes=attributes)
         
       return { "provider": provider, "result": apartments_result, "details": attributes } 
     except Exception as e:
@@ -93,6 +93,7 @@ def scrape(content, structure):
   
   return ", ".join(apartments)
 
+@debugged
 def filtering(apartment):
   if all([value is None for value in apartment.values()]):
     return None
