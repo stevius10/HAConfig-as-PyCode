@@ -15,7 +15,7 @@ trigger = []
 def event_setup_init(delay=CFG_EVENT_STARTED_DELAY):
   os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
   sys.path.extend([
-    path for path in [os.path.join(CFG_PATH_DIR_PY, subdir) for subdir in os.listdir(CFG_PATH_DIR_PY) if os.path.isdir(os.path.join(CFG_PATH_DIR_PY, subdir))] 
+    path for path in [os.path.join(CFG_PATH_DIR_PY, subdir) for subdir in os.listdir(CFG_PATH_DIR_PY) if os.path.isdir(os.path.join(CFG_PATH_DIR_PY, subdir))]
     if path not in sys.path
   ])
   task.sleep(delay)
@@ -24,59 +24,55 @@ def event_setup_init(delay=CFG_EVENT_STARTED_DELAY):
 # Setup
 
 @event_trigger(MAP_EVENT_SETUP_STARTED)
+@logged
 @service
 def ha_setup():
-  ha_setup_environment()
-  ha_setup_files()
-  ha_setup_links()
+  environment, paths, links = ha_setup_environment(), ha_setup_files(), ha_setup_links()
   event.fire(MAP_EVENT_SYSTEM_STARTED)
+  return "\n".join([paths, links, environment])
 
 # Tasks
 
-@logged
 def ha_setup_environment(variables=CFG_SYSTEM_ENVIRONMENT):
   def shorten(val, max_len=CFG_LOG_SETTINGS_ENVIRONMEMT_LENGTH):
     return val if len(val) <= max_len else val[:max_len] + '..'
   
   os.environ.update({k: v for k, v in variables.items() if not (k.startswith('S6') or k.startswith('__'))})
-  env_vars = defaultdict(list)
-  single_vars = []
+  env_vars = [f"{k}={shorten(os.environ[k])}" for k in sorted(os.environ.keys()) if not (k.startswith('S6') or k.startswith('__'))]
   
-  for k in sorted(os.environ.keys()):
-    if not (k.startswith('S6') or k.startswith('__')):
-      env_vars[k[0]].append(f"{k}={shorten(os.environ[k])}")
-  
-  for key, vals in list(env_vars.items()):
-    if len(vals) == 1:
-      single_vars.extend(vals)
-      del env_vars[key]
-
-  if single_vars:
-    for i in range(0, len(single_vars), 2):
-      pair = single_vars[i:i + 2]
-      env_vars["A"].append(", ".join(pair))
-  
-  formatted_env_vars = "\n  ".join([", ".join(vals) for vals in env_vars.values()])
+  formatted_env_vars = ", ".join(env_vars)
   return f"Environment:\n  {formatted_env_vars}"
-
-@logged
+  
 def ha_setup_files(files=CFG_SYSTEM_FILES):
   from filesystem import cp
   for src, dest in files.items():
     cp(src, dest)
   
   paths = defaultdict(list)
-  for path in sorted(set([f"{os.sep.join(path.split(os.sep)[:4])}/…" if len(path.split(os.sep)) > 4 else path for path in sys.path if not path.startswith('__')])):
-    key = os.sep.join(path.split(os.sep)[:2]) if len(path.split(os.sep)) > 1 else path
+  seen_keys = set()
+
+  for path in sys.path:
+    if path.startswith('__'):
+      continue
+    split_path = path.split(os.sep)
+    if len(split_path) > 4:
+      key = os.sep.join(split_path[:4])
+      path = key + "/…"
+      seen_keys.add(key)
+    else:
+      key = os.sep.join(split_path[:3]) if len(split_path) > 3 else path
     paths[key].append(path)
   
-  formatted_paths = "\n  ".join([", ".join(vals) for key, vals in paths.items() if key.startswith('/config') and not key.startswith('/config/pyscript')])
-  formatted_paths += "\n  " + ", ".join([", ".join(vals) for key, vals in paths.items() if key.startswith('/config/pyscript')])
-  formatted_paths += "\n  " + ", ".join([", ".join(vals) for key, vals in paths.items() if not key.startswith('/config')])
-  
+  formatted_paths = []
+  for key in sorted(paths.keys()):
+    if key in seen_keys:
+      formatted_paths.append(f"{key}/…")
+    else:
+      formatted_paths.append(", ".join(paths[key]))
+
+  formatted_paths = "\n  ".join(formatted_paths)
   return f"System Path:\n  {formatted_paths}"
 
-@logged
 def ha_setup_links(links=CFG_SYSTEM_LINKS):
   for src, dest in links.items():
     if not os.path.isdir(dest) and os.path.islink(dest):
