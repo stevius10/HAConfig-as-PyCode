@@ -23,15 +23,18 @@ def __run_test(test_type):
   import unittest
 
   os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
+  print(f"Current working directory: {os.getcwd()}")  # Debug statement
+  print(f"sys.path: {sys.path}")  # Debug statement
 
   f = io.StringIO()
   with redirect_stdout(f):
     try:
       loader = unittest.TestLoader()
+      print(f"Discovering tests in /config/pyscript/tests/{test_type}")  # Debug statement
       suite = loader.discover(f"/config/pyscript/tests/{test_type}")
       
       runner = unittest.TextTestRunner(stream=f, verbosity=3)
       result = runner.run(suite)
     except Exception as e:
       return f"Exception occurred: {str(e)}"
-  return f.getvalue() 
+  return f.getvalue()

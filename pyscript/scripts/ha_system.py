@@ -10,14 +10,22 @@ trigger = []
 
 # Startup
 
-@time_trigger
-@event_trigger(EVENT_HOMEASSISTANT_STARTED)
-def event_setup_init(delay=CFG_EVENT_STARTED_DELAY):
+@pyscript_executor
+def event_setup_init_native(delay=CFG_EVENT_STARTED_DELAY):
   os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
   sys.path.extend([
     path for path in [os.path.join(CFG_PATH_DIR_PY, subdir) for subdir in os.listdir(CFG_PATH_DIR_PY) if os.path.isdir(os.path.join(CFG_PATH_DIR_PY, subdir))]
-    if path not in sys.path
-  ])
+    if path not in sys.path ])
+
+@time_trigger
+@event_trigger(EVENT_HOMEASSISTANT_STARTED)
+def event_setup_init(delay=CFG_EVENT_STARTED_DELAY):
+  event_setup_init_native()
+  os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
+  sys.path.extend([
+    path for path in [os.path.join(CFG_PATH_DIR_PY, subdir) for subdir in os.listdir(CFG_PATH_DIR_PY) if os.path.isdir(os.path.join(CFG_PATH_DIR_PY, subdir))]
+    if path not in sys.path ])
+    
   task.sleep(delay)
   event.fire(MAP_EVENT_SETUP_STARTED)
 

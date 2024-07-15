@@ -84,7 +84,7 @@ def log_rotate(logfile=CFG_PATH_FILE_LOG):
 
 # Helper
 
-def file_read(logfile, lines=False):
+async def file_read(logfile, lines=False):
   exception = None
   for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
     try:

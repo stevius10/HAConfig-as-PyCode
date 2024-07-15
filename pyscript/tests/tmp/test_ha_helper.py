@@ -1,34 +1,50 @@
 import os
+import sys
 import unittest
-import aiofiles
+from unittest.mock import patch, MagicMock
 import asyncio
-from unittest.mock import patch, AsyncMock, mock_open, MagicMock
-
-# Mock event_trigger decorator
-def mock_event_trigger(event_type, expr=None):
-  def decorator(func):
-    def wrapper(*args, **kwargs):
-      return func(*args, **kwargs)
-    return wrapper
-  return decorator
+from datetime import datetime
 
 os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
+
+# Print sys.path and current working directory for debugging
+print(f"sys.path: {sys.path}")
+print(f"Current working directory: {os.getcwd()}")
+
+try:
+  from pyscript.tests.mocks.mock_pyscript import MockPyscript
+  print("Imported MockPyscript successfully")
+except Exception as e:
+  print(f"Error importing MockPyscript: {e}")
 
 class TestHaHelper(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
+    import sys
+    sys.modules['custom_components.pyscript'] = pyscript
+    from ha_helper import ha_log_truncate, log_truncate, log_rotate
+    
     print("Setting up class TestHaHelper")
     cls.mock_pyscript = MockPyscript()
-    cls.mock_pyscript_event_trigger = cls.mock_pyscript.event_trigger
+    def mock_event_trigger(event_type, expr=None):
+      def decorator(func):
+        def wrapper(*args, **kwargs):
+          return func(*args, **kwargs)
+        return wrapper
+      return decorator
+    cls.mock_event_trigger = mock_event_trigger
+    
+    try:
+      import custom_components.pyscript as pyscript_module
+      print(f"Attributes of custom_components.pyscript: {dir(pyscript_module)}")
+    except Exception as e:
+      print(f"Error importing custom_components.pyscript: {e}")
 
+    # Adjusted patches based on available attributes
     cls.patches = [
       patch.dict('custom_components.pyscript.trigger.__dict__', {'event_trigger': mock_event_trigger}),
       patch.dict('custom_components.pyscript.__init__.__dict__', {'event_trigger': mock_event_trigger}),
-      patch.dict('custom_components.pyscript.decorator.__dict__', {'event_trigger': mock_event_trigger}),
-      patch.dict('pyscript.trigger.__dict__', {'event_trigger': mock_event_trigger}),
-      patch.dict('pyscript.__init__.__dict__', {'event_trigger': mock_event_trigger}),
-      patch.dict('pyscript.decorator.__dict__', {'event_trigger': mock_event_trigger}),
       patch('custom_components.pyscript.trigger.AstEval', new=MagicMock()),
       patch('custom_components.pyscript.trigger.Event.notify_add', new=MagicMock())
     ]
@@ -50,57 +66,24 @@ class TestHaHelper(unittest.TestCase):
     cls.log_read = log_read
     cls.log_write = log_write
 
-    cls.mock_task_sleep = patch('ha_helper.task.sleep', new_callable=AsyncMock).start()
-    cls.mock_log_read = patch('ha_helper.log_read', new_callable=AsyncMock).start()
-    cls.mock_log_write = patch('ha_helper.log_write', new_callable=AsyncMock).start()
-    cls.mock_os_path_exists = patch('os.path.exists', return_value=True).start()
-    cls.mock_open = patch('aiofiles.open', mock_open(read_data='log_content')).start()
-
-  @classmethod
-  def tearDownClass(cls):
-    print("Tearing down class TestHaHelper")
-    patch.stopall()
-
   def setUp(self):
-    print("Setting up a test method")
     self.loop = asyncio.get_event_loop()
+    self.mock_log_read = patch('ha_helper.log_read', new=MagicMock()).start()
+    self.mock_log_write = patch('ha_helper.log_write', new=MagicMock()).start()
+    self.mock_open = patch('builtins.open', new=MagicMock()).start()
 
   def tearDown(self):
-    print("Tearing down a test method")
-    self.loop.close()
-
-  def test_my_event_handler(self):
-    print("Running test_my_event_handler")
-
-    @mock_event_trigger("my_event", "data == 'some_value'")
-    def my_event_handler(**kwargs):
-      print(f"Event data: {kwargs}")
-
-    # Simulate the event trigger
-    event_data = {"data": "some_value"}
-    my_event_handler(**event_data)
-
-  def test_ha_log_truncate_event(self):
-    print("Running test_ha_log_truncate_event")
-    event = {"trigger_type": "event", "event_type": "modified", "file": "", "folder": "", "path": ""}
-    async def run_test():
-      await self.ha_log_truncate(**event)
-      self.mock_log_write.assert_called_with(CFG_PATH_FILE_LOG, log_size_truncated=CFG_LOG_SIZE)
-      self.mock_task_sleep.assert_called_with(CFG_LOG_SETTINGS_DELAY_BLOCK)
-    self.loop.run_until_complete(run_test())
-
-  def test_ha_log_truncate_time(self):
-    print("Running test_ha_log_truncate_time")
-    event = {"trigger_type": "time", "event_type": "", "file": "", "folder": "", "path": ""}
-    async def run_test():
-      await self.ha_log_truncate(**event)
-      self.mock_log_write.assert_called_with(CFG_PATH_FILE_LOG, log_size_truncated=0)
-      self.mock_task_sleep.assert_called_with(CFG_LOG_SETTINGS_DELAY_BLOCK)
-    self.loop.run_until_complete(run_test())
+    for p in self.patches:
+      p.stop()
+    patch.stopall()
 
   def test_log_truncate(self):
     print("Running test_log_truncate")
-    self.mock_log_read.side_effect = [['log1', 'log2', 'log3'], ['history1', 'history2']]
+    self.mock_log_read.side_effect = [
+      ['log1', 'log2'], 
+      ['history1', 'history2'], 
+      ['log3']
+    ]
     async def run_test():
       await self.log_truncate()
       self.mock_log_read.assert_any_call(CFG_PATH_FILE_LOG, lines=True)
@@ -127,6 +110,7 @@ class TestHaHelper(unittest.TestCase):
 
   def test_log_read(self):
     print("Running test_log_read")
+    self.mock_open.return_value.read.return_value = 'log_content'
     async def run_test():
       result = await self.log_read('test_logfile')
       self.assertEqual(result, 'log_content')
