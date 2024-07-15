@@ -82,7 +82,7 @@ def log_rotate(logfile=CFG_PATH_FILE_LOG):
 
 # Helper 
 
-async def log_read(logfile, lines=False):
+async def file_read(logfile, lines=False):
   exception = None
   for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
     try:
@@ -99,7 +99,7 @@ async def log_read(logfile, lines=False):
     raise IORetriesExceededException(exception)
   return ""
 
-async def log_write(logfile, content, mode='w+'):
+async def file_write(logfile, content, mode='w+'):
   exception = None
   for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
     try:
