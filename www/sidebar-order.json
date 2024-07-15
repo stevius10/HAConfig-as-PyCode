@@ -20,7 +20,7 @@
       "name": "Web-Filter"
     },
     {
-      "item": "zigbee", 
+      "item": "Zigbee2MQTT", 
       "icon": "mdi:access-point-network",
       "name": "Heimnetz"
     },
