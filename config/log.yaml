@@ -13,6 +13,8 @@ logger:
       - "Reloaded"
     custom_components.pyscript.trigger:
       - "will never trigger"
+    homeassistant: 
+      - "Future exception was never retrieved"
     homeassistant.components.command_line.utils: 
       - "Timeout for command: python3"
     homeassistant.components.google_assistant.http: 

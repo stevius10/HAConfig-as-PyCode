@@ -3,6 +3,29 @@ from constants.data import DATA_DEVICES
 
 from utils import *
 
+# Persistence
+
+@logged
+@service
+def store(entity, value=None, default="", result=True, **kwargs): 
+
+  if not value: # store and restore persistence
+    state.persist(entity, default)
+    
+  else: # set persistence
+    state.set(entity, value)
+    state.persist(entity)
+    if "attributes" in kwargs and isinstance(kwargs.get('attributes'), dict):
+      for attribute in attributes:
+        state.set(f"{entity}.{attribute}", attributes.get(attribute))
+
+  state.persist(entity)
+  if result: 
+    homeassistant.update_entity(entity_id=entity) # avoid on shutdown 
+    return str(state.get(entity))
+  else: 
+    return ""
+
 # Notification
 
 @logged

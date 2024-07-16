@@ -21,8 +21,8 @@ class TestHaHelper(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    import sys
-    sys.modules['custom_components.pyscript'] = pyscript
+    from pyscript.tests.mocks.mock_pyscript import MockPyscript
+    sys.modules['custom_components.pyscript'] = MockPyscript()
     from ha_helper import ha_log_truncate, log_truncate, log_rotate
     
     print("Setting up class TestHaHelper")
@@ -55,11 +55,9 @@ class TestHaHelper(unittest.TestCase):
 
     from ha_helper import ha_log_truncate, log_truncate, log_rotate, log_read, log_write
     from constants.config import (
-      CFG_LOG_SIZE, CFG_LOG_TAIL, CFG_LOG_HISTORY_SIZE, CFG_PATH_FILE_LOG, 
-      CFG_LOG_HISTORY_SUFFIX, CFG_LOG_ARCHIV_SUFFIX, CFG_LOG_SETTINGS_IO_RETRY, 
-      CFG_LOG_SETTINGS_DELAY_BLOCK, CFG_LOG_ARCHIV_SIZE
+      CFG_LOG_DIR, CFG_LOG_FILE, CFG_PATH_FILE_LOG, CFG_LOG_HISTORY_SUFFIX, 
+      CFG_LOG_ARCHIV_SUFFIX, CFG_LOG_BACKUP_COUNT
     )
-
     cls.ha_log_truncate = ha_log_truncate
     cls.log_truncate = log_truncate
     cls.log_rotate = log_rotate
@@ -68,25 +66,24 @@ class TestHaHelper(unittest.TestCase):
 
   def setUp(self):
     self.loop = asyncio.get_event_loop()
+    self.addCleanup(self.loop.close)
+    self.mock_open = patch('builtins.open', new_callable=unittest.mock.mock_open).start()
     self.mock_log_read = patch('ha_helper.log_read', new=MagicMock()).start()
     self.mock_log_write = patch('ha_helper.log_write', new=MagicMock()).start()
-    self.mock_open = patch('builtins.open', new=MagicMock()).start()
 
   def tearDown(self):
-    for p in self.patches:
-      p.stop()
     patch.stopall()
 
-  def test_log_truncate(self):
-    print("Running test_log_truncate")
+  def test_ha_log_truncate(self):
+    print("Running test_ha_log_truncate")
     self.mock_log_read.side_effect = [
-      ['log1', 'log2'], 
-      ['history1', 'history2'], 
-      ['log3']
+      ['log1', 'log2'],
+      ['history1', 'history2'],
+      'log3\n# 1 / 1000 at ' + str(datetime.now()) + '\n'
     ]
     async def run_test():
-      await self.log_truncate()
-      self.mock_log_read.assert_any_call(CFG_PATH_FILE_LOG, lines=True)
+      await self.ha_log_truncate()
+      self.mock_log_read.assert_any_call(CFG_PATH_FILE_LOG)
       self.mock_log_read.assert_any_call(f"{CFG_PATH_FILE_LOG}.{CFG_LOG_HISTORY_SUFFIX}")
       self.mock_log_write.assert_any_call(CFG_PATH_FILE_LOG, ['log3\n', '# 1 / 1000 at ' + str(datetime.now()) + '\n'])
       self.mock_log_write.assert_any_call(f"{CFG_PATH_FILE_LOG}.{CFG_LOG_HISTORY_SUFFIX}", ['log1', 'log2', 'history1', 'history2'])

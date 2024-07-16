@@ -1,7 +1,7 @@
 import importlib
 import sys 
 
-from constants.config import CFG_LOG_LOGGER, CFG_LOG_LEVEL, CFG_LOGFILE_DEBUG_FUNCTION_STARTED, CFG_LOGFILE_IMPORT_RETRIES, CFG_PATH_DIR_PY_NATIVE
+from constants.config import CFG_LOG_LOGGER, CFG_LOG_LEVEL, CFG_LOGFILE_DEBUG_FUNCTION_STARTED, CFG_LOGFILE_IMPORT_RETRIES, CFG_LOGFILE_IMPORT_TIMEOUT, CFG_PATH_DIR_PY_NATIVE
 from constants.mappings import MAP_STATE_HA_UNDEFINED
 from exceptions import ForwardException
 
@@ -29,8 +29,6 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
       conditions.append(f"float({entity}) {comparator} {expression}")
     elif isinstance(expression, str):
       conditions.append(f"{entity} {comparator} \'{expression}\'")
-    # else:
-      # conditions.append(f"{entity} {comparator} {expression}")
   else:
     conditions.append(f"{entity}")
 
@@ -42,8 +40,11 @@ def debug(msg="", title=""):
   if title: 
     msg = f"[{title}] {msg}"
   if msg:
-    logfile = get_logfile()
-    logfile.debug(msg)
+    try:
+      logfile = get_logfile()
+      logfile.debug(msg)
+    except: # avoid startup validation
+      pass  # handled functional
 
 def log(msg="", title="", logger=CFG_LOG_LOGGER, level=CFG_LOG_LEVEL, **kwargs):
   if title: 
@@ -83,16 +84,15 @@ def store(entity, value=None, default="", result=True, **kwargs):
   if not value: # store and restore persistence
     state.persist(entity, default)
   else: # set persistence
-    if value: 
-      state.set(entity, value)
-      state.persist(entity)
+    state.set(entity, value)
+    state.persist(entity)
     if hasattr(kwargs, "attributes"):
       attributes = kwargs.get('attributes')
       if isinstance(attributes, dict):
         for attribute in attributes:
           state.set(f"{entity}.{attribute}", attributes.get(attribute))
     state.persist(entity)
-  if result: 
+  if result: # smooths shutdown
     homeassistant.update_entity(entity_id=entity) # avoid on shutdown 
 
     return str(state.get(entity))
@@ -111,8 +111,9 @@ def get_logfile(name=None):
       return logfile
     except Exception as e:
       if attempt < CFG_LOGFILE_IMPORT_RETRIES - 1: 
-        task.sleep(3); continue
-      else: raise e
+        task.wait_until(event_trigger=MAP_EVENT_SYSTEM_STARTED, timeout=CFG_LOGFILE_IMPORT_TIMEOUT)
+      else: 
+        raise e
 
 def logs(obj):
   if isinstance(obj, str):
