@@ -18,7 +18,7 @@ def default_factory(entity, default, call, params):
     params = ", ".join(f"{k}={v}" for k, v in params.items())
     eval(f"service.call('{call.split('.')[0]}', '{call.split('.')[1]}', {params})")
 
-def timeout_factory(entity, default, delay=0):
+def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace default factory
   entity_name = entity.split(".")[1]
   entity_timer = f"timer.{entity_name}"
   entity_persisted = f"pyscript.{MAP_PERSISTENCE_PREFIX_TIMER}_{entity_name}"
@@ -27,17 +27,18 @@ def timeout_factory(entity, default, delay=0):
   @debugged
   def timer_init():
     pyscript.store(entity=entity_persisted, default=MAP_STATE_HA_TIMER_IDLE)
-    remaining = state.get(entity_persisted) if state.get(entity_persisted) else ""
+    remaining = state.get(entity_persisted) if entity_persisted and state.get(entity_persisted) else ""
     if remaining and re.match(r'^\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?$', remaining):
       timer_start(delay=remaining)
       result_timer_init = f"[{entity_timer}] restored with duration {duration}"
     pyscript.store(entity=entity_persisted, value="")
 
-  @state_trigger(f"{entity} {'!=' if isinstance(entities.get(entity)['default'], str) else 'not in'} {repr(entities.get(entity)['default'])} and {expr(entity, '', defined=True)}", state_hold=1)
+  @state_trigger(f"{entity} {'!=' if isinstance(entities.get(entity, {}).get('default'), str) else 'not in'} {repr(entities.get(entity, {}).get('default'))} and {expr(entity, '', defined=True)}", state_hold=1)
   @debugged
-  def timer_start(delay=delay, trigger_type=None, var_name=None):
-    if state.get(entity) != default and state.get(entity) not in MAP_STATE_HA_UNDEFINED:
-      timer.start(entity_id=entity_timer, duration=delay)
+  def timer_start(duration=delay, trigger_type=None, var_name=None):
+    entity_state = state.get(entity)
+    if entity_state is not None and entity_state != entities.get(entity, {}).get('default') and entity_state not in MAP_STATE_HA_UNDEFINED:
+      timer.start(entity_id=entity_timer, duration=duration)
 
   @event_trigger("timer.finished", f"entity_id == '{entity_timer}'")
   @debugged
@@ -51,9 +52,10 @@ def timeout_factory(entity, default, delay=0):
 
   @time_trigger('shutdown')
   def timer_persist():
-    timer.pause(entity_id=entity_timer)
-    homeassistant.update_entity(entity_id=entity_timer)
-    pyscript.store(entity=entity_persisted, value=state.getattr(entity_timer).get('remaining', MAP_STATE_HA_TIMER_IDLE))
+    if entity_persisted is not None and state.get(entity_timer) and state.get(entity_timer) is not MAP_STATE_HA_TIMER_IDLE:
+      timer.pause(entity_id=entity_timer) 
+      homeassistant.update_entity(entity_id=entity_timer)
+      pyscript.store(entity=entity_persisted, value=state.getattr(entity_timer).get('remaining'))
 
   trigger.append(timer_init)
   trigger.append(timer_start)

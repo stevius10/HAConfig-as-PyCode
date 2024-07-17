@@ -1,138 +1,53 @@
 # HAConfig-as-PyCode
 
-HAConfig-as-PyCode is an event-driven, programmatic Home Assistant configuration project that leverages Python for enhanced reusability, encapsulation, and modular expandability. This project offers an alternative automation approach, more focused on developers compared to Home Assistant's default YAML-based configuration.
+HAConfig-as-PyCode is an event-driven, programmatic Home Assistant configuration project that leverages Python for enhanced reusability, encapsulation, and modular expandability. This project offers an alternative automation approach, focusing more on developers compared to Home Assistant's default YAML-based configuration.
 
 ![Desktop](www/overview-desktop.png)
 
 ## Implementation
 
-HAConfig-as-PyCode is built around an event-driven architecture integrating Python using PyScript and Home Assistant's built-in automation capabilities. This project combines declarative data structures for desired state configuration with imperative logic to process these data structures in an event-driven manner, leveraging an MQTT broker.
+HAConfig-as-PyCode is built around an event-driven architecture integrating Python using PyScript and Home Assistant's built-in automation capabilities. It combines declarative data structures for desired state configuration with imperative logic to process these data structures in an event-driven manner, leveraging an MQTT broker.
 
 ### Main Home Automation
 
-- **`auto_control.py`**: Defines control behavior for entities based on state triggers, managing actions through the `ENTITIES_CONTROL` data structure.
-- **`auto_entities.py`**: Automates entity state management, including default states and timeout handling, using the `ENTITIES_AUTO` data structure.
-- **`auto_motion.py`**: Manages motion sensor-based automations, mapping sensors to actions through the `ENTITIES_MOTION` data structure.
-- **`auto_notify.py`**: Handles notification based external communication, such as mobile phones, integrating the `notify` function to send push notifications and thereby triggers automation shortcuts on mobile devices leveraging `ha_utils.py` based notification implementation.  Uses the `DATA_DEVICES` structure from `data.py`.
-- **`auto_presence.py`**: Manages presence detection and actions based on indicators and exclusions defined in the `ENTITIES_PRESENCE` data structure.
+- **[`auto_control.py`](pyscript/auto_control.py)**: Defines control behavior for entities based on state triggers, managing actions through the `ENTITIES_CONTROL` data structure with multi-condition handling.
+- **[`auto_entities.py`](pyscript/auto_entities.py)**: Automates entity state management, including default states and timeout handling, using the `ENTITIES_AUTO` data structure with fallback mechanisms.
+- **[`auto_motion.py`](pyscript/auto_motion.py)**: Motion sensor-based automations, mapping motion sensors to actions through the `ENTITIES_MOTION` data structure with adaptive lighting.
+- **[`auto_notify.py`](pyscript/auto_notify.py)**: Handles external communication via notifications, using the `DATA_DEVICES` structure from `data.py` for mobile push notifications and automation shortcuts.
+- **[`auto_presence.py`](pyscript/auto_presence.py)**: Manages presence detection and actions based on weighted indicators and exclusions in the `ENTITIES_PRESENCE` data structure.
 
 ### Home Automation Capabilities
 
-For integration purposes:
-- **`ha_helper.py`**: Provides helper functions for interaction with Home Assistant resources, focusing on system logging and log management.
-- **`ha_system.py`**: Handles system-related setup, configuration management tasks, and environment setup.
-- **`ha_utils.py`**: Contains utility functions for mobile notifications and event-based shortcuts, leveraging the `DATA_DEVICES` structure from `data.py` to manage target devices for notifications.
-- **`ha_off.py`**: Implements functionality to turn off various integrated entities, either individually or by domain.
+- **[`ha_helper.py`](pyscript/scripts/ha_helper.py)**: Helper functions for interacting with Home Assistant resources, focusing on system logging and diagnostics.
+- **[`ha_system.py`](pyscript/scripts/ha_system.py)**: Manages system-related setup, configuration tasks, and configure environment.
+- **[`ha_utils.py`](pyscript/scripts/ha_utils.py)**: Utility functions for mobile notifications and event shortcuts, using the `DATA_DEVICES` structure for managing notification targets.
+- **[`ha_off.py`](pyscript/scripts/ha_off.py)**: Implements functionality to turn off various entities.
 
-For service-based purposes:
-- **`subprocesses.py`**: Manages and executes subprocesses based on predefined schedules and commands. Implements services by taking a list of shell commands from `/pyscript/modules/data.py`:
-  - **File Backup Service**: Runs a backup of Home Assistant configuration files at scheduled intervals.
-  - **Git Sync**: Enables automatic synchronization of the configuration to this Git repository.
-  - **Compile Service**: Compiles and structures the project files, listing the project structure and contents at specified times.
-  Functionality is triggered by injecting `time_trigger` to schedule the execution of given services.
+### Service-based Automations
+
+- **[`subprocesses.py`](pyscript/scripts/subprocesses.py)**: Manages and executes scheduled subprocesses and commands from `data.py`:
+  - **File Backup**: Scheduled backups of Home Assistant configuration files.
+  - **Git Sync**: Automatic synchronization of the configuration to the Git repository.
+  - **Compile**: Compiles project files, listing the structure and contents at specified times using `time_trigger`.
 
 ### Modules
 
-The `/pyscript/modules` directory contains reusable Python modules that encapsulate various functionalities used throughout the project, independent of Home Assistant capabilities.
-
-- **`constants.py`**: Centralizes configuration settings, entity definitions, expressions, mappings, and settings by importing them from sub-modules:
-  - **`config.py`**: Contains general configuration settings and paths.
-  - **`data.py`**: Defines data structures used for automation, presence detection, subprocess services, and scraping housing providers.
-  - **`entities.py`**: Describes the default desired state for entities and conditions for default behavior.
-  - **`expressions.py`**: Contains cron and state expressions for various automation scenarios.
-  - **`mappings.py`**: Provides mappings for states, services, events, and persistence prefixes.
-  - **`settings.py`**: Contains specific configuration values for application and service logic.
-- **`exceptions.py`**: Defines custom exception classes used for error handling within the project.
-- **`utils.py`**: Contains central functions for generating expressions and implementing project-wide logging functionality.
+- **[`constants.py`](pyscript/modules/constants.py)**: Centralizes configuration settings, entity definitions, expressions, mappings, and settings by importing them from sub-modules:
+  - **[`config.py`](pyscript/modules/constants/config.py)**: General configuration settings and structure.
+  - **[`data.py`](pyscript/modules/constants/data.py)**: Specific input data for automations. 
+  - **[`entities.py`](pyscript/modules/constants/entities.py)**: Default state for entities and conditions for behavior.
+  - **[`expressions.py`](pyscript/modules/constants/expressions.py)**: Expressions for various automation scenarios.
+  - **[`mappings.py`](pyscript/modules/constants/mappings.py)**: Naming, mappings in particular. 
+  - **[`settings.py`](pyscript/modules/constants/settings.py)**: Specific configuration values for independent service logic.
+- **[`exceptions.py`](pyscript/modules/exceptions.py)**: Custom exception classes for error handling with enhanced reporting.
+- **[`utils.py`](pyscript/modules/utils.py)**: Central functions for project-wide logging including log rotate and expression generation.
 
 ### Native Python
 
-Native Python is used within this project to handle privileged and I/O tasks that could potentially interfere with PyScript's main loop handling of asynchronous tasks.
+- **[`filesystem.py`](pyscript/python/filesystem.py)**: File system operations for tasks requiring privileges beyond the PyScript sandbox.
+- **[`logfile.py`](pyscript/python/logfile.py)**: Structured file logging operations with a partly singleton pattern for consistent log handling. 
 
-- **`filesystem.py`**: Provides file system operations for tasks that require privileges beyond the PyScript sandbox.
-- **`logfile.py`**: Manages structured logging operations, differentiating between a file logger for application or service logs and a debug logger for debugging purposes, implemented using a singleton pattern for project-wide accessibility.
+### Services
 
-### Notifications
-
-- **`scrape_housing.py`**: Scrapes housing offers from various providers, processes the data, and sends notifications to users about new listings. The `DATA_SCRAPE_HOUSING_PROVIDERS` data structure defines the URLs, request headers, and parsing rules for each provider. The script fetches the HTML content, extracts relevant information such as address, rent, size, and rooms, and then filters the listings based on predefined criteria before sending notifications. This integrates with `auto_notify.py`, which uses the `notify` function to send push notifications and triggers automation shortcuts via mobile devices using `ha_utils.py`.
-
-### Logging
-
-- **Log Management**: The project includes comprehensive logging functionality using the `logfile` module, with capabilities for structured logging, log rotation, and archival.
-
-### Testing (WIP)
-
-- **Unit Tests and Mocks**: The project includes a suite of unit tests and mock classes to ensure testing of different components. Tests are located in the **`tests`** directory.
-
-## Structure
-
-```plaintext
-apps/
-  air_control.py
-  scrape_housing.py
-auto_control.py
-auto_entities.py
-auto_motion.py
-auto_notify.py
-auto_presence.py
-modules/
-  constants/
-    config.py
-    data.py
-    entities.py
-    expressions.py
-    mappings.py
-    settings.py
-  exceptions.py
-  utils.py
-python/
-  filesystem.py
-  logfile.py
-requirements.txt
-scripts/
-  ha_helper.py
-  ha_off.py
-  ha_system.py
-  ha_utils.py
-  subprocesses.py
-  tests.py
-```
-
-### Customization
-
-- **User Interface**: The project includes various custom templates for the Home Assistant Lovelace UI. These are implemented through the **`templates/`** directory and external data integration.
-
-    - **`badges.yaml`**: Defines badge cards for displaying system status, backup information, air quality, and providing quick access to common actions like turning everything off.
-    - **`bar.yaml`**: Implements customizable button bars for room-specific lighting and device control.
-    - **`calendar.yaml`**: Includes a customized calendar view for displaying upcoming events from various calendars.
-    - **`card-art.yaml`**: Provides a comprehensive overview card with weather information, badges, and a calendar view.
-    - **`card.yaml`**: Defines room-specific overview cards with dynamic images, thermostat controls, and button bars.
-    - **`clima.yaml`**: Implements a custom thermostat card with temperature graphs and trend indicators.
-    - **`weather.yaml`**: Includes a weather forecast card and a custom weather display.
-
-- **Backup and Synchronization**: Automated backup and synchronization of the Home Assistant configuration and data.
-
-- **External Data**: The project integrates external data from various sources through sensors defined in the **`config/.sensors/`** directory:
-  
-  - **Housing Offers**: Scrapes and delivers housing offers and real estate listings from various companies in Berlin. The data is delivered via notifications to trigger mobile services.
-
-- **Customized Shell**: The project includes a customized shell environment with an optimized configuration for the Zsh shell, located in **`files/.zshrc`**.
-
-## Project Structure
-
-```plaintext
-config/
-  assistant.yaml
-  calendar.yaml
-  frontend.yaml
-  http.yaml
-  log.yaml
-  pyscript.yaml
-  sensors.yaml
-  timer.yaml
-  utils.yaml
-files/
-  .zshrc
-  pyscript/
-    [..]
-```
+- **[`air_control.py`](pyscript/apps/air_control.py)**: Controls air based functionality. 
+- **[`scrape_housing.py`](pyscript/apps/scrape_housing.py)**: Scrapes housing offers from various Berlin housing providers, processes data, and sends notifications using the `DATA_SCRAPE_HOUSING_PROVIDERS` structure. Integrates with `auto_notify.py` for push notifications and mobile shortcuts via `ha_utils.py`.
