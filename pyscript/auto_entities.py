@@ -24,7 +24,7 @@ def timeout_factory(entity, default, delay=0):
   entity_persisted = f"pyscript.{MAP_PERSISTENCE_PREFIX_TIMER}_{entity_name}"
 
   @event_trigger(MAP_EVENT_SYSTEM_STARTED)
-  @logged
+  @debugged
   def timer_init():
     pyscript.store(entity=entity_persisted, default=MAP_STATE_HA_TIMER_IDLE)
     remaining = state.get(entity_persisted) if state.get(entity_persisted) else ""
@@ -34,18 +34,18 @@ def timeout_factory(entity, default, delay=0):
     pyscript.store(entity=entity_persisted, value="")
 
   @state_trigger(f"{entity} {'!=' if isinstance(entities.get(entity)['default'], str) else 'not in'} {repr(entities.get(entity)['default'])} and {expr(entity, '', defined=True)}", state_hold=1)
-  @logged
+  @debugged
   def timer_start(delay=delay, trigger_type=None, var_name=None):
     if state.get(entity) != default and state.get(entity) not in MAP_STATE_HA_UNDEFINED:
       timer.start(entity_id=entity_timer, duration=delay)
 
   @event_trigger("timer.finished", f"entity_id == '{entity_timer}'")
-  @logged
-  def timer_stop(**kwargs):
-    service.call("homeassistant", f"turn_{default}", entity_id=entity)
+  @debugged
+  def timer_stop():
+    service.call("homeassistant", f"turn_{default[0] if isinstance(default, list) else default}", entity_id=entity)
 
   @state_trigger(expr(entity, entities.get(entity)['default']), state_hold=1)
-  @logged
+  @debugged
   def timer_reset():
     timer.cancel(entity_id=entity)
 

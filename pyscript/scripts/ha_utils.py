@@ -5,19 +5,16 @@ from utils import *
 
 # Persistence
 
-@logged
 @service
 def store(entity, value=None, default="", result=True, **kwargs): 
-
+  attributes = kwargs if kwargs else {}
+  
   if not value: # store and restore persistence
-    state.persist(entity, default)
+    state.persist(entity, default, attributes)
     
   else: # set persistence
-    state.set(entity, value)
+    state.set(entity, value, attributes)
     state.persist(entity)
-    if "attributes" in kwargs and isinstance(kwargs.get('attributes'), dict):
-      for attribute in attributes:
-        state.set(f"{entity}.{attribute}", attributes.get(attribute))
 
   state.persist(entity)
   if result: 
