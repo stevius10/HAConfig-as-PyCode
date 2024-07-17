@@ -23,6 +23,11 @@ HAConfig-as-PyCode is built around an event-driven architecture integrating Pyth
 - **[`ha_utils.py`](pyscript/scripts/ha_utils.py)**: Utility functions for mobile notifications and event shortcuts, using the `DATA_DEVICES` structure for managing notification targets.
 - **[`ha_off.py`](pyscript/scripts/ha_off.py)**: Implements functionality to turn off various entities.
 
+### Services
+
+- **[`air_control.py`](pyscript/apps/air_control.py)**: Controls air based functionality. 
+- **[`scrape_housing.py`](pyscript/apps/scrape_housing.py)**: Scrapes housing offers from various Berlin housing providers, processes data, and sends notifications using the `DATA_SCRAPE_HOUSING_PROVIDERS` structure. Integrates with `auto_notify.py` for push notifications and mobile shortcuts via `ha_utils.py`.
+
 ### Service-based Automations
 
 - **[`subprocesses.py`](pyscript/scripts/subprocesses.py)**: Manages and executes scheduled subprocesses and commands from `data.py`:
@@ -46,8 +51,3 @@ HAConfig-as-PyCode is built around an event-driven architecture integrating Pyth
 
 - **[`filesystem.py`](pyscript/python/filesystem.py)**: File system operations for tasks requiring privileges beyond the PyScript sandbox.
 - **[`logfile.py`](pyscript/python/logfile.py)**: Structured file logging operations with a partly singleton pattern for consistent log handling. 
-
-### Services
-
-- **[`air_control.py`](pyscript/apps/air_control.py)**: Controls air based functionality. 
-- **[`scrape_housing.py`](pyscript/apps/scrape_housing.py)**: Scrapes housing offers from various Berlin housing providers, processes data, and sends notifications using the `DATA_SCRAPE_HOUSING_PROVIDERS` structure. Integrates with `auto_notify.py` for push notifications and mobile shortcuts via `ha_utils.py`.
