@@ -26,8 +26,7 @@ def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace
   @event_trigger(MAP_EVENT_SYSTEM_STARTED)
   @debugged
   def timer_init():
-    pyscript.store(entity=entity_persisted, default=MAP_STATE_HA_TIMER_IDLE)
-    remaining = state.get(entity_persisted) if entity_persisted and state.get(entity_persisted) else ""
+    remaining = pyscript.store(entity=entity_persisted, default=MAP_STATE_HA_TIMER_IDLE)
     if remaining and re.match(r'^\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?$', remaining):
       timer_start(delay=remaining)
       result_timer_init = f"[{entity_timer}] restored with duration {duration}"
@@ -42,7 +41,7 @@ def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace
 
   @event_trigger("timer.finished", f"entity_id == '{entity_timer}'")
   @debugged
-  def timer_stop():
+  def timer_stop(**kwargs):
     service.call("homeassistant", f"turn_{default[0] if isinstance(default, list) else default}", entity_id=entity)
 
   @state_trigger(expr(entity, entities.get(entity)['default']), state_hold=1)
@@ -51,11 +50,11 @@ def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace
     timer.cancel(entity_id=entity)
 
   @time_trigger('shutdown')
-  def timer_persist():
+  def timer_shutdown():
     if entity_persisted is not None and state.get(entity_timer) and state.get(entity_timer) is not MAP_STATE_HA_TIMER_IDLE:
       timer.pause(entity_id=entity_timer) 
       homeassistant.update_entity(entity_id=entity_timer)
-      pyscript.store(entity=entity_persisted, value=state.getattr(entity_timer).get('remaining'))
+      service.call("pyscript", "store", entity=entity_persisted, value=state.getattr(entity_timer).get('remaining'))
 
   trigger.append(timer_init)
   trigger.append(timer_start)

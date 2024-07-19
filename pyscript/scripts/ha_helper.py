@@ -12,7 +12,7 @@ from exceptions import IORetriesExceededException
 # Automation
 
 @event_trigger(MAP_EVENT_FOLDER_WATCHER)
-@time_trigger('shutdown')
+@time_trigger
 @task_unique("ha_log_truncate", kill_me=True)
 @debugged
 async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder="", path="", **kwargs):
@@ -45,6 +45,9 @@ async def log_truncate(logfile=CFG_PATH_FILE_LOG, log_size_truncated=CFG_LOG_SIZ
     if history is not None and len(history) > 0: 
       logs_trunc.extend(history)
       file_write(history_file, logs_trunc[-log_history_size:])
+    
+    if len(logs_trunc) > log_history_size:
+      log_rotate()
 
 @debugged
 @service
@@ -56,6 +59,7 @@ def log_rotate(logfile=CFG_PATH_FILE_LOG):
     if os.path.exists(history_file):
       history = file_read(history_file)
       if history:
+        history.reverse()
         file_write(archive_file, history, mode='a+')
         file_write(history_file, '')
     file_write(history_file, '')
@@ -68,6 +72,7 @@ def log_rotate(logfile=CFG_PATH_FILE_LOG):
         archive_trunc_size = int(len(archive) * 0.1) # shorten ten percent if exceeded
         archive_truncated = archive[archive_trunc_size:]
         archive_truncated = '\n'.join(archive_truncated) + '\n'
+        archive_truncated.seek(0, 0)
         file_write(archive_file, archive_truncated)
     else:
       file_write(archive_file, '')
