@@ -26,8 +26,7 @@ def scrape_housing_factory(provider):
   @event_trigger(MAP_EVENT_SYSTEM_STARTED)
   @time_trigger('shutdown')
   def scrape_housing_persistence():
-    if service.has_service("pyscript", "store"):
-      service.call(domain="pyscript", name="store", entity=get_entity(provider))
+      store(entity=get_entity(provider))
 
   @logged
   @service(f"pyscript.scrape_housing_{provider}", supports_response="optional")

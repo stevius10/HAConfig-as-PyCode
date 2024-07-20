@@ -15,7 +15,7 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
 
   conditions = []
   if defined:
-    conditions.append(f"{entity} is not None")
+    conditions.append(f"{entity}.value is not None and {entity}.old_value is not None")
     states_undefined_str = ", ".join([f'\"{state}\"' for state in MAP_STATE_HA_UNDEFINED])
     conditions.append(f"{entity} not in [{states_undefined_str}]")
       
@@ -80,26 +80,22 @@ def logged(func):
 # Persistence
 
 def store(entity, value=None, default="", result=True, **kwargs): 
-
+  attributes = kwargs if kwargs else {}
+  
   if not value: # store and restore persistence
-    state.persist(entity, default)
+    state.persist(entity, default, attributes)
+    
   else: # set persistence
-    state.set(entity, value)
+    state.set(entity, value, attributes)
     state.persist(entity)
-    if hasattr(kwargs, "attributes"):
-      attributes = kwargs.get('attributes')
-      if isinstance(attributes, dict):
-        for attribute in attributes:
-          state.set(f"{entity}.{attribute}", attributes.get(attribute))
-    state.persist(entity)
-  if result: # smooths shutdown
+
+  state.persist(entity)
+  if result: 
     homeassistant.update_entity(entity_id=entity) # avoid on shutdown 
-
     return str(state.get(entity))
-
   else: 
     return ""
-
+    
 # Utility
 
 def get_logfile(name=None):
