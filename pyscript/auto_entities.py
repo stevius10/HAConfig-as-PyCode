@@ -31,9 +31,8 @@ def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace
       timer_start(delay=remaining)
       result_timer_init = f"[{entity_timer}] restored with duration {duration}"
     store(entity=entity_persisted, value="")
-  @time_trigger('shutdown')
 
-  @state_trigger(f"{entity} {'!=' if isinstance(entities.get(entity, {}).get('default'), str) else 'not in'} {repr(entities.get(entity, {}).get('default'))} and {expr(entity, '', defined=True)}", state_hold=1)
+  @state_trigger(expr(entity, entities.get(entity, {}).get('default', {}), comparator='!=' if isinstance(entities.get(entity, {}).get('default'), str) else 'not in'), state_check_now=True, state_hold=1)
   @debugged
   def timer_start(duration=delay, trigger_type=None, var_name=None):
     entity_state = state.get(entity)

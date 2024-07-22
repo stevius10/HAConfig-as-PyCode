@@ -133,7 +133,8 @@ def logs(obj):
       return str(obj)
 
 def log_func_format(func, args, kwargs, result=None):
-  log_func_format_args = ", ".join([str(arg) if arg else "" for arg in args]) if args else None
-  log_func_format_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if k != "context"]) if kwargs else None
-  log_func_format_arg = ", ".join([str(arg) if arg is not None else "" for arg in [log_func_format_args, log_func_format_kwargs] if arg])
-  return f"{func.name if hasattr(func, 'name') else ''}" + f"({log_func_format_arg})" + (f": \n-> {result}" if result else "")
+  log_func_format_args = ", ".join([str(arg) if arg is not None else "" for arg in args]) if args else ""
+  log_func_format_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if k != "context"]) if kwargs else ""
+  log_func_format_arg = ", ".join(filter(None, [log_func_format_args, log_func_format_kwargs]))
+  func_name = func.name if hasattr(func, 'name') else ''
+  return f"{func_name}({log_func_format_arg})" + (f": \n-> {result}" if result else "")
