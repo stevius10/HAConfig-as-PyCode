@@ -38,14 +38,11 @@ def subprocess_factory(service):
     return logfile.close()
     
   if statement:
-    try:
-      exec(statement)
-      @service
-      def subprocess_statement(name=name, log_command=False):
-        return execute_subprocess(name, log_command)
-      trigger.append(f"subprocess_{name}")
-    except SyntaxError as e:
-      print(f"SyntaxError in <apps.subprocesses.init>: {e}")
+    @time_trigger(statement)
+    @service
+    def execute_subprocess_triggered(name=name, log_command=False):
+      return execute_subprocess(name, log_command)
+    trigger.append(execute_subprocess_triggered)
   else:
     trigger.append(execute_subprocess)
 

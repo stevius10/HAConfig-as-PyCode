@@ -42,19 +42,21 @@ DATA_SUBPROCESS_SERVICES = {
     "commands": [
       "cd /config",
       "echo '\n--- Projektstruktur:\n'; git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v '^templates/' | grep -v '^pyscript/www/'", 
-      "echo '\n--- Quelltext:\'; git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v '^templates/' | grep -v '^tests/' | grep -v '^pyscript/www/' | grep -v -E '\\.(png|jpg|jpeg|json|yaml|)$' | while read -r file; do echo - Datei: \"$file\"; cat \"/config/$file\"; echo '\n--------\n'; done",
-      f"git ls-files -oc --exclude-standard | grep -v '__pycache__/' | tar -czf {SET_SUBPROCESS_COMPILE_PATH}/compile.tar.gz -T -"    ]
+      "echo '\n--- Quelltext:\'; git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v '^templates/' | grep -v '^tests/' | grep -v '^pyscript/www/' | grep -v -E '\\.(png|jpg|jpeg|json|yaml)$' | while read -r file; do echo - Datei: \"$file\"; cat \"/config/$file\"; echo '\n--------\n'; done",
+      f"git ls-files -oc --exclude-standard | grep -v '__pycache__/' | tar -czf {SET_SUBPROCESS_COMPILE_PATH}/compile.tar.gz -T -"    
+    ]
   },
   "filebackup": {
     "commands": [
       "apk add rsync; ulimit -n 4096",
-      f'backup_folder="{SET_SUBPROCESS_FILEBACKUP_FOLDER}/{datetime.now().strftime("%Y-%m-%d_%H-%M")}" && mkdir -p "$backup_folder" && '
-      f'/usr/bin/find "$backup_folder" -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1 && '
-      f'/usr/bin/find "$backup_folder" -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r "{{}}" \\; 2>&1 && '
+      f'backup_folder="{SET_SUBPROCESS_FILEBACKUP_FOLDER}/{datetime.now().strftime("%Y-%m-%d_%H-%M")}" && mkdir -p "$backup_folder" && ',
+      f'/usr/bin/find "$backup_folder" -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1 && ',
+      f'/usr/bin/find "$backup_folder" -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r {{}} \\\\; 2>&1 && ',
       f'rsync -azv --partial --ignore-existing --exclude=\'.git/\' --exclude=\'/homeassistant/.git/\' --exclude=\'.storage/xiaomi_miot\' --exclude=\'/homeassistant/.storage/xiaomi_miot\' /config/ "$backup_folder" 2>&1'
-    ], "statement": f"@time_trigger({EXPR_TIME_FILEBACKUP})"
+    ], 
+    "statement": EXPR_TIME_FILEBACKUP
   },
-  "gitsync": {
+    "gitsync": {
     "commands": [
       f"git config --local include.path '{SEC_SUBPROCESS_GIT_SETTINGS_CONFIG}'", 
       f"eval $(ssh-agent); ssh-add {SEC_SUBPROCESS_GIT_SETTINGS_CREDENTIALS}", 
@@ -65,8 +67,8 @@ DATA_SUBPROCESS_SERVICES = {
       "git add .", 
       f"git commit -m '{SEC_SUBPROCESS_GIT_REPO_MESSAGE}'", 
       f"git push origin {SEC_SUBPROCESS_GIT_REPO_BRANCH}"
-    ],
-    "statement": f"@time_trigger('{EXPR_TIME_SYNC_GIT}')"
+    ], 
+    "statement": EXPR_TIME_SYNC_GIT
   }
 }
 
