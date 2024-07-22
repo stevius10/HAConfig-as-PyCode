@@ -49,12 +49,11 @@ DATA_SUBPROCESS_SERVICES = {
   "filebackup": {
     "commands": [
       "apk add rsync; ulimit -n 4096",
-      f'backup_folder="{SET_SUBPROCESS_FILEBACKUP_FOLDER}/{datetime.now().strftime("%Y-%m-%d_%H-%M")}" && mkdir -p "$backup_folder" && ',
-      f'/usr/bin/find "$backup_folder" -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1 && ',
-      f'/usr/bin/find "$backup_folder" -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r {{}} \\\\; 2>&1 && ',
+      f'backup_folder="{SET_SUBPROCESS_FILEBACKUP_FOLDER}/{datetime.now().strftime("%Y-%m-%d_%H-%M")}" && mkdir -p "$backup_folder" && '
+      f'/usr/bin/find "$backup_folder" -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1 && '
+      f'/usr/bin/find "$backup_folder" -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r "{{}}" \\; 2>&1 && '
       f'rsync -azv --partial --ignore-existing --exclude=\'.git/\' --exclude=\'/homeassistant/.git/\' --exclude=\'.storage/xiaomi_miot\' --exclude=\'/homeassistant/.storage/xiaomi_miot\' /config/ "$backup_folder" 2>&1'
-    ], 
-    "statement": EXPR_TIME_FILEBACKUP
+    ], "trigger": EXPR_TIME_FILEBACKUP
   },
     "gitsync": {
     "commands": [
