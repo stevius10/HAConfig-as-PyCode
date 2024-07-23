@@ -31,7 +31,7 @@ def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace
     if remaining and re.match(r'[0-9]{1,2}:[0-5][0-9]:[0-5][0-9]', remaining):
       timer_start(duration=remaining)
     else:
-      timer_start()
+      homeassistant.update_entity(entity_id=entity) # trigger evaluation
     store(entity=entity_persisted, value=MAP_STATE_HA_TIMER_IDLE)
     if remaining and remaining != MAP_STATE_HA_TIMER_IDLE:
       return {"entity": entity_timer, "status": "restored", "details": {"duration": remaining}}
@@ -40,7 +40,7 @@ def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace
   @debugged
   def timer_start(duration=delay):
     entity_state = state.get(entity)
-    if entity_state is not None and (entity_state != default or entity_state not in default) and entity_state not in MAP_STATE_HA_UNDEFINED:
+    if entity_state is not None and entity_state not in list(default) and entity_state not in MAP_STATE_HA_UNDEFINED:
       service.call("timer", "start", entity_id=entity_timer, duration=duration)
       return {"entity": entity_timer, "status": "started", "details": {"duration": duration}}
 
@@ -50,7 +50,7 @@ def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace
     service.call("homeassistant", f"turn_{default[0] if isinstance(default, list) else default}", entity_id=entity)
     return {"entity": entity_timer, "status": "stopped", "details": kwargs}
 
-  @state_trigger(expr(entity, default, defined=False), state_hold=1)
+  @state_trigger(expr(entity, default, defined=False), state_check_now=False, state_hold_false=0, state_hold=1)
   @debugged
   def timer_reset(var_name=None, value=None):
     service.call("timer", "cancel", entity_id=entity_timer)

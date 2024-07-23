@@ -63,7 +63,7 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
   conditions = []
   if defined:
     conditions.append(f"{entity}.value is not None and {entity}.old_value is not None")
-    states_undefined_str = ", ".join([f'\"{state}\"' for state in MAP_STATE_HA_UNDEFINED])
+    states_undefined_str = ", ".join([f"\'{state}\'" for state in MAP_STATE_HA_UNDEFINED])
     conditions.append(f"{entity} not in [{states_undefined_str}]")
       
   if expression:

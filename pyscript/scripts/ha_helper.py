@@ -51,16 +51,17 @@ async def log_truncate(logfile=CFG_PATH_FILE_LOG, log_size_truncated=CFG_LOG_SIZ
 
 @debugged
 @service
-def log_rotate(logfile=CFG_PATH_FILE_LOG):
-  history_file = f"{logfile}.{CFG_LOG_HISTORY_SUFFIX}"
-  archive_file = f"{logfile}.{CFG_LOG_ARCHIV_SUFFIX}"
+def log_rotate(file=CFG_PATH_FILE_LOG):
+  history_file = f"{file}.{CFG_LOG_HISTORY_SUFFIX}"
+  archive_file = f"{file}.{CFG_LOG_ARCHIV_SUFFIX}"
 
   try:
     if os.path.exists(history_file):
       history = file_read(history_file)
+      archive = file_read(archive_file)
       if history:
         history.reverse()
-        file_write(archive_file, history, mode='a+')
+        file_write(archive_file, history+archive)
         file_write(history_file, '')
     file_write(history_file, '')
 
@@ -77,12 +78,12 @@ def log_rotate(logfile=CFG_PATH_FILE_LOG):
     else:
       file_write(archive_file, '')
 
-    if os.path.exists(logfile):
-      content = file_read(logfile)
+    if os.path.exists(file):
+      content = file_read(file)
       file_write(history_file, content)
-      file_write(logfile, '')
+      # file_write(file)
     else:
-      file_write(logfile, '')
+      file_write(file, '')
 
   except Exception as e:
     raise e
