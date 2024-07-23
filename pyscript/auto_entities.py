@@ -1,7 +1,7 @@
 import re
 
 from constants.entities import ENTITIES_AUTO
-from constants.mappings import MAP_EVENT_SYSTEM_STARTED, MAP_PERSISTENCE_PREFIX_TIMER, MAP_SERVICE_HA_TURNOFF, MAP_STATE_HA_TIMER_IDLE
+from constants.mappings import MAP_EVENT_SYSTEM_STARTED, MAP_PERSISTENCE_PREFIX_TIMER, MAP_SERVICE_HA_TURNOFF, MAP_STATE_HA_TIMER_IDLE, MAP_STATE_HA_UNDEFINED
 from constants.settings import SET_ENTITIES_GLOBAL_VOLUME_MAX
 
 from utils import *
@@ -13,10 +13,11 @@ entities = ENTITIES_AUTO
 # Default 
 
 def default_factory(entity, default, call, params):
-  @state_trigger(f"{entity} {'!=' if isinstance(default, str) else 'not in'} {repr(default)} and {expr(entity, '', defined=True)}")
-  def default():
-    params = ", ".join(f"{k}={v}" for k, v in params.items())
-    eval(f"service.call('{call.split('.')[0]}', '{call.split('.')[1]}', {params})")
+  call_service = call.split(".")
+  @state_trigger(f"{entity} {'!=' if isinstance(default, str) else 'not in'} {repr(default)} and {entity} != None")
+  def default_action():
+    parameters = ", ".join(f"{k}={v}" for k, v in params.items())
+    service.call(call_service[0], call_service[1], parameters)
 
 def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace default factory
   entity_name = entity.split(".")[1]
@@ -24,48 +25,51 @@ def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace
   entity_persisted = f"pyscript.{MAP_PERSISTENCE_PREFIX_TIMER}_{entity_name}"
 
   @event_trigger(MAP_EVENT_SYSTEM_STARTED)
-  @debugged
+  @logged
   def timer_init():
     remaining = store(entity=entity_persisted, default=MAP_STATE_HA_TIMER_IDLE)
-    if remaining and re.match(r'^\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?$', remaining):
-      timer_start(delay=remaining)
-      result_timer_init = f"[{entity_timer}] restored with duration {duration}"
-    store(entity=entity_persisted, value="")
+    if remaining and re.match(r'[0-9]{1,2}:[0-5][0-9]:[0-5][0-9]', remaining):
+      timer_start(duration=remaining)
+    else:
+      timer_start()
+    store(entity=entity_persisted, value=MAP_STATE_HA_TIMER_IDLE)
+    if remaining and remaining != MAP_STATE_HA_TIMER_IDLE:
+      return {"entity": entity_timer, "status": "restored", "details": {"duration": remaining}}
 
-  @state_trigger(expr(entity, entities.get(entity, {}).get('default', {}), comparator='!=' if isinstance(entities.get(entity, {}).get('default'), str) else 'not in'), state_check_now=True, state_hold=1)
+  @state_trigger(expr(entity, default, "!=", defined=False), state_hold=1)
   @debugged
-  def timer_start(duration=delay, trigger_type=None, var_name=None):
+  def timer_start(duration=delay):
     entity_state = state.get(entity)
-    if entity_state is not None and entity_state != entities.get(entity, {}).get('default') and entity_state not in MAP_STATE_HA_UNDEFINED:
-      timer.start(entity_id=entity_timer, duration=duration)
+    if entity_state is not None and (entity_state != default or entity_state not in default) and entity_state not in MAP_STATE_HA_UNDEFINED:
+      service.call("timer", "start", entity_id=entity_timer, duration=duration)
+      return {"entity": entity_timer, "status": "started", "details": {"duration": duration}}
 
   @event_trigger("timer.finished", f"entity_id == '{entity_timer}'")
   @debugged
   def timer_stop(**kwargs):
     service.call("homeassistant", f"turn_{default[0] if isinstance(default, list) else default}", entity_id=entity)
+    return {"entity": entity_timer, "status": "stopped", "details": kwargs}
 
-  @state_trigger(expr(entity, entities.get(entity)['default']), state_hold=1)
+  @state_trigger(expr(entity, default, defined=False), state_hold=1)
   @debugged
-  def timer_reset():
-    timer.cancel(entity_id=entity)
+  def timer_reset(var_name=None, value=None):
+    service.call("timer", "cancel", entity_id=entity_timer)
+    return {"entity": entity_timer, "status": "canceled", "details": {"entity": var_name, "state": value}}
 
   @time_trigger('shutdown')
   def timer_shutdown():
-    if entity_persisted is not None and state.get(entity_timer) and state.get(entity_timer) is not MAP_STATE_HA_TIMER_IDLE:
-      timer.pause(entity_id=entity_timer) 
-      homeassistant.update_entity(entity_id=entity_timer)
-      store(entity=entity_persisted, value=state.getattr(entity_timer).get('remaining'))
+    if state.get(entity_timer) and state.get(entity_timer) != MAP_STATE_HA_TIMER_IDLE:
+      service.call("timer", "pause", entity_id=entity_timer)
+      remaining = state.getattr(entity_timer).get('remaining')
+      store(entity=entity_persisted, value=remaining, result=False)
+      return {"entity": entity_timer, "status": "stored", "details": {"remaining": remaining}}
 
-  trigger.append(timer_init)
-  trigger.append(timer_start)
-  trigger.append(timer_stop)
-  trigger.append(timer_reset)
-  trigger.append(timer_shutdown)
+  trigger.extend([timer_init, timer_start, timer_stop, timer_reset, timer_shutdown])
 
 for entity in entities:
   if "delay" not in entities[entity]:
     if "expr" not in entities[entity]:
       entities[entity]["expr"] = MAP_SERVICE_HA_TURNOFF
-    default_factory(entity, entities.get(entity)['default'], entities.get(entity)['call'], entities.get(entity)['params'])
-  else: 
+    default_factory(entity, entities[entity]['default'], entities[entity]['call'], entities[entity]['params'])
+  else:
     timeout_factory(entity, entities[entity]["default"], entities[entity]["delay"])

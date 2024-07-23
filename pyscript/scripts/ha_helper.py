@@ -21,7 +21,7 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
       log_truncate(log_size_truncated=CFG_LOG_SIZE)
     if trigger_type == "time": 
       log_rotate()
-      log_truncate(log_size_truncated=0)
+      log_truncate() #log_size_truncated=0)
       system_log.clear()
   except Exception as e: 
     raise e

@@ -20,8 +20,6 @@ housing_provider = DATA_SCRAPE_HOUSING_PROVIDERS
 # Factory
 
 def scrape_housing_factory(provider):
-  
-  # pyscript.store(entity=get_entity(provider))
 
   @event_trigger(MAP_EVENT_SYSTEM_STARTED)
   @time_trigger('shutdown')
@@ -37,7 +35,7 @@ def scrape_housing_factory(provider):
         structure["item"], structure["address_selector"], structure["rent_selector"],
         structure["size_selector"], structure["rooms_selector"], structure["details_selector"]) or {}
       if service.has_service("pyscript", "store"):
-        service.call(domain="pyscript", name="store", entity=get_entity(provider), value=apartments[:254], attributes={'url': housing_provider.get(provider).get('url')})
+        store(entity=get_entity(provider), value=apartments[:254], attributes={'url': housing_provider.get(provider).get('url')})
       return { get_entity(provider): { "value": apartments[:254], "url": housing_provider.get(provider).get('url') } } if apartments else {}
     except Exception as e:
       return { get_entity(provider): { "error": str(e), "url": housing_provider.get(provider).get('url') } } if apartments else {}
@@ -73,6 +71,11 @@ def filtering(apartment):
     return None
   if apartment.get("address") is None:
     return None
+  else:
+    plz = re.search(r'\b1\d{4}\b', apartment["address"])
+    if plz:
+      if not plz.group().startswith('10') or plz.group() not in ['12043', '12045', '12047', '12049', '12051', '12053', '13573', '12089']:
+        return None
   if apartment.get("rent") is not None:
     if re.findall(r'\d', apartment["rent"]) and not (400 < int(''.join(re.findall(r'\d', apartment["rent"])[:3])) < SET_SCRAPE_HOUSING_FILTER_RENT):
       return None
