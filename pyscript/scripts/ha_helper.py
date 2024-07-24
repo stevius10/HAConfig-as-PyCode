@@ -21,7 +21,6 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
       log_truncate(log_size_truncated=CFG_LOG_SIZE)
     if trigger_type == "time": 
       log_truncate(log_size_truncated=0)
-      log_rotate()
       system_log.clear()
   except Exception as e: 
     raise e
@@ -70,7 +69,7 @@ def log_rotate(file=CFG_PATH_FILE_LOG):
       archive_size = len(archive)
       
       if archive_size > CFG_LOG_ARCHIV_SIZE:
-        archive_trunc_size = int(len(archive) * 0.1) # shorten ten percent if exceeded
+        archive_trunc_size = int(len(archive) * 0.2) # shorten twenty percent if exceeded
         archive_truncated = archive[archive_trunc_size:]
         archive_truncated = '\n'.join(archive_truncated) + '\n'
         archive_truncated.seek(0, 0)

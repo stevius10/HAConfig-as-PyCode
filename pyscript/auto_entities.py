@@ -38,10 +38,9 @@ def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace
   @state_trigger(expr(entity, default, "!="), state_hold=1)
   @debugged
   def timer_start(duration=delay):
-    if state.get(entity) != default and state.get(entity) not in MAP_STATE_UNDEFINED:
-      timer.start(entity_id=entity_timer, duration=delay)
-      remaining = state.getattr(entity_timer).get('remaining')
-      store(entity=entity_persisted, value=remaining)
+    timer.start(entity_id=entity_timer, duration=delay)
+    remaining = state.getattr(entity_timer).get('remaining')
+    store(entity=entity_persisted, value=remaining)
 
     return {"entity": entity_timer, "status": "started", "details": {"duration": duration}}
 
@@ -63,9 +62,9 @@ def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace
   @time_trigger('shutdown')
   def timer_shutdown():
     timer.pause(entity_id=entity_timer)
-    task.sleep(1)
     homeassistant.update_entity(entity_id=entity_timer)
     store(entity=entity_persisted, value=state.getattr(entity_timer).get('remaining'), result=False)
+    task.sleep(1)
     # return {"entity": entity_timer, "status": "stored", "details": {"remaining": remaining}}
 
   trigger.extend([timer_init, timer_start, timer_stop, timer_reset, timer_shutdown])
