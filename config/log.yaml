@@ -15,17 +15,19 @@ logger:
       - "will never trigger"
     homeassistant: 
       - "Future exception was never retrieved"
+    homeassistant.components.braviatv.coordinator:
+      - "braviatv"
     homeassistant.components.command_line.utils: 
       - "Timeout for command: python3"
     homeassistant.components.google_assistant.http: 
       - "googleapis.com"
-    homeassistant.components.websocket_api.http.connection:
-      - "not found"
-      - "Unexpected error inside websocket API"
     homeassistant.components.hassio:
       - "/addons"
     homeassistant.components.hassio.handlers:
       - "/addons"
+    homeassistant.components.websocket_api.http.connection:
+      - "not found"
+      - "Unexpected error inside websocket API"
     homeassistant.helpers.entity:
       - "Update"
     homeassistant.helpers.script.websocket_api_script:
@@ -40,6 +42,8 @@ logger:
       - "Error handling request"
     habluetooth.scanner:
       - "org.bluez.Error.InProgress"
+    miio.miioprotocol:
+      - "error"
     py.warnings:
       - "EvalFuncVar.__call__"
       - "Unverified HTTPS request"

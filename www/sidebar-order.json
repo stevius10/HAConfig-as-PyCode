@@ -20,9 +20,14 @@
       "name": "Web-Filter"
     },
     {
-      "item": "Zigbee2MQTT", 
+      "item": "zigbee2mqtt", 
       "icon": "mdi:access-point-network",
       "name": "Heimnetz"
+    },
+    {
+      "item": "terminal",
+      "icon": "mdi:console", 
+      "name": "Terminal"
     },
     {
       "new_item": true,
@@ -83,10 +88,6 @@
     },
     {
       "item": "Medien",
-      "hide": true
-    },
-    {
-      "item": "terminal",
       "hide": true
     }
 

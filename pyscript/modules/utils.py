@@ -62,9 +62,8 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
 
   conditions = []
   if defined:
-    conditions.append(f"{entity}.value is not None and {entity}.old_value is not None")
-    states_undefined_str = ", ".join([f"\'{state}\'" for state in MAP_STATE_HA_UNDEFINED])
-    conditions.append(f"{entity} not in [{states_undefined_str}]")
+    states_undefined_str = ", ".join([f' \"{state}\" ' for state in MAP_STATE_HA_UNDEFINED])
+    conditions.append(f'{entity} is not None and {entity} not in [{states_undefined_str}]')
       
   if expression:
     if isinstance(expression, list):
@@ -73,7 +72,7 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
       elif comparator in ["!=", "not"]:
         conditions.append(f"{entity} not in {expression}")
     if isinstance(expression, (int, float)) or comparator in ['<', '>']:
-      conditions.append(f"float({entity}) {comparator} {expression}")
+      conditions.append(f"int(float({entity})) {comparator} {expression}")
     elif isinstance(expression, str):
       conditions.append(f"{entity} {comparator} \'{expression}\'")
   else:
@@ -83,10 +82,11 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
 
 # Persistence
 
+@debugged
 def store(entity, value=None, default="", result=True, **kwargs): 
   attributes = kwargs if kwargs else {}
   
-  if not value: # store and restore persistence
+  if value is None: # store and restore persistence
     state.persist(entity, default, attributes)
 
   else: # set value
@@ -97,7 +97,9 @@ def store(entity, value=None, default="", result=True, **kwargs):
 
   if result: #  avoid on shutdown 
     homeassistant.update_entity(entity_id=entity)
-    return str(state.get(entity)) or ""
+    value = str(state.get(entity))
+    if value and value != default: 
+      return { "entity": entity,  "value": value }
 
 # Utility
 
