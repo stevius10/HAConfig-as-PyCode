@@ -28,7 +28,7 @@ def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace
   @logged
   def timer_init():
     remaining = store(entity=entity_persisted)
-    if remaining: # and re.match(r'[0-9]{1,2}:[0-5][0-9]:[0-5][0-9]', remaining):
+    if remaining and re.match(r'[0-9]{1,2}:[0-5][0-9]:[0-5][0-9]', str(remaining)):
       timer_start(duration=remaining)
       store(entity=entity_persisted, value="")
       return {"entity": entity_timer, "status": "restored", "details": {"duration": remaining}}
@@ -39,9 +39,6 @@ def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace
   @debugged
   def timer_start(duration=delay):
     timer.start(entity_id=entity_timer, duration=delay)
-    remaining = state.getattr(entity_timer).get('remaining')
-    store(entity=entity_persisted, value=remaining)
-
     return {"entity": entity_timer, "status": "started", "details": {"duration": duration}}
 
   @event_trigger("timer.finished", f"entity_id == '{entity_timer}'")
@@ -63,9 +60,9 @@ def timeout_factory(entity, default, delay=0): # consider delay set 0 to replace
   def timer_shutdown():
     timer.pause(entity_id=entity_timer)
     homeassistant.update_entity(entity_id=entity_timer)
-    store(entity=entity_persisted, value=state.getattr(entity_timer).get('remaining'), result=False)
-    task.sleep(1)
-    # return {"entity": entity_timer, "status": "stored", "details": {"remaining": remaining}}
+    store(entity=entity_persisted, value=state.getattr(entity_timer).get('remaining', ''), result=False)
+    homeassistant.update_entity(entity_id=entity_timer)
+    store(entity=entity_persisted, value=state.getattr(entity_timer).get('remaining', ''), result=True)
 
   trigger.extend([timer_init, timer_start, timer_stop, timer_reset, timer_shutdown])
 

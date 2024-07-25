@@ -48,6 +48,7 @@ logger:
       - "EvalFuncVar.__call__"
       - "Unverified HTTPS request"
     root:
+      - "DTSTAMP"
       - "Ical data was modified"
       - "BEGIN:VEVENT"
 

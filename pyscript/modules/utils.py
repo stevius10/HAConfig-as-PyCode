@@ -51,7 +51,6 @@ def logged(func):
 
 # Functional 
 
-@debugged
 def expr(entity, expression="", comparator="==", defined=True, operator='or'):
   if entity and not isinstance(entity, str):
     if isinstance(entity, list):
@@ -83,23 +82,20 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
 # Persistence
 
 @debugged
-def store(entity, value=None, default="", result=True, **kwargs): 
+def store(entity, value="", result=True, **kwargs): 
   attributes = kwargs if kwargs else {}
   
-  if value is None: # store and restore persistence
-    state.persist(entity, default, attributes)
-
-  else: # set value
-    if not state.get(entity):
-      state.persist(entity)
+  if value is not None or value == "":
     state.set(entity, value, attributes)
+    homeassistant.update_entity(entity_id=entity)
     state.persist(entity)
 
-  if result: #  avoid on shutdown 
+  if value is None:
+    state.persist(entity, default_value="")
+
+  if result:
     homeassistant.update_entity(entity_id=entity)
-    value = str(state.get(entity))
-    if value and value != default: 
-      return { "entity": entity,  "value": value }
+    return { "entity": entity,  "value": value }
 
 # Utility
 
