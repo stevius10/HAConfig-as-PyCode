@@ -26,7 +26,6 @@ def scrape_housing_factory(provider):
   def scrape_housing_persistence():
       store(entity=get_entity(provider))
 
-  @logged
   @service(f"pyscript.scrape_housing_{provider}", supports_response="optional")
   def scrape_housing(provider=provider):
     try: 

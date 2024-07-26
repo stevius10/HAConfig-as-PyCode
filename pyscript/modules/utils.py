@@ -81,22 +81,18 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
 
 # Persistence
 
-@debugged
-def store(entity, value="", result=True, **kwargs): 
-  attributes = kwargs if kwargs else {}
-  
-  if value is None:
-    state.persist(entity, default_value="")
-    
-  if value or value == "":
-    state.set(entity, value, attributes)
+def store(entity, value=None, result=True, **kwargs): 
+
+  if value is not None:
+    state.set(entity, value, kwargs if kwargs else {})
     homeassistant.update_entity(entity_id=entity)
     state.persist(entity)
+  else: 
+    state.persist(entity, default_value="")
 
   if result:
     homeassistant.update_entity(entity_id=entity)
-    entity_state = str(state.get(entity))
-    log(entity_state)
+    entity_state = state.get(entity)
     return entity_state
   
 # Utility
