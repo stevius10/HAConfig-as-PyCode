@@ -49,39 +49,12 @@ HAConfig-as-PyCode is built on an event-driven architecture, integrating Python 
 - **[`filesystem.py`](pyscript/python/filesystem.py)**: Handles file system operations requiring privileges beyond the PyScript sandbox.
 - **[`logfile.py`](pyscript/python/logfile.py)**: Structured file logging operations with a partly singleton pattern for consistent log handling.
 
-## Structure
 
-```plaintext
-apps/
-  air_control.py
-  scrape_housing.py
-auto_control.py
-auto_entities.py
-auto_motion.py
-auto_notify.py
-auto_presence.py
-modules/
-  constants/
-    config.py
-    data.py
-    entities.py
-    expressions.py
-    mappings.py
-    settings.py
-  exceptions.py
-  utils.py
-python/
-  filesystem.py
-  logfile.py
-requirements.txt
-scripts/
-  ha_helper.py
-  ha_off.py
-  ha_system.py
-  ha_utils.py
-  subprocesses.py
-  tests.py
-```
+### Project-wide Logging
+
+Project-wide logging is implemented using observability decorators from `utils.py`, leveraging `logfile.py` for structured logging operations. It uses a singleton pattern to ensure uniform log handling across the entire project, providing centralized logging functionalities and facilitating debugging and monitoring function calls.
+
+![Log](www/example-log.png)
 
 ### Customization
 
@@ -105,9 +78,39 @@ scripts/
 
 - **Customized Shell**: The project includes a customized shell environment with an optimized configuration for the Zsh shell, located in **`files/.zshrc`**.
 
-## Project Structure
+### Project Structure
 
 ```plaintext
+pyscript/
+  apps/
+    air_control.py
+    scrape_housing.py
+  auto_control.py
+  auto_entities.py
+  auto_motion.py
+  auto_notify.py
+  auto_presence.py
+  modules/
+    constants/
+      config.py
+      data.py
+      entities.py
+      expressions.py
+      mappings.py
+      settings.py
+    generic.py
+    utils.py
+  python/
+    filesystem.py
+    logfile.py
+  requirements.txt
+  scripts/
+    ha_helper.py
+    ha_off.py
+    ha_system.py
+    ha_utils.py
+    subprocesses.py
+    tests.py
 config/
   assistant.yaml
   calendar.yaml
@@ -120,12 +123,4 @@ config/
   utils.yaml
 files/
   .zshrc
-pyscript/
-    [..]
 ```
-
-### Project-wide Logging
-
-Project-wide logging is implemented using observability decorators from `utils.py`, leveraging `logfile.py` for structured logging operations. It uses a singleton pattern to ensure uniform log handling across the entire project, providing centralized logging functionalities and facilitating debugging and monitoring function calls.
-
-![Log](www/example-log.png)
