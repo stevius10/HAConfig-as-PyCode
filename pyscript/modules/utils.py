@@ -3,7 +3,8 @@ import sys
 
 from constants.config import CFG_LOG_LOGGER, CFG_LOG_LEVEL, CFG_LOGFILE_DEBUG_FUNCTION_STARTED, CFG_LOGFILE_IMPORT_RETRIES, CFG_LOGFILE_IMPORT_TIMEOUT, CFG_PATH_DIR_PY_NATIVE
 from constants.mappings import MAP_STATE_HA_UNDEFINED
-from exceptions import ForwardException
+
+from generic import ForwardException
 
 # Logging
 
@@ -25,12 +26,12 @@ def log(msg="", title="", logger=CFG_LOG_LOGGER, level=CFG_LOG_LEVEL, **kwargs):
 
 # Monitoring 
 
-def _monitored(func, log_func, debug_function_started=CFG_LOGFILE_DEBUG_FUNCTION_STARTED):
+def _observed(func, log_func, debug_function_started=CFG_LOGFILE_DEBUG_FUNCTION_STARTED):
   def wrapper(*args, **kwargs):
     if kwargs.get('context'): del kwargs['context']
     context = ".".join([func.global_ctx_name, func.name]) if hasattr(func, 'global_ctx_name') and hasattr(func, 'name') else ""
     if debug_function_started:
-      debug(f"{log_func_format(func, args, kwargs)}", title=context)
+      debug(f"{format_observed(func, args, kwargs)}", title=context)
     try:
       result = func(*args, **kwargs)
     except Exception as e:
@@ -38,16 +39,22 @@ def _monitored(func, log_func, debug_function_started=CFG_LOGFILE_DEBUG_FUNCTION
     finally:
       if result:
         if log_func == "log":
-          log(log_func_format(func, args, kwargs, result), title=context)
-        debug(log_func_format(func, args, kwargs, result), title=context)
+          log(format_observed(func, args, kwargs, result), title=context)
+        debug(format_observed(func, args, kwargs, result), title=context)
     return result
   return wrapper
 
 def debugged(func):
-  return _monitored(func, "debug")
+  return _observed(func, "debug")
 
 def logged(func):
-  return _monitored(func, "log")
+  return _observed(func, "log")
+
+def resulted(status, entity=None, message=None, **kwargs):
+  return { "status": status.value,
+    **({"entity": entity} if entity else {}),
+    **({"message": message} if message else {}),
+    **({"details": kwargs} if kwargs else {}) }
 
 # Functional 
 
@@ -110,30 +117,7 @@ def get_logfile(name=None):
       else: 
         raise e
 
-def logs(obj):
-  if isinstance(obj, str):
-    return obj
-  elif isinstance(obj, dict):
-    items = []
-    for k in obj.keys():
-      items.append(f"{k}={logs(obj.get(k, ''))}")
-    return ", ".join(items)
-  elif isinstance(obj, (list, tuple)):
-    items = [logs(item) for item in obj]
-    return f"[{', '.join(items)}]"
-  else:
-    try:
-      attributes = vars(obj)
-      attrs = []
-      for key in attributes.keys():
-        attrs.append(f"{key}={logs(attributes.get(key, ''))}")
-      return f"{type(obj).name}({', '.join(attrs)})"
-    except TypeError:
-      return str(obj)
-
-def log_func_format(func, args, kwargs, result=None):
-  log_func_format_args = ", ".join([str(arg) if arg is not None else "" for arg in args]) if args else ""
-  log_func_format_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if k != "context"]) if kwargs else ""
-  log_func_format_arg = ", ".join(filter(None, [log_func_format_args, log_func_format_kwargs]))
-  func_name = func.name if hasattr(func, 'name') else ''
-  return f"{func_name}({log_func_format_arg})" + (f": \n-> {result}" if result else "")
+def format_observed(func, args, kwargs, result=None):
+  str_args = ", ".join([str(arg) if arg is not None else "" for arg in args]) if args else ""
+  str_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if k != "context"]) if kwargs else ""
+  return f"{func.name if hasattr(func, 'name') else ''}({", ".join(filter(None, [str_args, str_kwargs]))})" + (f": \n-> {result}" if result else "")

@@ -7,7 +7,7 @@ from constants.mappings import MAP_EVENT_FOLDER_WATCHER
 
 from utils import *
 
-from exceptions import IORetriesExceededException
+from generic import IORetriesExceededException
 
 # Automation
 
