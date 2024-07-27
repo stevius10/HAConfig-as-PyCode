@@ -2,9 +2,13 @@ pyscript:
   allow_all_imports: true
   hass_is_global: true
   apps:
-    debug: 
-      - name: debug
-    services: 
-      - name: services
-    sync_git: 
-      - name: sync_git
+    app_debug: 
+    - name: app_debug
+    air_control: 
+    - name: air_control
+    run_tests: 
+    - name: run_tests
+    scrape_housing: 
+    - name: scrape_housing
+    subprocesses: 
+    - name: subprocesses

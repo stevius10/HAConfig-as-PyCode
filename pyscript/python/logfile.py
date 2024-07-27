@@ -1,64 +1,86 @@
+import json
 import logging
+import os
 from pathlib import Path
 
-PATH_DIR_PY_LOG = "/config/pyscript/logs/"
+from constants.config import CFG_LOGFILE_DEBUG_FILE, CFG_LOGFILE_FORMAT, CFG_LOGFILE_LOG_SIZE, CFG_PATH_DIR_LOG, CFG_PATH_DIR_PY_LOGS_COMPONENTS
 
-LOG_LOGFILE_FORMAT = "%(asctime)s: %(message)s"
+os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
 
 class Logfile:
   _logger = None
 
-  def __init__(self, ctx=None):
-    if ctx is not None:
-      self._logger = self._get_file_logger(ctx)
+  def __init__(self, name=None, component_log=True):
+    self.component_log = component_log
+    if name:
+      self.name = name.split(".")[1] if not name.isalpha() else name
+      self._logger = self._get_file_logger()
     else:
       self._logger = self._get_debug_logger()
 
-  def _get_file_logger(self, ctx):
-    self.name = ctx.split(".")[1]
+  def _get_file_logger(self):
     self.history = []
-    logger = self._create_logger(name=self.name)
+    log_dir = CFG_PATH_DIR_PY_LOGS_COMPONENTS if self.component_log else CFG_PATH_DIR_LOG
+    self.logfile = Path(log_dir, f"{self.name}.log")
+    logger = self._create_logger(self.logfile)
     return logger
 
   @classmethod
   def _get_debug_logger(cls):
     if cls._logger is None:
-      cls._logger = cls._create_logger(name="debug")
+      debug_logfile = Path(CFG_PATH_DIR_LOG, f"{CFG_LOGFILE_DEBUG_FILE}.log")
+      cls._logger = cls._create_logger(debug_logfile)
     return cls._logger
 
   @staticmethod
-  def _create_logger(name):
-    logfile = Path(PATH_DIR_PY_LOG, f"{name}.log")
+  def _create_logger(logfile):
+    logger = logging.getLogger(logfile.stem)
+    if logger.hasHandlers():
+      logger.handlers.clear()
     handler = logging.FileHandler(logfile, mode='w+')
-    handler.setFormatter(logging.Formatter(LOG_LOGFILE_FORMAT))
-    logger = logging.getLogger(name)
+    handler.setFormatter(logging.Formatter(CFG_LOGFILE_FORMAT))
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
     return logger
 
   def log(self, message=None):
-    if isinstance(message, str):
-      if message:
-        self._logger.info(message)
-        self.history.append(message)
-    elif isinstance(message, list):
-      for msg in message:
-        if msg: self.log(str(msg))
+    if message:
+      if isinstance(message, str):
+        if '\n' in message:
+          for msg in message.split('\n'):
+            self.log(msg)
+        else:
+          self._logger.info(message)
+          self.history.append(message)
+      elif isinstance(message, list):
+        for msg in message:
+          self.log(msg)
 
   @classmethod
   def debug(cls, message=None):
-    logger = cls._get_debug_logger()
-    if isinstance(message, str):
-      if message:
-        logger.info(message)
-    elif isinstance(message, list):
-      for msg in message:
-        if msg: logger.info(message)
-
+    if message:
+      if isinstance(message, str):
+        if '\n' in message:
+          for msg in message.split('\n'):
+            cls.debug(msg)
+        else:
+          cls._get_debug_logger().info(message)
+      elif isinstance(message, list):
+        for msg in message:
+          cls.debug(msg)
+          
   def close(self):
-    if hasattr(self, 'history'):
-      if self.history:
-        self.history = "\n".join(str(item) for item in self.history)
-        return {"service": self.name, "logs": self.history}
-    return {}
+    try:
+      if hasattr(self, 'history'):
+        lines = len(self.history)
+        if lines > CFG_LOGFILE_LOG_SIZE:
+          lines_half = CFG_LOGFILE_LOG_SIZE // 2
+          lines_half_start = self.history[:lines_half]
+          lines_half_stop = self.history[-lines_half:]
+          self.history = lines_half_start + [f"... [{lines - len(lines_half_start) - len(lines_half_stop)} lines] ..."] + lines_half_stop
+        self.history = " ".join(self.history)
+
+      return { "file": self.logfile.as_posix(), "result": self.history }
+    except Exception as e:
+      return str(e)

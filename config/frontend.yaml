@@ -2,7 +2,7 @@ frontend:
   extra_module_url: 
   - /hacsfiles/lovelace-card-mod/card-mod.js
   - /hacsfiles/ha-custom-sidebar/ha-custom-sidebar.js
-  
+
   themes:
     test: 
       info-color: "#778C36"
@@ -12,13 +12,13 @@ lovelace:
   mode: yaml
 
   resources:
-    - url: /hacsfiles/lovelace-layout-card/layout-card.js
-      type: module
-    - url: /hacsfiles/stack-in-card/stack-in-card.js
-      type: module
     - url: /hacsfiles/swipe-card/swipe-card.js
       type: module
     - url: /hacsfiles/lovelace-badge-card/badge-card.js
+      type: module
+    - url: /hacsfiles/lovelace-layout-card/layout-card.js
+      type: module
+    - url: /hacsfiles/stack-in-card/stack-in-card.js
       type: module
     - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
       type: module

@@ -8,9 +8,11 @@
 
 !pyscript
 !pyscript/**/*
+pyscript/**/__init__.py
+pyscript/apps/debug/**/*
+pyscript/logs
 pyscript/logs/**/*
 pyscript/snippets/**/*
-pyscript/apps/debug.py
 pyscript/modules/constants/secrets.py
 
 !scripts
@@ -27,5 +29,8 @@ www/community/*
 !.gitignore
 
 **/__pycache__/
+**/.idea/
 
 **/*.log
+**/*.log.*
+**/*.pyc

@@ -1,71 +1,123 @@
-from constants.config import LOG_LOGGER_SYS, LOG_LOGGING_LEVEL
-from constants.mappings import STATES_UNDEFINED
-
 import importlib
+import sys 
 
-# Expressions
+from constants.config import CFG_LOG_LOGGER, CFG_LOG_LEVEL, CFG_LOGFILE_DEBUG_FUNCTION_STARTED, CFG_LOGFILE_IMPORT_RETRIES, CFG_LOGFILE_IMPORT_TIMEOUT, CFG_PATH_DIR_PY_NATIVE
+from constants.mappings import MAP_STATE_HA_UNDEFINED
 
-def expr(entity, expression="", comparator="==", defined=True): 
-  
-  if isinstance(entity, list) or isinstance(entity, dict):
-    return expressions(entities=entity, expression=expression, defined=defined, comparator=comparator)
+from generic import ForwardException
 
-  statement_condition_defined = f"and str({entity}) not in {STATES_UNDEFINED}" if defined else ""
-
-  if expression is not None:
-    if any([isinstance(expression, (int, float)), '>' in comparator, '<' in comparator]):
-      entity = "int({})".format(entity) if entity.isalnum() else 0 # TODO: hardly debuggable
-    elif expression in [True, False]: expression = str(expression)
-    elif isinstance(expression, str): expression = f"'{expression}'"
-    expression = f"{comparator} {expression}"
-  else:
-    expression = ""
-    
-  return f"{entity} {expression} {statement_condition_defined}"
-
-def expressions(entities, expression=None, comparator="==", defined=True, operator='or'):  
-  if expression:
-    if isinstance(expression, int):
-      for i in range(len(entities)):
-        entities[i] = f"{entities[i]}"
-    result = f" {operator} ".join([expr(entity, expression, defined=defined, comparator=comparator) for entity in entities])
-  else: 
-    result = f" {operator} ".join([f"({expr(entity, expression=None, defined=defined)})" for entity in entities])
-  return result
-  
 # Logging
 
-def log(msg="", title="", logger=LOG_LOGGER_SYS, level=LOG_LOGGING_LEVEL):
-  if not isinstance(msg, str):
-    logger += "".join([getattr(msg, attr, "") for attr in ("get_name", "func_name")])
-  if title: message = f"[{title}] {message}"
-  system_log.write(message=msg, logger=logger, level=level)
+def debug(msg="", title=""):
+  if title: 
+    msg = f"[{title}] {msg}"
+  if msg:
+    try:
+      logfile = get_logfile()
+      logfile.debug(msg)
+    except: # avoid startup validation
+      pass  # handled functional
 
-def debug(msg=""):
-    logfile = importlib.import_module("logfile") # except: pass # on purpose: avoid validate before sys.path appended
-    logfile.Logfile.debug(msg)
+def log(msg="", title="", logger=CFG_LOG_LOGGER, level=CFG_LOG_LEVEL, **kwargs):
+  if title: 
+    msg = f"[{title}] {msg}"
+  if msg: 
+    system_log.write(message=str(msg), logger=logger, level=level)
 
-def logged(func):
+# Monitoring 
+
+def _observed(func, log_func, debug_function_started=CFG_LOGFILE_DEBUG_FUNCTION_STARTED):
   def wrapper(*args, **kwargs):
-    result = func(*args, **kwargs)
-    if "context" in kwargs: del kwargs['context']
-    parameter_args = ', '.join([str(arg) for arg in args if arg is not None]) if args else None
-    parameter_kwargs = ', '.join([f'{k}={v}' for k, v in kwargs.items() if v is not None]) if kwargs else None
-    result = str(result) if result is not None else ''
-    
-    if kwargs.get('trigger_type') != 'state' or (kwargs.get('trigger_type') == 'state' and 
-      kwargs.get('value') not in STATES_UNDEFINED and kwargs.get('old_value') not in STATES_UNDEFINED):
-      log(msg=f"{func.name}{f'({parameter_args})' if parameter_args else ''}{f'({parameter_kwargs})' if parameter_kwargs else ''}{f'({result})' if result else ''}")
+    if kwargs.get('context'): del kwargs['context']
+    context = ".".join([func.global_ctx_name, func.name]) if hasattr(func, 'global_ctx_name') and hasattr(func, 'name') else ""
+    if debug_function_started:
+      debug(f"{format_observed(func, args, kwargs)}", title=context)
+    try:
+      result = func(*args, **kwargs)
+    except Exception as e:
+      raise ForwardException(e, context)
+    finally:
+      if result:
+        if log_func == "log":
+          log(format_observed(func, args, kwargs, result), title=context)
+        debug(format_observed(func, args, kwargs, result), title=context)
     return result
   return wrapper
 
 def debugged(func):
-  def wrapper(*args, **kwargs):
-    result = func(*args, **kwargs)
-    if "context" in kwargs: del kwargs['context']
-    parameter_args = ', '.join([str(arg) for arg in args if arg is not None]) if args else None
-    parameter_kwargs = ', '.join([f'{k}={v}' for k, v in kwargs.items() if v is not None]) if kwargs else None
-    result = str(result) if result is not None else ''
-    debug(msg=f"{func.name}{f'({parameter_args})' if parameter_args else ''}{f'({parameter_kwargs})' if parameter_kwargs else ''}{f'({result})' if result else ''}")
-    return result
-  return wrapper
+  return _observed(func, "debug")
+
+def logged(func):
+  return _observed(func, "log")
+
+def resulted(status, entity=None, message=None, **kwargs):
+  return { "status": status.value,
+    **({"entity": entity} if entity else {}),
+    **({"message": message} if message else {}),
+    **({"details": kwargs} if kwargs else {}) }
+
+# Functional 
+
+def expr(entity, expression="", comparator="==", defined=True, operator='or'):
+  if entity and not isinstance(entity, str):
+    if isinstance(entity, list):
+      items = [f"({expr(item, expression, comparator, defined)})" for item in entity]
+    if isinstance(entity, dict):
+      items = [f"({expr(key, value, expression, comparator, defined)})" for key, value in entity.items()]
+    return f" {operator} ".join(items) if items else None
+
+  conditions = []
+  if defined:
+    states_undefined_str = ", ".join([f' \"{state}\" ' for state in MAP_STATE_HA_UNDEFINED])
+    conditions.append(f'{entity} is not None and {entity} not in [{states_undefined_str}]')
+      
+  if expression:
+    if isinstance(expression, list):
+      if comparator in [None, "==", "in"]:
+        conditions.append(f"{entity} in {expression}")
+      elif comparator in ["!=", "not"]:
+        conditions.append(f"{entity} not in {expression}")
+    if isinstance(expression, (int, float)) or comparator in ['<', '>']:
+      conditions.append(f"int(float({entity})) {comparator} {expression}")
+    elif isinstance(expression, str):
+      conditions.append(f"{entity} {comparator} \'{expression}\'")
+  else:
+    conditions.append(f"{entity}")
+
+  return " and ".join(conditions)
+
+# Persistence
+
+def store(entity, value=None, result=True, **kwargs): 
+
+  if value is not None:
+    state.set(entity, value, kwargs if kwargs else {})
+    homeassistant.update_entity(entity_id=entity)
+    state.persist(entity)
+  else: 
+    state.persist(entity, default_value="")
+
+  if result:
+    homeassistant.update_entity(entity_id=entity)
+    entity_state = state.get(entity)
+    return entity_state
+  
+# Utility
+
+def get_logfile(name=None):
+  logfile = None
+  for attempt in range(CFG_LOGFILE_IMPORT_RETRIES):
+    try:
+      from logfile import Logfile
+      logfile = Logfile(name if name else None)
+      return logfile
+    except Exception as e:
+      if attempt < CFG_LOGFILE_IMPORT_RETRIES - 1: 
+        task.wait_until(event_trigger=MAP_EVENT_SYSTEM_STARTED, timeout=CFG_LOGFILE_IMPORT_TIMEOUT)
+      else: 
+        raise e
+
+def format_observed(func, args, kwargs, result=None):
+  str_args = ", ".join([str(arg) if arg is not None else "" for arg in args]) if args else ""
+  str_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if k != "context"]) if kwargs else ""
+  return f"{func.name if hasattr(func, 'name') else ''}({", ".join(filter(None, [str_args, str_kwargs]))})" + (f": \n-> {result}" if result else "")

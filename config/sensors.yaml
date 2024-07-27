@@ -1,3 +1,13 @@
+# CLI based sensors
+
+command_line:
+
+  - sensor: 
+      name: V-CLI-Lastbackup
+      unique_id: v_cli_lastbackup
+      command: "bash /config/www/resources/sensors/v-cli-lastbackup.sh"
+      scan_interval: 3600
+      
 # Template based sensors
 
 template:
@@ -179,8 +189,9 @@ template:
     - name: Luftqualität
       unique_id: sensor.luftqualitat
       state: |
-        {{ states('sensor.wz_luft') }}/{{ states('sensor.sz_luft') }}
-    
+        {% set wz_luft = states('sensor.wz_luft') | int(default=0) | round(0) %}
+        {% set sz_luft = states('sensor.sz_luft') | int(default=0) | round(0) %}
+        {{ wz_luft }}/{{ sz_luft }}    
     # Helper
     - name: None
       unique_id: sensor.none
@@ -238,37 +249,3 @@ binary_sensor:
         max_samples: 4
         min_gradient: 0.00016
         device_class: heat
-
-# CLI based sensors
-
-command_line:
-
-  - sensor: 
-      name: V-Last-Backup
-      command: "bash /config/config/.sensors/v-lastbackup.sh"
-      scan_interval: 3600
-      
-  - sensor: 
-      name: V-Friedrichsheim
-      command: "python3 /config/config/.sensors/v-friedrichsheim.py"
-      scan_interval: 5400
-  
-  - sensor: 
-      name: V-Neukölln
-      command: "python3 /config/config/.sensors/v-neukolln.py"
-      scan_interval: 5400
-  
-  - sensor: 
-      name: V-InBerlinWohnen
-      command: "python3 /config/config/.sensors/v-ibw.py"
-      scan_interval: 5400
-  
-  - sensor: 
-      name: V-WBM
-      command: "python3 /config/config/.sensors/v-wbm.py"
-      scan_interval: 5400
-  
-  - sensor: 
-      name: V-Gewobag
-      command: "python3 /config/config/.sensors/v-gewobag.py"
-      scan_interval: 5400

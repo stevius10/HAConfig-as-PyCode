@@ -1,0 +1,177 @@
+# Mocks
+from functools import wraps
+from unittest.mock import MagicMock
+
+# Objects
+
+class MockState:
+  def __init__(self):
+    print("Initializing MockState")
+    self.get = MagicMock()
+    self.set = MagicMock()
+    self.delete = MagicMock()
+    self.getattr = MagicMock()
+    self.names = MagicMock()
+    self.persist = MagicMock()
+    self.setattr = MagicMock()
+
+class MockService:
+  def __init__(self):
+    print("Initializing MockService")
+    self.call = MagicMock()
+    self.has_service = MagicMock()
+
+class MockEvent:
+  def __init__(self):
+    print("Initializing MockEvent")
+    self.fire = MagicMock()
+
+class MockLog:
+  def __init__(self):
+    print("Initializing MockLog")
+    self.debug = MagicMock()
+    self.info = MagicMock()
+    self.warning = MagicMock()
+    self.error = MagicMock()
+    self.print = MagicMock()
+
+class MockTask:
+  def __init__(self):
+    print("Initializing MockTask")
+    self.create = MagicMock()
+    self.cancel = MagicMock()
+    self.current_task = MagicMock()
+    self.name2id = MagicMock()
+    self.wait = MagicMock()
+    self.add_done_callback = MagicMock()
+    self.remove_done_callback = MagicMock()
+    self.executor = MagicMock()
+    self.sleep = MagicMock()
+    self.unique = MagicMock()
+    self.wait_until = MagicMock()
+
+# Mock
+
+class MockPyscript:
+  def __init__(self):
+    print("Instantiating MockState in MockPyscript")
+    self.state = MockState()
+    print("Instantiating MockService in MockPyscript")
+    self.service = MockService()
+    print("Instantiating MockEvent in MockPyscript")
+    self.event = MockEvent()
+    print("Instantiating MockLog in MockPyscript")
+    self.log = MockLog()
+    print("Instantiating MockTask in MockPyscript")
+    self.task = MockTask()
+
+  # Decorator
+
+  def service(self, service_name=None, supports_response=None):
+    print(f"Creating service decorator for {service_name}")
+    def decorator(func):
+      @wraps(func)
+      def wrapper(*args, **kwargs):
+        print(f"Calling service {service_name} with args: {args}, kwargs: {kwargs}")
+        self.service.call(service_name, *args, **kwargs)
+        return func(*args, **kwargs)
+      return wrapper
+    return decorator
+
+  def task_unique(self, task_name, kill_me=False):
+    print(f"Creating task_unique decorator for {task_name}")
+    def decorator(func):
+      @wraps(func)
+      def wrapper(*args, **kwargs):
+        print(f"Calling task_unique {task_name} with args: {args}, kwargs: {kwargs}")
+        self.task.unique(task_name, kill_me)
+        return func(*args, **kwargs)
+      return wrapper
+    return decorator
+
+  def pyscript_executor(self, func):
+    print(f"Creating pyscript_executor decorator for {func.__name__}")
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+      print(f"Executing pyscript_executor for {func.__name__} with args: {args}, kwargs: {kwargs}")
+      self.task.executor(func, *args, **kwargs)
+      return func(*args, **kwargs)
+    return wrapper
+
+  # Trigger
+
+  def state_trigger(self, str_expr, state_hold=None, state_hold_false=None, state_check_now=False, kwargs=None, watch=None):
+    print(f"Creating state_trigger for {str_expr}")
+    if kwargs is None:
+      kwargs = {}
+    def decorator(func):
+      @wraps(func)
+      def wrapper(*args, **kwargs):
+        print(f"Executing state_trigger for {str_expr} with args: {args}, kwargs: {kwargs}")
+        self.state.get(str_expr, *args, **kwargs)
+        return func(*args, **kwargs)
+      return wrapper
+    return decorator
+
+  def time_trigger(self, time_spec, kwargs=None):
+    print(f"Creating time_trigger for {time_spec}")
+    if kwargs is None:
+      kwargs = {}
+    def decorator(func):
+      @wraps(func)
+      def wrapper(*args, **kwargs):
+        print(f"Executing time_trigger for {time_spec} with args: {args}, kwargs: {kwargs}")
+        self.state.get(time_spec, *args, **kwargs)
+        return func(*args, **kwargs)
+      return wrapper
+    return decorator
+
+  def event_trigger(self, event_type, str_expr=None, kwargs=None):
+    print(f"Creating event_trigger for {event_type}")
+    if kwargs is None:
+      kwargs = {}
+    def decorator(func):
+      @wraps(func)
+      def wrapper(*args, **kwargs):
+        print(f"Executing event_trigger for {event_type} with args: {args}, kwargs: {kwargs}")
+        self.event.fire(event_type, str_expr, *args, **kwargs)
+        return func(*args, **kwargs)
+      return wrapper
+    return decorator
+
+  def mqtt_trigger(self, topic, str_expr=None, kwargs=None):
+    print(f"Creating mqtt_trigger for {topic}")
+    if kwargs is None:
+      kwargs = {}
+    def decorator(func):
+      @wraps(func)
+      def wrapper(*args, **kwargs):
+        print(f"Executing mqtt_trigger for {topic} with args: {args}, kwargs: {kwargs}")
+        self.event.fire(topic, str_expr, *args, **kwargs)
+        return func(*args, **kwargs)
+      return wrapper
+    return decorator
+
+  # Condition
+
+  def state_active(self, str_expr):
+    print(f"Creating state_active for {str_expr}")
+    def decorator(func):
+      @wraps(func)
+      def wrapper(*args, **kwargs):
+        print(f"Executing state_active for {str_expr} with args: {args}, kwargs: {kwargs}")
+        self.state.get(str_expr, *args, **kwargs)
+        return func(*args, **kwargs)
+      return wrapper
+    return decorator
+
+  def time_active(self, time_spec, hold_off=None):
+    print(f"Creating time_active for {time_spec}")
+    def decorator(func):
+      @wraps(func)
+      def wrapper(*args, **kwargs):
+        print(f"Executing time_active for {time_spec} with args: {args}, kwargs: {kwargs}")
+        self.state.get(time_spec, *args, **kwargs)
+        return func(*args, **kwargs)
+      return wrapper
+    return decorator

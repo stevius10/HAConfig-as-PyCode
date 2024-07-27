@@ -1,60 +1,50 @@
-from constants.entities import AUTO_ENTITIES
-from constants.events import EVENT_SYSTEM_STARTED
-from constants.mappings import SERVICE_HA_TURN_OFF
+import regex as re
 
+from constants.entities import ENTITIES_AUTO
+from constants.mappings import MAP_EVENT_SYSTEM_STARTED, MAP_PERSISTENCE_PREFIX_TIMER, MAP_STATE_HA_TIMER_IDLE, MAP_SERVICE_HA_TURNOFF, MAP_STATE_UNDEFINED
+from constants.settings import SET_ENTITIES_GLOBAL_VOLUME_MAX
+
+from generic import RESULT_STATUS
 from utils import *
-
-entities = AUTO_ENTITIES
 
 trigger = []
 
-# Default 
+entities = ENTITIES_AUTO
 
-def default_factory(entity, func):
-  @state_trigger(expr(entity, entities.get(entity)['default'], comparator="!="), func)
-  @debugged
-  def default(func):
-    service.call(func.split(".")[0], func.split(".")[1], entity_id=entity)
-  trigger.append(default)
+def default_factory(entity, default, call, params):
 
-# Timeout
+  @state_trigger(f"{entity} {'!=' if isinstance(default, str) else 'not in'} {repr(default)} and {entity} != None")
+  def default():
+    service.call(call_service[0],  call.split(".")[1], **{k: v for k, v in params.items()})
 
-def timeout_factory(entity, default, delay=None):
-  
-  entity.split(".")[0]
+def timeout_factory(entity, default, delay=0):
+
   entity_name = entity.split(".")[1]
   entity_timer = f"timer.{entity_name}"
-  
-  @event_trigger(EVENT_SYSTEM_STARTED)
-  @state_trigger(expr(entity, expression=default, comparator="!=", defined=True), state_check_now=True)
+
+  @state_trigger(expr(entity, default, '!='), state_check_now=True, state_hold=1)
   @debugged
-  def start_timer(trigger_type=None, var_name=None):
-    if state.get(entity) != default and state.get(entity) not in STATES_UNDEFINED:
-      if trigger_type == "event" or delay == None: 
-        timer_stop(entity=entity)
-      if "delay" in entities.get(entity): 
-        timer.cancel(entity_id=entity_timer)
-        timer.start(entity_id=entity_timer, duration=delay)
-  trigger.append(start_timer)
+  def timer_start(duration=delay):
+    timer.start(entity_id=entity_timer, duration=delay)
+    return resulted(RESULT_STATUS.STARTED, entity=entity_timer, duration=delay)
 
   @event_trigger("timer.finished", f"entity_id == '{entity_timer}'")
   @debugged
   def timer_stop(**kwargs):
-    service.call("homeassistant", f"turn_{default}", entity_id=entity)
-  trigger.append(timer_stop)
-  
-  @state_trigger(expr(entity, expression=default, comparator="=="))
+    service.call("homeassistant", f"turn_{default[0] if isinstance(default, list) else default}", entity_id=entity)
+    return resulted(RESULT_STATUS.STOPPED, entity=entity_timer, details=kwargs)
+
+  @state_trigger(expr(entity, default), state_check_now=False, state_hold_false=0, state_hold=1)
   @debugged
-  def timer_reset(var_name=None):
+  def timer_reset(var_name=None, value=None, old_value=None):
     timer.cancel(entity_id=entity_timer)
-  trigger.append(timer_reset)
+    return resulted(RESULT_STATUS.CANCELED, entity=entity_timer, state=value)
 
-# Initialization
+  trigger.extend([timer_start, timer_stop, timer_reset])
 
-for entity in entities:
-  if "delay" not in entities[entity]:
-    if "func" not in entities[entity]:
-      entities_default[entity]["func"] = SERVICE_HA_TURN_OFF
-    default_factory(entity, entities.get(entity)['func'])
-  else: 
-    timeout_factory(entity, entities[entity]["default"], entities[entity]["delay"])
+for entity, details in entities.items():
+  if "delay" in details:
+    timeout_factory(entity, details["default"], details["delay"])
+  else:
+    details.setdefault("call", MAP_SERVICE_HA_TURNOFF)
+    default_factory(entity, details['default'], details['call'], details['params'])

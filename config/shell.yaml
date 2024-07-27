@@ -1,2 +1,0 @@
-shell_command:
-  filebackup: 'bash /config/pyscript/ressources/bash/filebackup.sh > /dev/null 2>&1 &'
