@@ -2,7 +2,7 @@
 
 HAConfig-as-PyCode is an event-driven, programmatic Home Assistant configuration project leveraging Python for enhanced reusability, encapsulation, and modular expandability. This project provides an alternative automation approach, focusing on developers compared to Home Assistant's default YAML-based configuration.
 
-![Mobile](www/overview-mobile.png)
+![Desktop](www/overview-desktop.png)
 
 ## Implementation
 
@@ -15,8 +15,6 @@ HAConfig-as-PyCode is built on an event-driven architecture, integrating Python 
 - **[`auto_motion.py`](pyscript/auto_motion.py)**: Implements motion sensor-based automations, mapping motion sensors to actions through the `ENTITIES_MOTION` data structure with adaptive lighting.
 - **[`auto_notify.py`](pyscript/auto_notify.py)**: Manages external communication via notifications, leveraging the `DATA_DEVICES` structure from `data.py` for mobile push notifications and automation shortcuts.
 - **[`auto_presence.py`](pyscript/auto_presence.py)**: Handles presence detection and actions based on weighted indicators and exclusions in the `ENTITIES_PRESENCE` data structure.
-
-![Desktop](www/overview-desktop.png)
 
 ### Home Automation Capabilities
 
@@ -55,7 +53,7 @@ HAConfig-as-PyCode is built on an event-driven architecture, integrating Python 
 
 - **Unit Tests and Mocks**: The project includes a suite of unit tests and mock classes to ensure testing of different components. Tests are located in the **`tests`** directory.
 
-![Log](www/example-log.png)
+![Mobile](www/overview-mobile.png)
 
 ## Structure
 
@@ -90,6 +88,8 @@ scripts/
   subprocesses.py
   tests.py
 ```
+
+![Log](www/example-log.png)
 
 ### Customization
 
