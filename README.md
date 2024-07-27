@@ -51,8 +51,6 @@ HAConfig-as-PyCode is built on an event-driven architecture, integrating Python 
 
 ## Structure
 
-![Mobile](www/overview-mobile.png)
-
 ```plaintext
 apps/
   air_control.py
@@ -87,6 +85,8 @@ scripts/
 
 ### Customization
 
+![Mobile](www/overview-mobile.png)
+
 - **User Interface**: The project includes various custom templates for the Home Assistant Lovelace UI. These are implemented through the **`templates/`** directory and external data integration.
 
     - **`badges.yaml`**: Defines badge cards for displaying system status, backup information, air quality, and providing quick access to common actions like turning everything off.
@@ -120,7 +120,7 @@ config/
   utils.yaml
 files/
   .zshrc
-  pyscript/
+pyscript/
     [..]
 ```
 

@@ -5,7 +5,7 @@ command_line:
   - sensor: 
       name: V-CLI-Lastbackup
       unique_id: v_cli_lastbackup
-      command: "bash /config/resources/sensors/v-cli-lastbackup.sh"
+      command: "bash /config/www/resources/sensors/v-cli-lastbackup.sh"
       scan_interval: 3600
       
 # Template based sensors
