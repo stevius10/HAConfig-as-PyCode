@@ -124,4 +124,8 @@ pyscript/
     [..]
 ```
 
+### Project-wide Logging
+
+Project-wide logging is implemented using observability decorators from `utils.py`, leveraging `logfile.py` for structured logging operations. It uses a singleton pattern to ensure uniform log handling across the entire project, providing centralized logging functionalities and facilitating debugging and monitoring function calls.
+
 ![Log](www/example-log.png)
