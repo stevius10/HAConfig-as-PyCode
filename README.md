@@ -49,13 +49,9 @@ HAConfig-as-PyCode is built on an event-driven architecture, integrating Python 
 - **[`filesystem.py`](pyscript/python/filesystem.py)**: Handles file system operations requiring privileges beyond the PyScript sandbox.
 - **[`logfile.py`](pyscript/python/logfile.py)**: Structured file logging operations with a partly singleton pattern for consistent log handling.
 
-### Testing (WIP)
-
-- **Unit Tests and Mocks**: The project includes a suite of unit tests and mock classes to ensure testing of different components. Tests are located in the **`tests`** directory.
+## Structure
 
 ![Mobile](www/overview-mobile.png)
-
-## Structure
 
 ```plaintext
 apps/
@@ -88,8 +84,6 @@ scripts/
   subprocesses.py
   tests.py
 ```
-
-![Log](www/example-log.png)
 
 ### Customization
 
@@ -129,3 +123,5 @@ files/
   pyscript/
     [..]
 ```
+
+![Log](www/example-log.png)
