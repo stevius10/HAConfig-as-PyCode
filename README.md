@@ -41,14 +41,13 @@ HAConfig-as-PyCode is built on an event-driven architecture, integrating Python 
   - **[`expressions.py`](pyscript/modules/constants/expressions.py)**: Expressions for various automation scenarios.
   - **[`mappings.py`](pyscript/modules/constants/mappings.py)**: Naming and mappings.
   - **[`settings.py`](pyscript/modules/constants/settings.py)**: Specific configuration values for independent service logic.
-- **[`gernic.py`](pyscript/modules/generic.py)**: Generic classes like various enumerations and custom exceptions for error handling.
+- **[`generic.py`](pyscript/modules/generic.py)**: Generic classes like various enumerations and custom exceptions for error handling.
 - **[`utils.py`](pyscript/modules/utils.py)**: Central functions for project-wide logging, log rotation, expression generation, and diagnostics.
 
 ### Native Python
 
-- **[`filesystem.py`](pyscript/python/filesystem.py)**: Handles file system operations requiring privileges beyond the PyScript sandbox.
+- **[`filesystem.py`](pyscript/python/filesystem.py)**: Handles file system operations requiring privileges beyond the PyScript runtime.
 - **[`logfile.py`](pyscript/python/logfile.py)**: Structured file logging operations with a partly singleton pattern for consistent log handling.
-
 
 ### Project-wide Logging
 
