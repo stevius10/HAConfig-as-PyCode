@@ -32,7 +32,7 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
 async def log_truncate(logfile=CFG_PATH_FILE_LOG, log_size_truncated=CFG_LOG_SIZE, log_tail_size=CFG_LOG_TAIL, log_history_size=CFG_LOG_HISTORY_SIZE):
   history_file=f"{logfile}.{CFG_LOG_HISTORY_SUFFIX}"
   
-  logs = file_read(logfile, lines=True)
+  logs = file_read(logfile)
   history = file_read(history_file)
   
   if logs is not None and len(logs) > log_size_truncated: 
@@ -58,14 +58,13 @@ def log_rotate(file=CFG_PATH_FILE_LOG):
     if os.path.exists(history_file):
       history = file_read(history_file)
       if history: 
-        history = history if isinstance(history, list) else [history]
         history.reverse()
         file_write(archive_file, history+[file_read(archive_file, lines=True)])
         file_write(history_file, '')
     file_write(history_file, '')
 
     if os.path.exists(archive_file):
-      archive = file_read(archive_file, lines=True)
+      archive = file_read(archive_file)
       archive_size = len(archive)
       
       if archive_size > CFG_LOG_ARCHIV_SIZE:
@@ -89,7 +88,7 @@ def log_rotate(file=CFG_PATH_FILE_LOG):
 
 # Helper
 
-async def file_read(logfile, lines=False):
+async def file_read(logfile, lines=True):
   exception = None
   for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
     try:
