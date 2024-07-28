@@ -57,10 +57,10 @@ def log_rotate(file=CFG_PATH_FILE_LOG):
   try:
     if os.path.exists(history_file):
       history = file_read(history_file)
-      archive = file_read(archive_file)
-      if history:
+      if history: 
+        history = history if isinstance(history, list) else [history]
         history.reverse()
-        file_write(archive_file, history+archive)
+        file_write(archive_file, history+[file_read(archive_file, lines=True)])
         file_write(history_file, '')
     file_write(history_file, '')
 

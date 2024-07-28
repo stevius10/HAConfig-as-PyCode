@@ -1,7 +1,7 @@
 import regex as re
 
 from constants.entities import ENTITIES_AUTO
-from constants.mappings import MAP_EVENT_SYSTEM_STARTED, MAP_PERSISTENCE_PREFIX_TIMER, MAP_STATE_HA_TIMER_IDLE, MAP_SERVICE_HA_TURNOFF, MAP_STATE_UNDEFINED
+from constants.mappings import MAP_EVENT_SYSTEM_STARTED, MAP_PERSISTENCE_PREFIX_TIMER, MAP_STATE_HA_TIMER_IDLE, MAP_SERVICE_HA_TURNOFF, MAP_STATE_HA_UNDEFINED
 from constants.settings import SET_ENTITIES_GLOBAL_VOLUME_MAX
 
 from generic import RESULT_STATUS
@@ -35,6 +35,7 @@ def timeout_factory(entity, default, delay=0):
     return resulted(RESULT_STATUS.STOPPED, entity=entity_timer, details=kwargs)
 
   @state_trigger(expr(entity, default), state_check_now=False, state_hold_false=0, state_hold=1)
+  @state_active(f"{entity}.old not in {MAP_STATE_HA_UNDEFINED}")
   @debugged
   def timer_reset(var_name=None, value=None, old_value=None):
     timer.cancel(entity_id=entity_timer)

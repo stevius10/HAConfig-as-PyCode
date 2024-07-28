@@ -50,7 +50,8 @@ def ha_setup_environment(variables=CFG_SYSTEM_ENVIRONMENT):
   
   formatted_env_vars = ", ".join(env_vars)
   return f"Environment:\n  {formatted_env_vars}"
-  
+
+
 def ha_setup_files(files=CFG_SYSTEM_FILES):
   from filesystem import cp
   for src, dest in files.items():
@@ -65,7 +66,7 @@ def ha_setup_files(files=CFG_SYSTEM_FILES):
     split_path = path.split(os.sep)
     if len(split_path) > 4:
       key = os.sep.join(split_path[:4])
-      path = key + "/…"
+      path = key + "/..."
       seen_keys.add(key)
     else:
       key = os.sep.join(split_path[:3]) if len(split_path) > 3 else path
