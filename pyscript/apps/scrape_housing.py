@@ -33,8 +33,7 @@ def scrape_housing_factory(provider):
       apartments = scrape(fetch(provider), 
         structure["item"], structure["address_selector"], structure["rent_selector"],
         structure["size_selector"], structure["rooms_selector"], structure["details_selector"]) or {}
-      if service.has_service("pyscript", "store"):
-        store(entity=get_entity(provider), value=apartments[:254], attributes={'url': housing_provider.get(provider).get('url')})
+      store(entity=get_entity(provider), value=apartments[:254], attributes={'url': housing_provider.get(provider).get('url')})
       return { get_entity(provider): { "value": apartments[:254], "url": housing_provider.get(provider).get('url') } } if apartments else {}
     except Exception as e:
       return { get_entity(provider): { "error": str(e), "url": housing_provider.get(provider).get('url') } } if apartments else {}

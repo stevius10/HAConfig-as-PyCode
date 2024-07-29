@@ -1,9 +1,7 @@
-# Mocks
 from functools import wraps
 from unittest.mock import MagicMock
 
 # Objects
-
 class MockState:
   def __init__(self):
     print("Initializing MockState")
@@ -51,7 +49,6 @@ class MockTask:
     self.wait_until = MagicMock()
 
 # Mock
-
 class MockPyscript:
   def __init__(self):
     print("Instantiating MockState in MockPyscript")
@@ -65,63 +62,23 @@ class MockPyscript:
     print("Instantiating MockTask in MockPyscript")
     self.task = MockTask()
 
-  # Decorator
-
+  # Decorators
   def service(self, service_name=None, supports_response=None):
     print(f"Creating service decorator for {service_name}")
     def decorator(func):
       @wraps(func)
       def wrapper(*args, **kwargs):
-        print(f"Calling service {service_name} with args: {args}, kwargs: {kwargs}")
-        self.service.call(service_name, *args, **kwargs)
+        print(f"Executing service decorator for {service_name} with args: {args}, kwargs: {kwargs}")
         return func(*args, **kwargs)
       return wrapper
     return decorator
 
-  def task_unique(self, task_name, kill_me=False):
-    print(f"Creating task_unique decorator for {task_name}")
-    def decorator(func):
-      @wraps(func)
-      def wrapper(*args, **kwargs):
-        print(f"Calling task_unique {task_name} with args: {args}, kwargs: {kwargs}")
-        self.task.unique(task_name, kill_me)
-        return func(*args, **kwargs)
-      return wrapper
-    return decorator
-
-  def pyscript_executor(self, func):
-    print(f"Creating pyscript_executor decorator for {func.__name__}")
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-      print(f"Executing pyscript_executor for {func.__name__} with args: {args}, kwargs: {kwargs}")
-      self.task.executor(func, *args, **kwargs)
-      return func(*args, **kwargs)
-    return wrapper
-
-  # Trigger
-
-  def state_trigger(self, str_expr, state_hold=None, state_hold_false=None, state_check_now=False, kwargs=None, watch=None):
-    print(f"Creating state_trigger for {str_expr}")
-    if kwargs is None:
-      kwargs = {}
-    def decorator(func):
-      @wraps(func)
-      def wrapper(*args, **kwargs):
-        print(f"Executing state_trigger for {str_expr} with args: {args}, kwargs: {kwargs}")
-        self.state.get(str_expr, *args, **kwargs)
-        return func(*args, **kwargs)
-      return wrapper
-    return decorator
-
-  def time_trigger(self, time_spec, kwargs=None):
+  def time_trigger(self, time_spec):
     print(f"Creating time_trigger for {time_spec}")
-    if kwargs is None:
-      kwargs = {}
     def decorator(func):
       @wraps(func)
       def wrapper(*args, **kwargs):
         print(f"Executing time_trigger for {time_spec} with args: {args}, kwargs: {kwargs}")
-        self.state.get(time_spec, *args, **kwargs)
         return func(*args, **kwargs)
       return wrapper
     return decorator
@@ -134,7 +91,6 @@ class MockPyscript:
       @wraps(func)
       def wrapper(*args, **kwargs):
         print(f"Executing event_trigger for {event_type} with args: {args}, kwargs: {kwargs}")
-        self.event.fire(event_type, str_expr, *args, **kwargs)
         return func(*args, **kwargs)
       return wrapper
     return decorator
@@ -147,20 +103,17 @@ class MockPyscript:
       @wraps(func)
       def wrapper(*args, **kwargs):
         print(f"Executing mqtt_trigger for {topic} with args: {args}, kwargs: {kwargs}")
-        self.event.fire(topic, str_expr, *args, **kwargs)
         return func(*args, **kwargs)
       return wrapper
     return decorator
 
-  # Condition
-
+  # Conditions
   def state_active(self, str_expr):
     print(f"Creating state_active for {str_expr}")
     def decorator(func):
       @wraps(func)
       def wrapper(*args, **kwargs):
         print(f"Executing state_active for {str_expr} with args: {args}, kwargs: {kwargs}")
-        self.state.get(str_expr, *args, **kwargs)
         return func(*args, **kwargs)
       return wrapper
     return decorator
@@ -171,7 +124,9 @@ class MockPyscript:
       @wraps(func)
       def wrapper(*args, **kwargs):
         print(f"Executing time_active for {time_spec} with args: {args}, kwargs: {kwargs}")
-        self.state.get(time_spec, *args, **kwargs)
         return func(*args, **kwargs)
       return wrapper
     return decorator
+
+# Assign the mock to the name `pyscript` to simulate the runtime environment
+pyscript = MockPyscript()

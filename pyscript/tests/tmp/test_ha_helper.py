@@ -7,9 +7,18 @@ from datetime import datetime
 
 os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 
-# Print sys.path and current working directory for debugging
 print(f"sys.path: {sys.path}")
 print(f"Current working directory: {os.getcwd()}")
+
+def mock_event_trigger(event_type, expr=None):
+  def decorator(func):
+    def wrapper(*args, **kwargs):
+      return func(*args, **kwargs)
+    return wrapper
+  return decorator
+
+builtins_dict = sys.modules['builtins'].__dict__
+builtins_dict['event_trigger'] = mock_event_trigger
 
 try:
   from pyscript.tests.mocks.mock_pyscript import MockPyscript
@@ -22,47 +31,31 @@ class TestHaHelper(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     from pyscript.tests.mocks.mock_pyscript import MockPyscript
-    sys.modules['custom_components.pyscript'] = MockPyscript()
-    from ha_helper import ha_log_truncate, log_truncate, log_rotate
-    
-    print("Setting up class TestHaHelper")
     cls.mock_pyscript = MockPyscript()
-    def mock_event_trigger(event_type, expr=None):
-      def decorator(func):
-        def wrapper(*args, **kwargs):
-          return func(*args, **kwargs)
-        return wrapper
-      return decorator
-    cls.mock_event_trigger = mock_event_trigger
     
-    try:
-      import custom_components.pyscript as pyscript_module
-      print(f"Attributes of custom_components.pyscript: {dir(pyscript_module)}")
-    except Exception as e:
-      print(f"Error importing custom_components.pyscript: {e}")
-
-    # Adjusted patches based on available attributes
+    # Patching the event_trigger before importing ha_helper
     cls.patches = [
-      patch.dict('custom_components.pyscript.trigger.__dict__', {'event_trigger': mock_event_trigger}),
-      patch.dict('custom_components.pyscript.__init__.__dict__', {'event_trigger': mock_event_trigger}),
-      patch('custom_components.pyscript.trigger.AstEval', new=MagicMock()),
-      patch('custom_components.pyscript.trigger.Event.notify_add', new=MagicMock())
+      patch.dict('custom_components.pyscript.__dict__', {'event_trigger': mock_event_trigger}),
+      patch.dict('builtins.__dict__', {'event_trigger': mock_event_trigger})
     ]
 
     for p in cls.patches:
       print(f"Starting patch: {p}")
       p.start()
 
-    from ha_helper import ha_log_truncate, log_truncate, log_rotate, log_read, log_write
-    from constants.config import (
-      CFG_LOG_DIR, CFG_LOG_FILE, CFG_PATH_FILE_LOG, CFG_LOG_HISTORY_SUFFIX, 
-      CFG_LOG_ARCHIV_SUFFIX, CFG_LOG_BACKUP_COUNT
-    )
-    cls.ha_log_truncate = ha_log_truncate
-    cls.log_truncate = log_truncate
-    cls.log_rotate = log_rotate
-    cls.log_read = log_read
-    cls.log_write = log_write
+    try:
+      from ha_helper import ha_log_truncate, log_truncate, log_rotate, log_read, log_write
+      from constants.config import (
+        CFG_LOG_DIR, CFG_LOG_FILE, CFG_PATH_FILE_LOG, CFG_LOG_HISTORY_SUFFIX, 
+        CFG_LOG_ARCHIV_SUFFIX, CFG_LOG_BACKUP_COUNT
+      )
+      cls.ha_log_truncate = ha_log_truncate
+      cls.log_truncate = log_truncate
+      cls.log_rotate = log_rotate
+      cls.log_read = log_read
+      cls.log_write = log_write
+    except Exception as e:
+      print(f"Error importing ha_helper: {e}")
 
   def setUp(self):
     self.loop = asyncio.get_event_loop()

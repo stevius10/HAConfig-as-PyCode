@@ -22,10 +22,6 @@ def __run_test(test_type):
   import sys
   import unittest
 
-  os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
-  print(f"Current working directory: {os.getcwd()}")  # Debug statement
-  print(f"sys.path: {sys.path}")  # Debug statement
-
   f = io.StringIO()
   with redirect_stdout(f):
     try:
