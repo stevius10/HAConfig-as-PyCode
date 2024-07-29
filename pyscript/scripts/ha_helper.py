@@ -30,7 +30,7 @@ async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder=""
 @debugged
 @service
 async def log_truncate(logfile=CFG_PATH_FILE_LOG, log_size_truncated=CFG_LOG_SIZE, log_tail_size=CFG_LOG_TAIL, log_history_size=CFG_LOG_HISTORY_SIZE):
-  history_file=f"{logfile}.{CFG_LOG_HISTORY_SUFFIX}"
+  history_file = f"{logfile}.{CFG_LOG_HISTORY_SUFFIX}"
   
   logs = file_read(logfile)
   history = file_read(history_file)
@@ -38,7 +38,7 @@ async def log_truncate(logfile=CFG_PATH_FILE_LOG, log_size_truncated=CFG_LOG_SIZ
   if logs is not None and len(logs) > log_size_truncated: 
     logs_trunc = logs[:-log_tail_size]
     logs_truncated = logs[-log_tail_size:]
-    logs_truncated.append(f"\n# {len(logs)} / {len(logs_truncated)} at {datetime.now()}\n")
+    logs_truncated.append(f"# {len(logs)} / {len(logs_truncated)} at {datetime.now()}\n")
     file_write(logfile, logs_truncated)
 
     if history is not None and len(history) > 0: 
@@ -59,52 +59,37 @@ def log_rotate(file=CFG_PATH_FILE_LOG):
       history = file_read(history_file)
       if history: 
         history.reverse()
-        file_write(archive_file, history+[file_read(archive_file, lines=True)])
-        file_write(history_file, '')
-    file_write(history_file, '')
+        archive_content = file_read(archive_file)
+        if archive_content:
+          history.extend(archive_content)
 
-    if os.path.exists(archive_file):
-      archive = file_read(archive_file)
-      archive_size = len(archive)
-      
-      if archive_size > CFG_LOG_ARCHIV_SIZE:
-        archive_trunc_size = int(len(archive) * 0.2) # shorten twenty percent if exceeded
-        archive_truncated = archive[archive_trunc_size:]
-        archive_truncated = '\n'.join(archive_truncated) + '\n'
-        archive_truncated.seek(0, 0)
-        file_write(archive_file, archive_truncated)
-    else:
-      file_write(archive_file, '')
+        file_write(archive_file, history)
+        file_write(history_file, [])
 
     if os.path.exists(file):
       content = file_read(file)
       file_write(history_file, content)
-      # file_write(file)
+      file_write(file, [])
     else:
-      file_write(file, '')
+      file_write(file, [])
 
   except Exception as e:
     raise e
 
 # Helper
 
-async def file_read(logfile, lines=True):
+async def file_read(logfile):
   exception = None
   for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
     try:
-      if lines is False:
-        async with aiofiles.open(logfile, mode='r') as l:
-          content = l.read()
-        return content.splitlines() if '\n' in content else content
-      else:
-        async with aiofiles.open(logfile, mode='r') as l:
-          content = l.readlines()
-        return content
+      async with aiofiles.open(logfile, mode='r') as l:
+        content = l.readlines()
+      return content
     except Exception as e:
       exception = e
   if exception:
     raise IORetriesExceededException(exception)
-  return ""
+  return []
 
 async def file_write(logfile, lines, mode='w+'):
   exception = None
@@ -112,9 +97,9 @@ async def file_write(logfile, lines, mode='w+'):
     try:
       async with aiofiles.open(logfile, mode=mode) as l:
         if isinstance(lines, list):
-          await l.writelines([line + '\n' for line in lines])
+          l.writelines([line if line.endswith('\n') else line + '\n' for line in lines])
         else:
-          await l.write(lines)
+          l.write(lines + '\n')
       return True
     except Exception as e:
       exception = e
