@@ -44,6 +44,8 @@ class TestHaHelper(unittest.TestCase):
       p.start()
 
     try:
+      # with patch('modul.decorator', MockDecorator()):
+        # importlib.reload(modul)
       from ha_helper import ha_log_truncate, log_truncate, log_rotate, log_read, log_write
       from constants.config import (
         CFG_LOG_DIR, CFG_LOG_FILE, CFG_PATH_FILE_LOG, CFG_LOG_HISTORY_SUFFIX, 

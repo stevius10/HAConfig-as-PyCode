@@ -37,10 +37,10 @@ def _observed(func, log_func, debug_function_started=CFG_LOGFILE_DEBUG_FUNCTION_
     except Exception as e:
       raise ForwardException(e, context)
     finally:
-      if result:
-        if log_func == "log":
-          log(format_observed(func, args, kwargs, result), title=context)
-        debug(format_observed(func, args, kwargs, result), title=context)
+      # if result:
+      if log_func == "log":
+        log(format_observed(func, args, kwargs, result), title=context)
+      debug(format_observed(func, args, kwargs, result), title=context)
     return result
   return wrapper
 
