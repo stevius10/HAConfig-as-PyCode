@@ -13,13 +13,14 @@ class TestHaHelper(unittest.TestCase):
   def setUpClass(cls):
     from mocks.mock_pyscript import MockPyscript
     cls.mock_pyscript = MockPyscript()
-
+    
     for attr in dir(cls.mock_pyscript):
       if callable(getattr(cls.mock_pyscript, attr)) and not attr.startswith("__"):
         cls.patches.append(patch.dict('builtins.__dict__', {attr: getattr(cls.mock_pyscript, attr)}))
     for p in cls.patches:
       p.start()
     patch.dict('builtins.__dict__', {'service': cls.mock_pyscript.service}).start()
+    
     try:
       from ha_helper import ha_log_truncate, log_truncate, log_rotate, file_read, file_write
       cls.ha_log_truncate = ha_log_truncate
@@ -37,15 +38,50 @@ class TestHaHelper(unittest.TestCase):
   def tearDown(self):
     patch.stopall()
 
-  def test_ha_log_truncate(self):
+  def test_ha_log_truncate_event_modified(self):
     self.mock_file_read.side_effect = [
-      ['log1', 'log2'],
-      ['history1', 'history2'],
-      'log3\n# 1 / 1000 at ' + str(datetime.now()) + '\n'
+      ['log1', 'log2', 'log3'],
+      ['history1', 'history2']
     ]
+    
     async def run_test():
-      await self.ha_log_truncate()
+      await self.ha_log_truncate(trigger_type="event", event_type="modified")
       self.mock_file_read.assert_any_call('/config/home-assistant.log')
+
+    asyncio.run(run_test())
+
+  def test_ha_log_truncate_time_trigger(self):
+    self.mock_file_read.side_effect = [
+      ['log1', 'log2', 'log3'],
+      ['history1', 'history2']
+    ]
+    
+    async def run_test():
+      await self.ha_log_truncate(trigger_type="time")
+      self.mock_file_read.assert_any_call('/config/home-assistant.log')
+
+    asyncio.run(run_test())
+
+  def test_log_truncate(self):
+    self.mock_file_read.side_effect = [
+      ['line1', 'line2', 'line3', 'line4', 'line5'],
+      ['history1', 'history2']
+    ]
+    
+    self.log_truncate(logfile='test.log', log_size_truncated=2, log_tail_size=2, log_history_size=4)
+    
+    self.mock_file_write.assert_any_call('test.log', ['line4', 'line5', '# 5 / 2 at ' + str(datetime.now()) + '\n'])
+    self.mock_file_write.assert_any_call('test.log.history', ['line3', 'line4', 'line5', 'history1', 'history2'])
+
+  def test_log_rotate(self):
+    self.mock_file_read.side_effect = [
+      ['line1', 'line2', 'line3'],
+      ['archive1', 'archive2']
+    ]
+    
+    self.log_rotate(file='test.log')
+    
+    self.mock_file_write.assert_called_with('test.log.archive', ['line3', 'line2', 'line1', 'archive1', 'archive2'])
 
 if __name__ == '__main__':
   unittest.main()

@@ -11,7 +11,6 @@ class MockState:
     self.persist = MagicMock()
     self.setattr = MagicMock()
 
-
 class MockEvent:
   def __init__(self):
     self.fire = MagicMock()
@@ -39,28 +38,32 @@ class MockTask:
     self.wait_until = MagicMock()
 
 class MockPyscript:
+  
   def __init__(self):
     self.state = MockState()
     self.event = MockEvent()
     self.log = MockLog()
     self.task = MockTask()
-
-  def service(self, *args, **kwargs):
-    def decorator(func):
-      @wraps(func)
-      def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
-      return wrapper
+  
+  @staticmethod
+  def service(func):
+    def decorator(*args, **kwargs):
+      if 'file' in kwargs:
+        del kwargs['file']
+      if 'logfile' in kwargs:
+        del kwargs['logfile']
+      return func(*args, **kwargs)
     return decorator
 
-  def time_trigger(self, *args, **kwargs):
-    def decorator(func):
-      @wraps(func)
-      def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
-      return wrapper
+  @staticmethod
+  def time_trigger(func):
+    def decorator(*args, **kwargs):
+      if 'trigger_type' in kwargs:
+        del kwargs['trigger_type']
+      return func(*args, **kwargs)
     return decorator
 
+  @staticmethod
   def event_trigger(self, *args, **kwargs):
     def decorator(func):
       @wraps(func)
@@ -69,6 +72,7 @@ class MockPyscript:
       return wrapper
     return decorator
 
+  @staticmethod
   def mqtt_trigger(self, *args, **kwargs):
     def decorator(func):
       @wraps(func)
@@ -77,6 +81,7 @@ class MockPyscript:
       return wrapper
     return decorator
 
+  @staticmethod
   def state_active(self, *args, **kwargs):
     def decorator(func):
       @wraps(func)
@@ -85,6 +90,7 @@ class MockPyscript:
       return wrapper
     return decorator
 
+  @staticmethod
   def time_active(self, *args, **kwargs):
     def decorator(func):
       @wraps(func)
@@ -93,6 +99,7 @@ class MockPyscript:
       return wrapper
     return decorator
 
+  @staticmethod
   def task_unique(self, *args, **kwargs):
     def decorator(func):
       @wraps(func)
