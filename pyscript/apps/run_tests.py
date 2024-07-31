@@ -9,7 +9,6 @@ def run_tests():
     test_results = __run_test("tmp")
     logfile.log(test_results)
   except Exception as e:
-    log(str(e))
     logfile.log(str(e))
   finally:
     return { "result": logfile.close() }
@@ -25,12 +24,8 @@ def __run_test(test_type):
   f = io.StringIO()
   with redirect_stdout(f):
     try:
-      loader = unittest.TestLoader()
-      print(f"Discovering tests in /config/pyscript/tests/{test_type}")  # Debug statement
-      suite = loader.discover(f"/config/pyscript/tests/{test_type}")
-      
-      runner = unittest.TextTestRunner(stream=f, verbosity=3)
-      result = runner.run(suite)
+      suite = unittest.TestLoader().discover(f"/config/pyscript/tests/{test_type}")
+      unittest.TextTestRunner(stream=f, verbosity=3).run(suite)
     except Exception as e:
-      return f"Exception occurred: {str(e)}"
+      raise e
   return f.getvalue()
