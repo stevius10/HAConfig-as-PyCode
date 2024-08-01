@@ -19,7 +19,7 @@ ENTITIES_AUTO = {
   "switch.sz_luftung": { "default": "off", "delay": 600 },
   
   "switch.sofa": { 'default': 'sensor.sofa_current_power > 5 if switch.sofa == on', 'duration': 60, 'delay': 4800 },
-  "media_player.schlafzimmer.volume_level": { "default": [f"< {SET_ENTITIES_GLOBAL_VOLUME_MAX}"], "call": "media_player.volume_set", "params": {"volume_level": (SET_ENTITIES_GLOBAL_VOLUME_MAX / 100) } }
+  # "media_player.schlafzimmer": { "default": f"media_player.schlafzimmer.volume_level < {SET_ENTITIES_GLOBAL_VOLUME_MAX}", "call": "media_player.volume_set", "params": {"volume_level": (SET_ENTITIES_GLOBAL_VOLUME_MAX / 100) } }
   
 }
 
