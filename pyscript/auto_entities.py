@@ -8,14 +8,12 @@ trigger = []
 
 entities = ENTITIES_AUTO
 
-def reset_factory(entity, default, call=None, params={}, delay=0, duration=0):
-
+def reset_factory(entity, default, call=MAP_SERVICE_HA_TURNOFF, params={}, delay=0, duration=0):
   is_not_default = expr(entity, default, '!=') if isinstance(default, (str, list)) else default
-
+  
   entity_name = entity.split(".")[1]
   entity_timer = f"timer.{entity_name}"
-  call = call or MAP_SERVICE_HA_TURNOFF
-  
+
   @logged
   def reset():
     return service.call(call.split(".")[0], call.split(".")[1], **{**params, 'entity_id': entity})

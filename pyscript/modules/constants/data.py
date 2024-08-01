@@ -56,17 +56,17 @@ DATA_SUBPROCESS_SERVICES = {
     ], "statement": EXPR_TIME_FILEBACKUP
   },
     "gitsync": {
-    "commands": [
-      f"git config --local include.path '{SEC_SUBPROCESS_GIT_SETTINGS_CONFIG}'", 
-      f"eval $(ssh-agent); ssh-add {SEC_SUBPROCESS_GIT_SETTINGS_CREDENTIALS}", 
-      "git stash", 
-      f"git pull origin {SEC_SUBPROCESS_GIT_REPO_BRANCH}", 
-      f"git checkout {SEC_SUBPROCESS_GIT_REPO_BRANCH}", 
-      "git stash apply",
-      "git add .", 
-      f"git commit -m '{SEC_SUBPROCESS_GIT_REPO_MESSAGE}'", 
-      f"git push origin {SEC_SUBPROCESS_GIT_REPO_BRANCH}"
-    ], "statement": EXPR_TIME_SYNC_GIT
+      "commands": [
+        f"git config --local include.path '{SEC_SUBPROCESS_GIT_SETTINGS_CONFIG}'", 
+        f"eval $(ssh-agent); ssh-add {SEC_SUBPROCESS_GIT_SETTINGS_CREDENTIALS}", 
+        "git stash", 
+        f"git pull origin {SEC_SUBPROCESS_GIT_REPO_BRANCH}", 
+        f"git checkout {SEC_SUBPROCESS_GIT_REPO_BRANCH}", 
+        "git stash apply",
+        "git add .", 
+        f"git commit -m '{SEC_SUBPROCESS_GIT_REPO_MESSAGE}'", 
+        f"git push origin {SEC_SUBPROCESS_GIT_REPO_BRANCH}"
+      ], "statement": EXPR_TIME_SYNC_GIT
   }
 }
 
