@@ -5,8 +5,7 @@ from utils import expr
 # Automation
 
 ENTITIES_AUTO = {
-  "climate.k": { "default": "off", "call": "climate.turn_off", "params": {"entity_id": "climate.k"}},
-  "media_player.schlafzimmer.volume_level": { "default": [f"< {SET_ENTITIES_GLOBAL_VOLUME_MAX}"], "call": "media_player.volume_set", "params": {"volume_level": SET_ENTITIES_GLOBAL_VOLUME_MAX } },
+  "climate.k": { "default": "off", "call": "climate.turn_off" },
   "media_player.schlafzimmer": { "default": ["off", "paused"], "duration": 60, "delay": 4800 },
   "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
   "switch.bett": { "default": "off", "delay": 1800 },
@@ -19,8 +18,8 @@ ENTITIES_AUTO = {
   "switch.wz_luftung": { "default": "off", "delay": 600 },
   "switch.sz_luftung": { "default": "off", "delay": 600 },
   
-  "switch.sofa": { 'default': 'sensor.sofa_current_power > 5 if switch.sofa == on', 'duration': 60, 'delay': 4800 }
-
+  "switch.sofa": { 'default': 'sensor.sofa_current_power > 5 if switch.sofa == on', 'duration': 60, 'delay': 4800 },
+  "media_player.schlafzimmer.volume_level": { "default": [f"< {SET_ENTITIES_GLOBAL_VOLUME_MAX}"], "call": "media_player.volume_set", "params": {"volume_level": SET_ENTITIES_GLOBAL_VOLUME_MAX } }
   
 }
 
