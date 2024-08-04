@@ -18,7 +18,7 @@ def reset_factory(entity, default, call=MAP_SERVICE_HA_TURNOFF, params={}, delay
   def reset():
     return service.call(call.split(".")[0], call.split(".")[1], **{**params, 'entity_id': entity})
 
-  @state_trigger(is_not_default)
+  @state_trigger(is_not_default, state_hold_false=0)
   @debugged
   def reset_start():
     if delay > 0:
@@ -32,6 +32,7 @@ def reset_factory(entity, default, call=MAP_SERVICE_HA_TURNOFF, params={}, delay
     @state_active(expr(entity_timer, MAP_STATE_HA_TIMER_ACTIVE))
     @debugged
     def reset_timer_stop(**kwargs):
+      timer.stop(entity_id=entity_timer)
       reset()
       return resulted(RESULT_STATUS.STOPPED, entity=entity_timer, details=reset())
 
