@@ -6,7 +6,7 @@ from utils import expr
 
 ENTITIES_AUTO = {
   "climate.k": { "default": "off", "call": "climate.turn_off" },
-  "media_player.schlafzimmer": { "default": ["off", "paused"], "duration": 60, "delay": 4800 },
+  "media_player.schlafzimmer": { "default": ["off", "paused"], "call": "media_player.media_stop", "duration": 60, "delay": 4800 },
   "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
   "switch.bett": { "default": "off", "delay": 1800 },
   "switch.heizdecke": { "default": "off", "delay": 1800 }, 

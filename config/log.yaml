@@ -71,6 +71,7 @@ recorder:
     - pyscript.*
   exclude: 
     entities: 
+      - sensor.graph_fix_up_temperature
       - sensor.graph_fix_down_temperature
 
 system_log:
