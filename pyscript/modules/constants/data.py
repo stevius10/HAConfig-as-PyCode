@@ -48,25 +48,26 @@ DATA_SUBPROCESS_SERVICES = {
   },
   "filebackup": {
     "commands": [
-      "apk add rsync; ulimit -n 4096",
-      f'backup_folder="{SET_SUBPROCESS_FILEBACKUP_FOLDER}/{datetime.now().strftime("%Y-%m-%d_%H-%M")}" && mkdir -p "$backup_folder" && '
+      "apk add rsync && ulimit -n 4096 && "
+      f'backup_folder="{SET_SUBPROCESS_FILEBACKUP_FOLDER}/$(date +%Y-%m-%d_%H-%M)" && echo "-> $backup_folder" && mkdir -p "$backup_folder" && '
       f'/usr/bin/find "$backup_folder" -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1 && '
       f'/usr/bin/find "$backup_folder" -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r "{{}}" \\; 2>&1 && '
-      f'rsync -azv --partial --ignore-existing --exclude=\'.git/\' --exclude=\'/homeassistant/.git/\' --exclude=\'.storage/xiaomi_miot\' --exclude=\'/homeassistant/.storage/xiaomi_miot\' /config/ "$backup_folder" 2>&1'
+      f'rsync -azv --partial --ignore-existing --exclude=".git/" --exclude="/homeassistant/.git/" --exclude=".storage/xiaomi_miot" --exclude="/homeassistant/.storage/xiaomi_miot" --exclude="www/community" --exclude="custom_components" --exclude="*.log" --exclude=".storage/hacs.*" --exclude=".storage/icloud" --exclude=".storage/hacs.repositories.*" /config/ "$backup_folder" 2>&1 && '
+      f'echo "$(find "$backup_folder" -type f | wc -l) files in $(du -sh "$backup_folder" | cut -f1)" 2>&1'
     ], "statement": EXPR_TIME_FILEBACKUP
   },
-    "gitsync": {
-      "commands": [
-        f"git config --local include.path '{SEC_SUBPROCESS_GIT_SETTINGS_CONFIG}'", 
-        f"eval $(ssh-agent); ssh-add {SEC_SUBPROCESS_GIT_SETTINGS_CREDENTIALS}", 
-        "git stash", 
-        f"git pull origin {SEC_SUBPROCESS_GIT_REPO_BRANCH}", 
-        f"git checkout {SEC_SUBPROCESS_GIT_REPO_BRANCH}", 
-        "git stash apply",
-        "git add .", 
-        f"git commit -m '{SEC_SUBPROCESS_GIT_REPO_MESSAGE}'", 
-        f"git push origin {SEC_SUBPROCESS_GIT_REPO_BRANCH}"
-      ], "statement": EXPR_TIME_SYNC_GIT
+  "gitsync": {
+    "commands": [
+      f"git config --local include.path '{SEC_SUBPROCESS_GIT_SETTINGS_CONFIG}'", 
+      f"eval $(ssh-agent); ssh-add {SEC_SUBPROCESS_GIT_SETTINGS_CREDENTIALS}", 
+      "git stash", 
+      f"git pull origin {SEC_SUBPROCESS_GIT_REPO_BRANCH}", 
+      f"git checkout {SEC_SUBPROCESS_GIT_REPO_BRANCH}", 
+      "git stash apply",
+      "git add .", 
+      f"git commit -m '{SEC_SUBPROCESS_GIT_REPO_MESSAGE}'", 
+      f"git push origin {SEC_SUBPROCESS_GIT_REPO_BRANCH}"
+    ], "statement": EXPR_TIME_SYNC_GIT
   }
 }
 
