@@ -64,11 +64,12 @@ recorder:
     - switch.bett
     - switch.sofa
     - switch.heizdecke
+    - sensor.sofa_current_power
     entity_globs:
     - fritz_box_*_durchsatz
     - sensor.system_monitor_*
     - sensor.*temperature
-    - pyscript.*
+
   exclude: 
     entities: 
       - sensor.graph_fix_up_temperature

@@ -24,7 +24,7 @@ SET_AIR_CONTROL_WAIT_ACTIVE_DELAY = 3
 SET_SUBPROCESS_COMPILE_PATH="/share/tmp"
 
 SET_SCRAPE_HOUSING_BLACKLIST = [
-  "WBS erforderlich", "mit WBS", "WBS 160", "Wohnberechtigungsschein erforderlich", 
+  "WBS erforderlich", "mit WBS", "WBS 160", "Wohnberechtigungsschein erforderlich", "Seniorenwohnung",
   "nur mit WBS", "nur WBS", "nur mit Wohnberechtigungsschein", "mit Wohnberechtigungsschein", 
   "WBS 140", "WBS Pflicht", "WBS benötigt", "nur für WBS Inhaber", "wbs pflichtig", "wbs-pflichtig"
 ]

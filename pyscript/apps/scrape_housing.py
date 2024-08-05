@@ -28,18 +28,23 @@ def scrape_housing_factory(provider):
 
   @service(f"pyscript.scrape_housing_{provider}", supports_response="optional")
   def scrape_housing(provider=provider):
-    try: 
+    try:
       structure = housing_provider[provider]["structure"]
+      provider_url = housing_provider[provider]["url"]
       apartments = scrape(fetch(provider), 
         structure["item"], structure["address_selector"], structure["rent_selector"],
-        structure["size_selector"], structure["rooms_selector"], structure["details_selector"]) or {}
-      store(entity=get_entity(provider), value=apartments[:254], attributes={'url': housing_provider.get(provider).get('url')})
-      return { get_entity(provider): { "value": apartments[:254], "url": housing_provider.get(provider).get('url') } } if apartments else {}
-    except Exception as e:
-      return { get_entity(provider): { "error": str(e), "url": housing_provider.get(provider).get('url') } } if apartments else {}
+        structure["size_selector"], structure["rooms_selector"], structure["details_selector"], structure["url_selector"], provider_url) or {}
       
-  trigger.append(scrape_housing)
+      apartments_string = ", ".join([apt["address"] for apt in apartments.values()]) if apartments else ""
+      
+      apartments_dict = {apt["address"]: {"summary": apt["summary"], "url": apt["url"]} for apt in apartments.values()}
 
+      store(entity=get_entity(provider), value=list(apartments.values())[:254], attributes={'url': provider_url})
+      return { result: { "entity": get_entity(provider), "value": list(apartments.values())[:254], "url": provider_url } } if apartments else {}
+    except Exception as e:
+      return { result: { "entity": get_entity(provider), "error": str(e), "url": housing_provider.get(provider).get('url') } } if apartments else {}
+
+  trigger.append(scrape_housing)
 
 # Automation
 
@@ -63,28 +68,30 @@ def scrape_housings(housing_provider=housing_provider, event_trigger=None):
 
 # Functional
 
+MAP_GENERIC_NOVALUE = "no value"
+
 @debugged
 def filtering(apartment):
   if all([value is None for value in apartment.values()]):
-    return None
+    return False, RESULT_STATUS.DISCARDED, MAP_RESULT_REASON.NO_VALUE, apartment
   if apartment.get("address") is None:
-    return None
+    return False, RESULT_STATUS.DISCARDED, f"{MAP_RESULT_REASON.NO_VALUE}: address", apartment
   else:
     plz = re.search(r'\b1\d{4}\b', apartment["address"])
     if plz:
       if not plz.group().startswith('10') or plz.group() not in ['12043', '12045', '12047', '12049', '12051', '12053', '13573', '12089']:
-        return None
+        return False, RESULT_STATUS.DISCARDED, f"{MAP_RESULT_REASON.FILTERED}: area", apartment
   if apartment.get("rent") is not None:
     if re.findall(r'\d', apartment["rent"]) and not (400 < int(''.join(re.findall(r'\d', apartment["rent"])[:3])) < SET_SCRAPE_HOUSING_FILTER_RENT):
-      return None
+      return False, RESULT_STATUS.DISCARDED, f"{MAP_RESULT_REASON.FILTERED}: rent", apartment
   if apartment.get("text") is not None:
     for blacklist_item in SET_SCRAPE_HOUSING_BLACKLIST:
       if re.search(r'\b' + re.escape(blacklist_item.lower()) + r'\b', apartment["text"].lower()):
-        return None
-  return {k: v for k, v in apartment.items() if v is not None}
+        return False, RESULT_STATUS.DISCARDED, f"{MAP_RESULT_REASON.FILTERED}: blacklist", apartment
+  return True, apartment
 
-def scrape(content, item, address_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None):
-  apartments = []
+def scrape(content, item, address_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None, url_selector=None, provider_url=None):
+  apartments = {}
   elements = content.select(item)
   
   for element in elements:
@@ -109,19 +116,22 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
     if not rooms:
       rooms_match = re.search(r'(\d+(?:,\d+)?)\s*Zimmer', element_text)
       rooms = rooms_match.group(1) + ' Zimmer' if rooms_match else None
-    
+
     details = get_or_default(element, details_selector)
     if not details:
       details = element_text
-    
-    apartment = filtering({"address": address, "rent": rent, "size": size, "rooms": rooms, "details": details, "text": element_text})
-    if apartment:
+
+    url = get_or_default(element, url_selector)
+    if not url:
+      url = provider_url
+
+    apartment = {"address": address, "rent": rent, "size": size, "rooms": rooms, "details": details, "url": url, "text": element_text}
+    is_valid, apartment = filtering(apartment)
+    if is_valid:
       summary = [item for item in [rent, rooms, size] if item]
-      apartment_format = f"{address} ({', '.join(summary)})" if summary else address
-      apartments.append(apartment_format)
+      apartments[address] = {"address": address, "summary": ', '.join(summary), "url": url}
   
-  apartments_format = ", ".join(apartments)
-  return apartments_format
+  return apartments
 
 @pyscript_executor
 def fetch(provider):
