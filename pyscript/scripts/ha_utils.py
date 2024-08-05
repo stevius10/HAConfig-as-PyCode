@@ -1,4 +1,7 @@
-from constants.config import CFG_NOTIFICATION_TARGET_DEFAULT
+import random
+import string
+
+from constants.config import CFG_NOTIFICATION_TARGET_DEFAULT, CFG_NOTIFICATION_ID_LENGTH
 from constants.data import DATA_DEVICES
 
 from utils import *
@@ -7,11 +10,15 @@ from utils import *
 
 @logged
 @service
-def notify(message, data=None, target=CFG_NOTIFICATION_TARGET_DEFAULT, default=True):
+def notify(message, data=None, target=CFG_NOTIFICATION_TARGET_DEFAULT, default=True, synced=True):
   devices = DATA_DEVICES.get(target) if target else [target for targets in DATA_DEVICES.values() for target in targets]
 
   if default:
     devices = [device for device in devices if device.get("default")]
+    
+  if synced:
+    data = data or {}
+    data.setdefault('apns_headers', {})['apns-collapse-id'] = ''.join(random.choices(string.ascii_uppercase + string.digits, k=CFG_NOTIFICATION_ID_LENGTH))
 
   for device in devices:
     service.call("notify", f"mobile_app_{device['id']}", message=message, data=data)
