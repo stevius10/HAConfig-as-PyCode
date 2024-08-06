@@ -41,18 +41,18 @@ def air_control_clean(conditioned=True, entity=[entity["fan"] for entity in enti
 @debugged
 @service
 def air_control_sleep(entity=[entity["fan"] for entity in entities.values()], var_name=None, value=None, state_check_now=True):
-  if var_name: 
-    entity = ".".join(var_name.split(".")[:2])  # handle percentage trigger
-  if isinstance(entity, str) and value != STATE_OFF:  # prevent turn off on trigger "or" expression
-    air_control_turn_on(entity)
-  if air_control_feature_supported(entity):
-     fan.set_preset_mode(entity_id=entity, preset_mode=MAP_SERVICE_AIR_CONTROL_MODE_SLEEP)
-  else:
-    fan.set_percentage(entity_id=entity, percentage=SET_AIR_CONTROL_SLEEP_MODE_PERCENTAGE)
-    air_control_turn_off(entities[entity.split(".")[1]]["luftung"])
-  elif isinstance(entity, list):
+  if isinstance(entity, list):
     for item in entity: 
       air_control_sleep(entity=item, var_name=item)
+  else: 
+    if var_name: 
+      entity = ".".join(var_name.split(".")[:2])  # handle percentage trigger
+    if value != STATE_OFF:
+      air_control_turn_on(entity)
+    if air_control_feature_supported(entity):
+       fan.set_preset_mode(entity_id=entity, preset_mode=MAP_SERVICE_AIR_CONTROL_MODE_SLEEP)
+    else:
+      fan.set_percentage(entity_id=entity, percentage=SET_AIR_CONTROL_SLEEP_MODE_PERCENTAGE)
 
 @debugged
 @service
@@ -85,6 +85,7 @@ def air_control_turn_on(entity=[entity["fan"] for entity in entities.values()]):
         fan.turn_on(entity_id=entity)
         task.sleep(SET_AIR_CONTROL_WAIT_ACTIVE_DELAY)
 
+@state_trigger(expr([entity["fan"] for entity in entities.values()], "on"), state_hold=SET_AIR_CONTROL_TIMEOUT_CLEAN)
 @debugged
 @service
 def air_control_turn_off(entity=[entity["fan"] for entity in entities.values()]):
