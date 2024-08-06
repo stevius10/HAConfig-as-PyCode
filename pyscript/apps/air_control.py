@@ -35,8 +35,7 @@ def air_control_clean(conditioned=True, entity=[entity["fan"] for entity in enti
     fan.set_percentage(entity_id=item, percentage=get_clean_percentage(item.split(".")[1]) if conditioned else 100)
     air_control_helper_air(entity=item, check=True)
 
-@state_trigger(expr(entity['fan'], STATE_ON))
-@state_active(expr(entity['fan']}.percentage, SET_AIR_CONTROL_SLEEP_MODE_PERCENTAGE, comparator='<=') for entity in entities.values()])
+@state_trigger([f"{expr(entity['fan'], STATE_ON)} and {expr(f'{entity['fan']}.percentage', SET_AIR_CONTROL_CLEAN_MODE_PERCENTAGE, comparator='<')}" for entity in entities.values()])
 @state_trigger(expr([f"{entity['fan']}.percentage" for entity in entities.values()], SET_AIR_CONTROL_SLEEP_MODE_PERCENTAGE, comparator='>').replace("'", ""),  # prevent interpretation 
     state_hold=SET_AIR_CONTROL_TIMEOUT_CLEAN, state_check_now=True)
 @service
