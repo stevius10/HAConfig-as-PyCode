@@ -58,20 +58,24 @@ def resulted(status, entity=None, message=None, **kwargs):
 
 # Functional 
 
-@debugged
-def expr(entity, expression="", comparator="==", defined=True, operator='or'):
+# @debugged
+def expr(entity, expression="", comparator="==", defined=True, from_defined=False, operator='or'):
   if entity and not isinstance(entity, str):
     if isinstance(entity, list):
-      items = [f"({expr(item, expression, comparator, defined)})" for item in entity]
+      items = [f"({expr(item, expression, comparator, defined, from_defined)})" for item in entity]
     if isinstance(entity, dict):
-      items = [f"({expr(key, value, expression, comparator, defined)})" for key, value in entity.items()]
+      items = [f"({expr(key, value, expression, comparator, defined, from_defined)})" for key, value in entity.items()]
     return f" {operator} ".join(items) if items else None
 
   conditions = []
+  
+  states_undefined_str = ", ".join([f' \"{state}\" ' for state in MAP_STATE_HA_UNDEFINED])
   if defined:
-    states_undefined_str = ", ".join([f' \"{state}\" ' for state in MAP_STATE_HA_UNDEFINED])
     conditions.append(f'{entity} is not None and {entity} not in [{states_undefined_str}]')
-      
+  if from_defined:
+    conditions.append(f'{entity}.old is not None and {entity}.old not in [{states_undefined_str}]')
+
+
   if expression:
     if isinstance(expression, list):
       if comparator in [None, "==", "in"]:

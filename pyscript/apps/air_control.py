@@ -38,7 +38,6 @@ def air_control_clean(conditioned=True, entity=[entity["fan"] for entity in enti
 @state_trigger([expr(entity['fan'], STATE_ON) for entity in entities.values()])
 @state_trigger(expr([f"{entity['fan']}.percentage" for entity in entities.values()], SET_AIR_CONTROL_SLEEP_MODE_PERCENTAGE, comparator='>').replace("'", ""),  # prevent interpretation 
     state_hold=SET_AIR_CONTROL_TIMEOUT_CLEAN, state_check_now=True)
-@debugged
 @service
 def air_control_sleep(entity=[entity["fan"] for entity in entities.values()], var_name=None, value=None, state_check_now=True):
   if isinstance(entity, list):
@@ -54,7 +53,6 @@ def air_control_sleep(entity=[entity["fan"] for entity in entities.values()], va
     else:
       fan.set_percentage(entity_id=entity, percentage=SET_AIR_CONTROL_SLEEP_MODE_PERCENTAGE)
 
-@debugged
 @service
 def air_control_helper_air(entity=[entity["fan"] for entity in entities.values()], helper=[entity["luftung"] for entity in entities.values()], check=False):
   if not check or (sum([int(state.get(entities.get(item.split(".")[1], {}).get("sensor"), 0)) for item in entity if len(item.split(".")) > 1 and entities.get(item.split(".")[1]) and state.get(entities[item.split(".")[1]]["sensor"]) is not None]) > SET_AIR_CONTROL_HELPER_PM_MINIMUM):
@@ -74,7 +72,6 @@ def air_control_feature_supported(entity):
 
 # Helper
 
-@debugged
 def air_control_turn_on(entity=[entity["fan"] for entity in entities.values()]):
   if isinstance(entity, list):
     for item in entity:
@@ -85,15 +82,16 @@ def air_control_turn_on(entity=[entity["fan"] for entity in entities.values()]):
         fan.turn_on(entity_id=entity)
         task.sleep(SET_AIR_CONTROL_WAIT_ACTIVE_DELAY)
 
-@state_trigger(expr([entity["fan"] for entity in entities.values()], "on"), state_hold=SET_AIR_CONTROL_TIMEOUT_CLEAN)
 @debugged
 @service
-def air_control_turn_off(entity=[entity["fan"] for entity in entities.values()]):
+def air_control_turn_off(entity=None):
   if isinstance(entity, list):
     for item in entity:
       air_control_turn_off(item)
-  else:
+  elif isinstance(entity, str):
     pyscript.turnoff_air(entity=entity)
+  else: 
+    pyscript.turnoff_air()
 
 # Mappings
 

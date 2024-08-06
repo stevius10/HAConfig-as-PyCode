@@ -12,7 +12,7 @@ ENTITIES_AUTO = {
   "switch.heizdecke": { "default": "off", "delay": 1800 }, 
   "switch.sofa": { "default": "off", "delay": 1800 }, 
   "fan.wz_ventilator": { "default": "off", "delay": 7200 }, 
-  "fan.sz_ventilator": { "default": "off", "delay": 7200 }, 
+  "fan.sz_ventilator": { "default": "off", "delay": 72 }, 
   "fan.wz_luft": { "default": "off", "delay": 21600 }, 
   "fan.sz_luft": { "default": "off", "delay": 21600 }, 
   "switch.wz_luftung": { "default": "off", "delay": 600 },
