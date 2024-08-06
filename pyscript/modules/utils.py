@@ -75,7 +75,6 @@ def expr(entity, expression="", comparator="==", defined=True, from_defined=Fals
   if from_defined:
     conditions.append(f'{entity}.old is not None and {entity}.old not in [{states_undefined_str}]')
 
-
   if expression:
     if isinstance(expression, list):
       if comparator in [None, "==", "in"]:

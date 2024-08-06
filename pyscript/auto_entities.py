@@ -1,6 +1,6 @@
 import regex as re
 from constants.entities import ENTITIES_AUTO
-from constants.mappings import MAP_SERVICE_HA_TURNOFF, MAP_STATE_HA_TIMER_ACTIVE
+from constants.mappings import MAP_EVENT_SYSTEM_STARTED, MAP_SERVICE_HA_TURNOFF, MAP_STATE_HA_TIMER_ACTIVE
 from generic import RESULT_STATUS
 from utils import *
 
@@ -14,13 +14,14 @@ def default_factory(entity, default, call=MAP_SERVICE_HA_TURNOFF, params={}, del
   entity_name = entity.split(".")[1]
   entity_timer = f"timer.{entity_name}"
 
-  def default_call():
+  def default_call(): 
     return service.call(call.split(".")[0], call.split(".")[1], **{**params, 'entity_id': entity})
 
-  @state_trigger(is_not_default, state_check_now=True)
+  @state_trigger(is_not_default, state_hold_false=0)
   @state_active(expr(entity_timer, MAP_STATE_HA_TIMER_ACTIVE, "!="))
+  @task_unique(entity)
   @debugged
-  def default_timer():
+  def default_timer(delay=delay):
     if delay > 0:
       timer.start(entity_id=entity_timer, duration=delay)
       return resulted(RESULT_STATUS.STARTED, entity=entity_timer, duration=delay)
@@ -30,7 +31,8 @@ def default_factory(entity, default, call=MAP_SERVICE_HA_TURNOFF, params={}, del
   if delay > 0:
     @event_trigger("timer.finished", f"entity_id == '{entity_timer}'")
     @state_trigger(is_default, state_hold=duration)
-    # @state_active(expr(entity_timer, MAP_STATE_HA_TIMER_ACTIVE))
+    @state_active(expr(entity_timer, MAP_STATE_HA_TIMER_ACTIVE))
+    @task_unique(entity)
     @debugged
     def default_reset(**kwargs):
       timer.cancel(entity_id=entity_timer)
