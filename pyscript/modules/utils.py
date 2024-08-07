@@ -58,7 +58,7 @@ def resulted(status, entity=None, message=None, **kwargs):
 
 # Functional 
 
-# @debugged
+@debugged
 def expr(entity, expression="", comparator="==", defined=True, from_defined=False, operator='or'):
   if entity and not isinstance(entity, str):
     if isinstance(entity, list):

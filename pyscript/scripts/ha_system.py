@@ -1,9 +1,14 @@
 import os
 import sys
+
 from collections import defaultdict
+from pathlib import Path
+
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
-from constants.config import CFG_EVENT_STARTED_DELAY, CFG_LOG_SETTINGS_ENVIRONMEMT_LENGTH, CFG_PATH_DIR_PY, CFG_SYSTEM_ENVIRONMENT, CFG_SYSTEM_FILES, CFG_SYSTEM_LINKS
+
+from constants.config import * 
 from constants.mappings import MAP_EVENT_SETUP_STARTED, MAP_EVENT_SYSTEM_STARTED
+
 from utils import *
 
 trigger = []
@@ -13,9 +18,7 @@ trigger = []
 @pyscript_executor
 def event_setup_init_native(delay=CFG_EVENT_STARTED_DELAY):
   os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
-  sys.path.extend([
-    path for path in [os.path.join(CFG_PATH_DIR_PY, subdir) for subdir in os.listdir(CFG_PATH_DIR_PY) if os.path.isdir(os.path.join(CFG_PATH_DIR_PY, subdir))]
-    if path not in sys.path ])
+  sys.path.extend([path for path in [os.path.join(CFG_PATH_DIR_PY, subdir) for subdir in os.listdir(CFG_PATH_DIR_PY) if os.path.isdir(os.path.join(CFG_PATH_DIR_PY, subdir))] if path not in sys.path ])
 
 @time_trigger
 @event_trigger(EVENT_HOMEASSISTANT_STARTED)
@@ -35,7 +38,7 @@ def event_setup_init(delay=CFG_EVENT_STARTED_DELAY):
 @logged
 @service
 def ha_setup():
-  environment, paths, links = ha_setup_environment(), ha_setup_files(), ha_setup_links()
+  environment, paths, links, logging = ha_setup_environment(), ha_setup_files(), ha_setup_links(), ha_setup_logging()
   event.fire(MAP_EVENT_SYSTEM_STARTED)
   return "\n".join([paths, links, environment])
 
@@ -80,7 +83,7 @@ def ha_setup_files(files=CFG_SYSTEM_FILES):
       formatted_paths.append(", ".join(paths[key]))
 
   formatted_paths = "\n  ".join(formatted_paths)
-  return f"System Path:\n  {formatted_paths}"
+  return { "paths": formatted_paths }
 
 def ha_setup_links(links=CFG_SYSTEM_LINKS):
   for src, dest in links.items():
@@ -88,4 +91,8 @@ def ha_setup_links(links=CFG_SYSTEM_LINKS):
       os.unlink(dest)
     os.symlink(src, dest)
   formatted_links = "\n".join([f"{src} <- {dest}" for src, dest in links.items()])
-  return f"Sym. Links:\n{formatted_links}"
+  return { "links" : formatted_links }
+
+def ha_setup_logging():  # sync. task due logging scope
+  logger.set_level(**{CFG_LOG_LOGGER: CFG_LOG_LEVEL})
+  return { "debug": Path(CFG_PATH_DIR_LOG, f"{CFG_LOGFILE_DEBUG_FILE}.log") }

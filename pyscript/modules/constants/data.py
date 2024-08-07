@@ -42,7 +42,7 @@ DATA_SUBPROCESS_SERVICES = {
     "commands": [
       "cd /config",
       "echo '\n--- Projektstruktur:\n'; git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v '^templates/' | grep -v '^pyscript/www/'", 
-      "echo '\n--- Quelltext:\'; git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v '^templates/' | grep -v '^tests/' | grep -v '^pyscript/www/' | grep -v -E '\\.(png|jpg|jpeg|json|yaml)$' | while read -r file; do echo - Datei: \"$file\"; cat \"/config/$file\"; echo '\n--------\n'; done",
+      "echo '\n--- Quelltext:\'; git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v '^templates/' | grep -v '^tests/' | grep -v '^pyscript/www/' | grep -v -E '\\.(png|jpg|jpeg|json|yaml)$' | while read -r file; do echo Datei: \"$file\"; cat \"/config/$file\"; echo -e '\n--------\n\n'; done",
       f"git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v 'www/' | tar -czf {SET_SUBPROCESS_COMPILE_PATH}/compile.tar.gz -T -"    
     ]
   },
