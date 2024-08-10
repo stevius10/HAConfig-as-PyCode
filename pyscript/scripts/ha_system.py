@@ -15,7 +15,7 @@ trigger = []
 
 # Startup
 
-@pyscript_executor
+@pyscript_executor # native written redundancy intended
 def event_setup_init_native(delay=CFG_EVENT_STARTED_DELAY):
   os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
   sys.path.extend([path for path in [os.path.join(CFG_PATH_DIR_PY, subdir) for subdir in os.listdir(CFG_PATH_DIR_PY) if os.path.isdir(os.path.join(CFG_PATH_DIR_PY, subdir))] if path not in sys.path ])
@@ -25,9 +25,7 @@ def event_setup_init_native(delay=CFG_EVENT_STARTED_DELAY):
 def event_setup_init(delay=CFG_EVENT_STARTED_DELAY):
   event_setup_init_native()
   os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
-  sys.path.extend([
-    path for path in [os.path.join(CFG_PATH_DIR_PY, subdir) for subdir in os.listdir(CFG_PATH_DIR_PY) if os.path.isdir(os.path.join(CFG_PATH_DIR_PY, subdir))]
-    if path not in sys.path ])
+  sys.path.extend([path for path in [os.path.join(CFG_PATH_DIR_PY, subdir) for subdir in os.listdir(CFG_PATH_DIR_PY) if os.path.isdir(os.path.join(CFG_PATH_DIR_PY, subdir))] if path not in sys.path ])
     
   task.sleep(delay)
   event.fire(MAP_EVENT_SETUP_STARTED)
@@ -38,21 +36,18 @@ def event_setup_init(delay=CFG_EVENT_STARTED_DELAY):
 @logged
 @service
 def ha_setup():
-  environment, paths, links, logging = ha_setup_environment(), ha_setup_files(), ha_setup_links(), ha_setup_logging()
   event.fire(MAP_EVENT_SYSTEM_STARTED)
-  return "\n".join([paths, links, environment])
+  return { **ha_setup_environment(), **ha_setup_files(), **ha_setup_links(), **ha_setup_logging() }
 
 # Tasks
 
 def ha_setup_environment(variables=CFG_SYSTEM_ENVIRONMENT):
   def shorten(val, max_len=CFG_LOG_SETTINGS_ENVIRONMEMT_LENGTH):
     return val if len(val) <= max_len else val[:max_len] + '..'
-  
+
   os.environ.update({k: v for k, v in variables.items() if not (k.startswith('S6') or k.startswith('__'))})
   env_vars = [f"{k}={shorten(os.environ[k])}" for k in sorted(os.environ.keys()) if not (k.startswith('S6') or k.startswith('__'))]
-  
-  formatted_env_vars = ", ".join(env_vars)
-  return f"Environment:\n  {formatted_env_vars}"
+  return { "environment": ", ".join(env_vars) }
 
 
 def ha_setup_files(files=CFG_SYSTEM_FILES):

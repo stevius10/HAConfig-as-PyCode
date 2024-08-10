@@ -6,13 +6,11 @@ from utils import *
 
 trigger = []
 
-entity = MAP_PERSISTENCE_ENTITY_PRESENCE
-
 def presence_factory(room):
 
   @event_trigger(MAP_EVENT_SYSTEM_STARTED)
   def presence_init():
-    store(entity)
+    store(MAP_PERSISTENCE_ENTITY_PRESENCE)
 
   trigger_conditions = [expr(entity, condition['condition']) for entity, condition in ENTITIES_PRESENCE[room]['indicators'].items()]
   # @state_trigger(trigger_conditions)
@@ -26,7 +24,7 @@ def presence_factory(room):
       update_presence(room, 'off')
   trigger.append(presence)
 
-def update_presence(room, action):
+def update_presence(room, action, entity=MAP_PERSISTENCE_ENTITY_PRESENCE):
   if entity: 
     current_state = state.get(entity) if state.get(entity) else {}
     attributes = current_state.get('attributes', {}) if current_state else {}
