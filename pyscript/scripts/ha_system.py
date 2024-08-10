@@ -8,6 +8,7 @@ from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 
 from constants.config import * 
 from constants.mappings import MAP_EVENT_SETUP_STARTED, MAP_EVENT_SYSTEM_STARTED
+from generic import RESULT_STATUS
 
 from utils import *
 
@@ -26,30 +27,29 @@ def event_setup_init(delay=CFG_EVENT_STARTED_DELAY):
   event_setup_init_native()
   os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
   sys.path.extend([path for path in [os.path.join(CFG_PATH_DIR_PY, subdir) for subdir in os.listdir(CFG_PATH_DIR_PY) if os.path.isdir(os.path.join(CFG_PATH_DIR_PY, subdir))] if path not in sys.path ])
-    
+
   task.sleep(delay)
   event.fire(MAP_EVENT_SETUP_STARTED)
 
-# Setup
-
 @event_trigger(MAP_EVENT_SETUP_STARTED)
-@logged
 @service
 def ha_setup():
+  result = { **ha_setup_environment(), **ha_setup_files(),  **ha_setup_logging(), **ha_setup_links() }
   event.fire(MAP_EVENT_SYSTEM_STARTED)
-  return { **ha_setup_environment(), **ha_setup_files(), **ha_setup_links(), **ha_setup_logging() }
+  return result 
 
-# Tasks
+# Setup
 
+@logged
 def ha_setup_environment(variables=CFG_SYSTEM_ENVIRONMENT):
   def shorten(val, max_len=CFG_LOG_SETTINGS_ENVIRONMEMT_LENGTH):
     return val if len(val) <= max_len else val[:max_len] + '..'
 
   os.environ.update({k: v for k, v in variables.items() if not (k.startswith('S6') or k.startswith('__'))})
   env_vars = [f"{k}={shorten(os.environ[k])}" for k in sorted(os.environ.keys()) if not (k.startswith('S6') or k.startswith('__'))]
-  return { "environment": ", ".join(env_vars) }
+  return resulted(status=RESULT_STATUS.SUCCEED, entity=ha_setup_environment.get_name(), message=", ".join(env_vars))
 
-
+@logged
 def ha_setup_files(files=CFG_SYSTEM_FILES):
   from filesystem import cp
   for src, dest in files.items():
@@ -76,18 +76,18 @@ def ha_setup_files(files=CFG_SYSTEM_FILES):
       formatted_paths.append(f"{key}/…")
     else:
       formatted_paths.append(", ".join(paths[key]))
+  return resulted(status=RESULT_STATUS.SUCCEED, entity=ha_setup_files.get_name(), message="\n  ".join(formatted_paths))
 
-  formatted_paths = "\n  ".join(formatted_paths)
-  return { "paths": formatted_paths }
-
+@logged
 def ha_setup_links(links=CFG_SYSTEM_LINKS):
   for src, dest in links.items():
     if not os.path.isdir(dest) and os.path.islink(dest):
       os.unlink(dest)
     os.symlink(src, dest)
   formatted_links = "\n".join([f"{src} <- {dest}" for src, dest in links.items()])
-  return { "links" : formatted_links }
+  return resulted(status=RESULT_STATUS.SUCCEED, entity=ha_setup_links.get_name(), message=formatted_links)
 
+@logged
 def ha_setup_logging():  # sync. task due logging scope
   logger.set_level(**{CFG_LOG_LOGGER: CFG_LOG_LEVEL})
-  return { "debug": Path(CFG_PATH_DIR_LOG, f"{CFG_LOGFILE_DEBUG_FILE}.log") }
+  return resulted(status=RESULT_STATUS.SUCCEED, entity=ha_setup_logging.get_name(), message=Path(CFG_PATH_DIR_LOG, f"{CFG_LOGFILE_DEBUG_FILE}.log"))
