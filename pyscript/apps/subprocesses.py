@@ -13,14 +13,14 @@ services = DATA_SUBPROCESS_SERVICES
 
 # Factory
 
-@logged
+@debugged
 def subprocess_factory(service):
   name = service
   service = services.get(service)
   commands = service.get("commands")
   statement = service.get("statement")
 
-  @logged
+  @debugged
   @service(f"pyscript.subprocess_{name}", supports_response="optional")
   def execute_subprocess(name=name, log_command=False):
     logfile = get_logfile(f"{pyscript.get_global_ctx()}_{name}")

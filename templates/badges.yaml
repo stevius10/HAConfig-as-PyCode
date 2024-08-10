@@ -87,9 +87,9 @@ template_badges_general:
           - operator: regex
             value: "d{2}"
 
-      - entity: sensor.fritz_box_7530_download_durchsatz
+      - entity: sensor.fritzbox_download
         name: "⇩"
-      - entity: sensor.fritz_box_7530_upload_durchsatz
+      - entity: sensor.fritzbox_upload
         name: "⇧"
 
       - type: entity-filter
@@ -152,7 +152,7 @@ template_badges_system:
       badges:
       - *badge_webfilter
       - *badge_backup
-      - entity: sensor.fritz_box_7530_gb_empfangen
+      - entity: image.fritzbox_wlan
         name: Erneut verbinden
         double_tap_action:
           action: call-service

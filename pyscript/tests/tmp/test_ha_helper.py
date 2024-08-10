@@ -19,13 +19,12 @@ class TestHaHelper(unittest.TestCase):
         cls.patches.append(patch.dict('builtins.__dict__', {attr: getattr(cls.mock_pyscript, attr)}))
     for attr in dir(cls.mock_pyscript.task):
       if callable(getattr(cls.mock_pyscript.task, attr)) and not attr.startswith("__"):
-        cls.patches.append(patch.dict('task', {attr: getattr(cls.mock_pyscript.task, attr)}))
+        cls.patches.append(patch.dict('builtins.__dict__', {attr: getattr(cls.mock_pyscript.task, attr)}))
+
+    patch.dict('builtins.__dict__', {'task': cls.mock_pyscript.task}).start()
 
     for p in cls.patches:
       p.start()
-
-    patch.dict('builtins.__dict__', {'service': cls.mock_pyscript.service}).start()
-    patch.dict('builtins.__dict__', {'task': cls.mock_pyscript.MockTask}).start()
 
     try:
       from ha_helper import ha_log_truncate, log_truncate, log_rotate, file_read, file_write
