@@ -9,7 +9,7 @@ trigger = []
 entities = ENTITIES_AUTO
 
 def default_factory(entity, default, call=MAP_SERVICE_HA_TURNOFF, params={}, delay=0, duration=0):
-  is_default, is_not_default = [(expr(entity, default, compare, from_defined=True) if isinstance(default, (str, list)) else default) for compare in ('==', '!=')]
+  is_default, is_not_default = [(expr(entity, default, compare, previous=True) if isinstance(default, (str, list)) else default) for compare in ('==', '!=')]
 
   entity_name = entity.split(".")[1]
   entity_timer = f"timer.{entity_name}"

@@ -59,12 +59,12 @@ def resulted(status, entity=None, message=None, **kwargs):
 # Functional 
 
 @debugged
-def expr(entity, expression="", comparator="==", defined=True, from_defined=False, operator='or'):
+def expr(entity, expression="", comparator="==", defined=True, previous=False, operator='or'):
   if entity and not isinstance(entity, str):
     if isinstance(entity, list):
-      items = [f"({expr(item, expression, comparator, defined, from_defined)})" for item in entity]
+      items = [f"({expr(item, expression, comparator, defined, previous)})" for item in entity]
     if isinstance(entity, dict):
-      items = [f"({expr(key, value, expression, comparator, defined, from_defined)})" for key, value in entity.items()]
+      items = [f"({expr(key, value, expression, comparator, defined, previous)})" for key, value in entity.items()]
     return f" {operator} ".join(items) if items else None
 
   conditions = []
@@ -72,8 +72,20 @@ def expr(entity, expression="", comparator="==", defined=True, from_defined=Fals
   states_undefined_str = ", ".join([f' \"{state}\" ' for state in MAP_STATE_HA_UNDEFINED])
   if defined:
     conditions.append(f'{entity} is not None and {entity} not in [{states_undefined_str}]')
-  if from_defined:
-    conditions.append(f'{entity}.old is not None and {entity}.old not in [{states_undefined_str}]')
+
+  if previous:
+    if isinstance(previous, bool):
+      conditions.append(f'{entity}.old is not None and {entity}.old not in [{states_undefined_str}]')
+    else:
+      if isinstance(entity, dict):
+        items = [f"({expr(f'{key}.old', value, comparator=comparator, defined=defined)})" for key, value in entity.items()]
+        conditions.append(f" {operator} ".join(items))
+      elif isinstance(entity, list):
+        items = [f"({expr(f'{item}.old', previous, comparator=comparator, defined=defined)})" for item in entity]
+        conditions.append(f" {operator} ".join(items))
+      else:
+        conditions.append(f"{entity}.old {comparator} '{previous}'")
+
 
   if expression:
     if isinstance(expression, list):
