@@ -51,7 +51,7 @@ def scrape_housing_factory(provider):
         structure["item"], structure["address_selector"], structure["rent_selector"],
         structure["size_selector"], structure["rooms_selector"], structure["details_selector"])
 
-      store(entity=get_entity(provider), value=[apartment.__string__() for apartment in apartments][:254])
+      store(entity=get_entity(provider), value=[apartment.__str__() for apartment in apartments][:254])
       return { "result": { "entity": get_entity(provider), "value": ", ".join([str(apartment) for apartment in apartments]) } }
     except Exception as e:
       return { "result": { "entity": get_entity(provider), "error": str(e) } }
