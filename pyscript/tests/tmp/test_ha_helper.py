@@ -1,10 +1,12 @@
+import asyncio
+import importlib
 import os
 import sys
 import unittest
 from unittest.mock import patch, MagicMock
-import importlib
-import asyncio
 from datetime import datetime
+
+sys.dont_write_bytecode = True
 
 class TestHaHelper(unittest.TestCase):
   patches = []
@@ -13,16 +15,18 @@ class TestHaHelper(unittest.TestCase):
   def setUpClass(cls):
     from mocks.mock_pyscript import MockPyscript
     cls.mock_pyscript = MockPyscript()
+    cls.mock_pyscript.task = cls.mock_pyscript.Task
+
     
     for attr in dir(cls.mock_pyscript):
       if callable(getattr(cls.mock_pyscript, attr)) and not attr.startswith("__"):
         cls.patches.append(patch.dict('builtins.__dict__', {attr: getattr(cls.mock_pyscript, attr)}))
-    for attr in dir(cls.mock_pyscript.task):
-      if callable(getattr(cls.mock_pyscript.task, attr)) and not attr.startswith("__"):
-        cls.patches.append(patch.dict('builtins.__dict__', {attr: getattr(cls.mock_pyscript.task, attr)}))
 
-    patch.dict('builtins.__dict__', {'task': cls.mock_pyscript.task}).start()
-
+    cls.patches.append(patch('asyncio.Task', new=MagicMock()))
+    cls.patches.append(patch('asyncio.Task.sleep', new=MagicMock()))
+    cls.patches.append(patch('ha_helper.Task', new=cls.mock_pyscript.task))
+    cls.patches.append(patch('ha_helper.Task.sleep', new=cls.mock_pyscript.MockTask.sleep))
+    
     for p in cls.patches:
       p.start()
 

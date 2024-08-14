@@ -2,7 +2,7 @@ from functools import wraps
 from unittest.mock import MagicMock
 
 class MockPyscript:
-  
+
   class MockState:
     def __init__(self):
       self.get = MagicMock()
@@ -12,11 +12,11 @@ class MockPyscript:
       self.names = MagicMock()
       self.persist = MagicMock()
       self.setattr = MagicMock()
-  
+
   class MockEvent:
     def __init__(self):
       self.fire = MagicMock()
-  
+
   class MockLog:
     def __init__(self):
       self.debug = MagicMock()
@@ -24,7 +24,7 @@ class MockPyscript:
       self.warning = MagicMock()
       self.error = MagicMock()
       self.print = MagicMock()
-  
+
   class MockTask:
     def __init__(self):
       self.create = MagicMock()
@@ -38,74 +38,63 @@ class MockPyscript:
       self.sleep = MagicMock()
       self.unique = MagicMock()
       self.wait_until = MagicMock()
-    
+
   def __init__(self):
     self.state = self.MockState()
     self.event = self.MockEvent()
     self.log = self.MockLog()
     self.task = self.MockTask()
-  
+
   @staticmethod
   def service(func):
+    @wraps(func)
     def decorator(*args, **kwargs):
-      if 'file' in kwargs:
-        del kwargs['file']
-      if 'logfile' in kwargs:
-        del kwargs['logfile']
+      kwargs.pop('file', None)
+      kwargs.pop('logfile', None)
       return func(*args, **kwargs)
     return decorator
 
   @staticmethod
   def time_trigger(func):
+    @wraps(func)
     def decorator(*args, **kwargs):
-      if 'trigger_type' in kwargs:
-        del kwargs['trigger_type']
+      kwargs.pop('trigger_type', None)
       return func(*args, **kwargs)
     return decorator
 
   @staticmethod
-  def event_trigger(self, *args, **kwargs):
-    def decorator(func):
-      @wraps(func)
-      def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
-      return wrapper
+  def event_trigger(func):
+    @wraps(func)
+    def decorator(*args, **kwargs):
+      return func(*args, **kwargs)
     return decorator
 
   @staticmethod
-  def mqtt_trigger(self, *args, **kwargs):
-    def decorator(func):
-      @wraps(func)
-      def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
-      return wrapper
+  def mqtt_trigger(func):
+    @wraps(func)
+    def decorator(*args, **kwargs):
+      return func(*args, **kwargs)
     return decorator
 
   @staticmethod
-  def state_active(self, *args, **kwargs):
-    def decorator(func):
-      @wraps(func)
-      def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
-      return wrapper
+  def state_active(func):
+    @wraps(func)
+    def decorator(*args, **kwargs):
+      return func(*args, **kwargs)
     return decorator
 
   @staticmethod
-  def time_active(self, *args, **kwargs):
-    def decorator(func):
-      @wraps(func)
-      def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
-      return wrapper
+  def time_active(func):
+    @wraps(func)
+    def decorator(*args, **kwargs):
+      return func(*args, **kwargs)
     return decorator
 
   @staticmethod
-  def task_unique(self, *args, **kwargs):
-    def decorator(func):
-      @wraps(func)
-      def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
-      return wrapper
+  def task_unique(func):
+    @wraps(func)
+    def decorator(*args, **kwargs):
+      return func(*args, **kwargs)
     return decorator
 
 pyscript = MockPyscript()
