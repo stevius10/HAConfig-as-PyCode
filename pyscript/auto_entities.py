@@ -14,7 +14,7 @@ def default_factory(entity, default, call=MAP_SERVICE_HA_TURNOFF, params={}, del
   entity_name = entity.split(".")[1]
   entity_timer = f"timer.{entity_name}"
 
-  def default_call(): 
+  def default_call(call=call): 
     return service.call(call.split(".")[0], call.split(".")[1], **{**params, 'entity_id': entity})
 
   @state_trigger(is_not_default, state_hold_false=0)

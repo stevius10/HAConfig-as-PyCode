@@ -1,5 +1,6 @@
 from functools import wraps
 from unittest.mock import MagicMock
+from utils import *
 
 class MockPyscript:
 
@@ -63,18 +64,12 @@ class MockPyscript:
     return decorator
 
   @staticmethod
-  def event_trigger(func):
+  def event_trigger(func, **kwargs):
     @wraps(func)
-    def decorator(*args, **kwargs):
-      return func(*args, **kwargs)
-    return decorator
-
-  @staticmethod
-  def mqtt_trigger(func):
-    @wraps(func)
-    def decorator(*args, **kwargs):
-      return func(*args, **kwargs)
-    return decorator
+    def wrapper(*args, **kwargs):
+      result = func(*args, **kwargs)
+      return result
+    return wrapper
 
   @staticmethod
   def state_active(func):
@@ -91,9 +86,11 @@ class MockPyscript:
     return decorator
 
   @staticmethod
-  def task_unique(name="", kill_me=False, **kwargs):
+  def task_unique(*args, **kwargs):
     def decorator(func):
       def wrapper(*func_args, **func_kwargs):
+        print(func)
+        log(func)
         return func(*func_args, **func_kwargs)
       return wrapper
     return decorator
