@@ -91,10 +91,9 @@ class MockPyscript:
     return decorator
 
   @staticmethod
-  def task_unique(func):
-    @wraps(func)
-    def decorator(*args, **kwargs):
-      return func(*args, **kwargs)
+  def task_unique(name="", kill_me=False, **kwargs):
+    def decorator(func):
+      def wrapper(*func_args, **func_kwargs):
+        return func(*func_args, **func_kwargs)
+      return wrapper
     return decorator
-
-pyscript = MockPyscript()
