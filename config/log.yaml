@@ -17,6 +17,8 @@ logger:
       - "Future exception was never retrieved"
     homeassistant.components.braviatv.coordinator:
       - "braviatv"
+    homeassistant.components.caldav.coordinator: 
+      - "CalDAV"
     homeassistant.components.command_line.utils: 
       - "Timeout for command: python3"
     homeassistant.components.google_assistant.http: 

@@ -14,7 +14,7 @@ def default_factory(entity, default, call=MAP_SERVICE_HA_TURNOFF, params={}, del
   entity_name = entity.split(".")[1]
   entity_timer = f"timer.{entity_name}"
 
-  def default_call(call=call): 
+  def default_call(call=call, params=params): 
     return service.call(call.split(".")[0], call.split(".")[1], **{**params, 'entity_id': entity})
 
   @state_trigger(is_not_default, state_hold_false=0)
@@ -32,7 +32,7 @@ def default_factory(entity, default, call=MAP_SERVICE_HA_TURNOFF, params={}, del
     @state_trigger(is_default, state_hold=duration)
     @task_unique(entity)
     @debugged
-    def default_reset(**kwargs):
+    def default_reset():
       timer.cancel(entity_id=entity_timer)
       return resulted(RESULT_STATUS.STOPPED, entity=entity_timer, details=default_call())
 
