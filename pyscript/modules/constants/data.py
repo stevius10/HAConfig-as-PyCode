@@ -46,16 +46,18 @@ DATA_SUBPROCESS_SERVICES = {
       f"git ls-files -oc --exclude-standard | grep -v '__pycache__/' | grep -v 'www/' | tar -czf {SET_SUBPROCESS_COMPILE_PATH}/compile.tar.gz -T -"    
     ]
   },
-  "filebackup": {
-    "commands": [
-      "apk add rsync && ulimit -n 4096 && "
-      f'backup_folder="{SET_SUBPROCESS_FILEBACKUP_FOLDER}/$(date +%Y-%m-%d_%H-%M)" && echo "-> $backup_folder" && mkdir -p "$backup_folder" && '
-      f'/usr/bin/find "$backup_folder" -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1 && '
-      f'/usr/bin/find "$backup_folder" -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r "{{}}" \\; 2>&1 && '
-      f'rsync -azv --partial --ignore-existing --exclude=".git/" --exclude="/homeassistant/.git/" --exclude=".storage/xiaomi_miot" --exclude="/homeassistant/.storage/xiaomi_miot" --exclude="www/community" --exclude="custom_components" --exclude="*.log" --exclude=".storage/hacs.*" --exclude=".storage/icloud" --exclude=".storage/hacs.repositories.*" /config/ "$backup_folder" 2>&1 && '
-      f'echo "$(find "$backup_folder" -type f | wc -l) files in $(du -sh "$backup_folder" | cut -f1)" 2>&1'
-    ], "statement": EXPR_TIME_FILEBACKUP
-  },
+"filebackup": {
+  "commands": [
+    "apk add rsync && ulimit -n 4096 && "
+    f'backup_folder="{SET_SUBPROCESS_FILEBACKUP_FOLDER}/$(date +%Y-%m-%d_%H-%M)" && echo "-> $backup_folder" && mkdir -p "$backup_folder" && '
+    f'/usr/bin/find "$backup_folder" -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1 && '
+    f'/usr/bin/find "$backup_folder" -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r {{}} \\; 2>&1 && '
+    f'rsync -azv --partial --ignore-existing --exclude=".git/" --exclude="/homeassistant/.git/" --exclude=".storage/xiaomi_miot" --exclude="/homeassistant/.storage/xiaomi_miot" --exclude="www/community" --exclude="custom_components" --exclude="*.log" --exclude=".storage/hacs.*" --exclude=".storage/icloud" --exclude=".storage/hacs.repositories.*" /config/ "$backup_folder" 2>&1 && '
+    f'echo "$(find "$backup_folder" -type f | wc -l) files in $(du -sh "$backup_folder" | cut -f1)" 2>&1'
+  ], 
+  "statement": EXPR_TIME_FILEBACKUP
+},
+
   "gitsync": {
     "commands": [
       f"git config --local include.path '{SEC_SUBPROCESS_GIT_SETTINGS_CONFIG}'", 
