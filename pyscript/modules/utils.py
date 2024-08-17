@@ -9,39 +9,30 @@ from generic import ForwardException
 # Logging
 
 def debug(msg="", title=""):
-  if title: 
-    msg = f"[{title}] {msg}"
-  if msg:
+  if msg := f"[{title}] {msg}" if title else msg:
     try:
-      logfile = get_logfile()
-      logfile.debug(msg)
-    except: # avoid startup validation
-      pass  # handled functional
+      get_logfile().debug(msg)
+    except: pass # avoid startup validation
 
 def log(msg="", title="", logger=CFG_LOG_LOGGER, level=CFG_LOG_LEVEL, **kwargs):
-  if title: 
-    msg = f"[{title}] {msg}"
-  if msg: 
+  if msg := f"[{title}] {msg}" if title else msg:
     system_log.write(message=str(msg), logger=logger, level=level)
 
 # Monitoring 
 
 def _observed(func, log_func, debug_function_started=CFG_LOGFILE_DEBUG_FUNCTION_STARTED):
   def wrapper(*args, **kwargs):
-    if kwargs.get('context'): del kwargs['context']
-    context = ".".join([func.global_ctx_name, func.name]) if hasattr(func, 'global_ctx_name') and hasattr(func, 'name') else ""
-    if debug_function_started:
-      debug(f"{format_observed(func, args, kwargs)}", title=context)
+    log_title = func.global_ctx_name if hasattr(func, 'global_ctx_name') and hasattr(func, 'name') else ""
+    kwargs.pop('context', None)
+    debug_function_started and debug(format_observed(func, args, kwargs), title=log_title)
     try:
       result = func(*args, **kwargs)
+      log_func == "log" and result and log(format_observed(func, args, kwargs, result), title=log_title)
+      debug(format_observed(func, args, kwargs, result), title=log_title)
+      return result
     except Exception as e:
-      raise ForwardException(e, context)
-    finally:
-      # if result:
-      if log_func == "log":
-        log(format_observed(func, args, kwargs, result), title=context)
-      debug(format_observed(func, args, kwargs, result), title=context)
-    return result
+      raise ForwardException(e, func.global_ctx_name)
+
   return wrapper
 
 def debugged(func):
@@ -136,4 +127,4 @@ def get_logfile(name=None):
 def format_observed(func, args, kwargs, result=None):
   str_args = ", ".join([str(arg) if arg is not None else "" for arg in args]) if args else ""
   str_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if k != "context"]) if kwargs else ""
-  return f"{func.name if hasattr(func, 'name') else ''}({", ".join(filter(None, [str_args, str_kwargs]))})" + (f": \n-> {result}" if result else "")
+  return f"{func.name if hasattr(func, 'name') else ''}({", ".join(filter(None, [str_args, str_kwargs]))})" + (f": -> {result}" if result else "")
