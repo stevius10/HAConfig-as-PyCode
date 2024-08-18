@@ -32,7 +32,7 @@ def default_factory(entity, default, call=MAP_SERVICE_HA_TURNOFF, params={}, del
     @state_trigger(is_default, state_hold=duration)
     @task_unique(entity)
     @debugged
-    def default_reset(entity_id, finished_at):
+    def default_reset(**kwargs):
       timer.cancel(entity_id=entity_timer)
       return resulted(RESULT_STATUS.STOPPED, entity=entity_timer, details=default_call())
 
