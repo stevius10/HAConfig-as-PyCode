@@ -26,16 +26,9 @@ class Apartment:
   rooms: Optional[str] = None
   details: Optional[str] = None
   text: Optional[str] = None
-  summary: str = field(init=False)
 
-  def __post_init__(self):
-    self.summary = ', '.join(filter(None, [self.rent, self.rooms, self.size]))
-
-  def __str__(self):
-    return f"{self.address} ({self.summary})"
-  
-  def to_dict(self):
-    return { "address": self.address, "summary": self.summary }
+  def get_summary(self):
+    return f"{self.address} ({', '.join(filter(None, [self.rent, self.rooms, self.size]))})"
 
 def scrape_housing_factory(provider):
   @event_trigger(MAP_EVENT_SYSTEM_STARTED)
@@ -51,7 +44,7 @@ def scrape_housing_factory(provider):
         structure["item"], structure["address_selector"], structure["rent_selector"],
         structure["size_selector"], structure["rooms_selector"], structure["details_selector"])
 
-      store(entity=get_entity(provider), value=[apartment.__str__() for apartment in apartments][:254])
+      store(entity=get_entity(provider), value=", ".join([apartment.get_summary() for apartment in apartments][:254]))
       return { "result": { "entity": get_entity(provider), "value": ", ".join([str(apartment) for apartment in apartments]) } }
     except Exception as e:
       return { "result": { "entity": get_entity(provider), "error": str(e) } }
