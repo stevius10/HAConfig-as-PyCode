@@ -87,9 +87,9 @@ template_badges_general:
           - operator: regex
             value: "d{2}"
 
-      - entity: sensor.fritzbox_download
+      - entity: sensor.fritz_box_7590_ax_download_durchsatz
         name: "⇩"
-      - entity: sensor.fritzbox_upload
+      - entity: sensor.fritz_box_7590_ax_upload_durchsatz
         name: "⇧"
 
       - type: entity-filter
@@ -152,13 +152,13 @@ template_badges_system:
       badges:
       - *badge_webfilter
       - *badge_backup
-      - entity: image.fritzbox_wlan
+      - entity: image.fritz_box_7590_ax_generation_lockdown
         name: Erneut verbinden
         double_tap_action:
           action: call-service
           service: button.press
           data:
-            entity_id: button.fritz_box_7530_neu_verbinden
+            entity_id: switch.fritz_box_7590_ax_generation_lockdown
           confirmation:
             text: Internetverbindung trennen und neu herstellen? 
         tap_action:
