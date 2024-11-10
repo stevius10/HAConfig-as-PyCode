@@ -34,3 +34,4 @@ def compare(old, new):
   old_identifiers = set(get_identifiers(old))
   new_identifiers = set(get_identifiers(new))
   return new_identifiers - old_identifiers
+  
