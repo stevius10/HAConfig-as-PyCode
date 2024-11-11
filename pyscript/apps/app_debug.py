@@ -32,8 +32,8 @@ def debug_events(service_data=None, **kwargs):
 @service
 def debug_triggers():
   triggers = {}
-  for ctx_name, ctx in pyscript.get_global_ctx().items():
-    ctx_triggers = ctx.get_triggers()
-    if ctx_triggers:
-      triggers[ctx_name] = [str(trig) for trig in ctx_triggers]
+#   for ctx_name, ctx in pyscript.get_global_ctx().items():
+#     ctx_triggers = ctx.get_triggers()
+#     if ctx_triggers:
+#       triggers[ctx_name] = [str(trig) for trig in ctx_triggers]
   return {"triggers": triggers}

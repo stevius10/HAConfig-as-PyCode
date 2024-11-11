@@ -17,11 +17,12 @@ from generic import IORetriesExceededException
 @debugged
 async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder="", path="", **kwargs):
   try: 
-    if trigger_type == "event" and event_type == "modified": 
-      log_truncate(log_size_truncated=CFG_LOG_SIZE)
+
     if trigger_type == "time": 
       log_truncate(log_size_truncated=0)
       system_log.clear()
+    elif trigger_type == "event" and event_type == "modified": 
+      log_truncate(log_size_truncated=CFG_LOG_SIZE)
   except Exception as e: 
     raise e
   finally: 
@@ -88,7 +89,7 @@ async def file_read(logfile):
     except Exception as e:
       exception = e
   if exception:
-    raise IORetriesExceededException(exception)
+    raise IORetriesExceededException(exception, logfile)
   return []
 
 async def file_write(logfile, lines, mode='w+'):
@@ -104,5 +105,5 @@ async def file_write(logfile, lines, mode='w+'):
     except Exception as e:
       exception = e
   if exception:
-    raise IORetriesExceededException(exception)
+    raise IORetriesExceededException(exception, logfile)
   return False
