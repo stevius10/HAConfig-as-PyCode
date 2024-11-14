@@ -60,61 +60,116 @@ badge_air_quality:
 
 template_badges_general: 
   card:
-    type: custom:layout-card
-    layout: vertical
-    cards:
-    - type: 'custom:badge-card'
-      badges: 
-      
-      - type: entity-filter
-        entities: 
-          - *badge_webfilter
-        conditions:
-        - condition: state
-          state_not: "on"
+    type: 'custom:badge-card'
+    badges: 
+    
+    - type: entity-filter
+      entities: 
+        - *badge_webfilter
+      conditions:
+      - condition: state
+        state_not: "on"
+        
+    - type: entity-filter
+      entities: 
+        - *badge_backup
+      state_filter:
+        - operator: regex
+          value: "[d]"
           
-      - type: entity-filter
-        entities: 
-          - *badge_backup
-        state_filter:
-          - operator: regex
-            value: "[d]"
+    - type: entity-filter
+      entities: 
+        - *badge_air_quality
+      conditions:
+        - operator: regex
+          value: "d{2}"
+  
+    - entity: sensor.fritz_box_7590_ax_download_durchsatz
+      name: "⇩"
+    - entity: sensor.fritz_box_7590_ax_upload_durchsatz
+      name: "⇧"
+  
+    - type: entity-filter
+      entities:
+        - entity: media_player.wohnzimmer
+        - entity: media_player.bad
+        - entity: media_player.kueche
+        - entity: media_player.schlafzimmer
+      state_filter:
+        - playing
+  
+    - type: custom:auto-entities
+      card:
+        type: custom:badge-card
+      filter:
+        include:
+          - domain: timer
+            state: "active"
+            options:
+              tap_action:
+                action: call-service
+                service: timer.finish
+                service_data:
+                  entity_id: this.entity_id
+      show_empty: false
+        
+# template_badges_general: 
+#   card:
+#     type: custom:layout-card
+#     layout: vertical
+#     cards:
+#     - type: 'custom:badge-card'
+#       badges: 
+      
+#       - type: entity-filter
+#         entities: 
+#           - *badge_webfilter
+#         conditions:
+#         - condition: state
+#           state_not: "on"
+          
+#       - type: entity-filter
+#         entities: 
+#           - *badge_backup
+#         state_filter:
+#           - operator: regex
+#             value: "[d]"
             
-      - type: entity-filter
-        entities: 
-          - *badge_air_quality
-        conditions:
-          - operator: regex
-            value: "d{2}"
+#       - type: entity-filter
+#         entities: 
+#           - *badge_air_quality
+#         conditions:
+#           - operator: regex
+#             value: "d{2}"
 
-      - entity: sensor.fritz_box_7590_ax_download_durchsatz
-        name: "⇩"
-      - entity: sensor.fritz_box_7590_ax_upload_durchsatz
-        name: "⇧"
+#       - entity: sensor.fritz_box_7590_ax_download_durchsatz
+#         name: "⇩"
+#       - entity: sensor.fritz_box_7590_ax_upload_durchsatz
+#         name: "⇧"
 
-      - type: entity-filter
-        entities:
-          - entity: media_player.wohnzimmer
-          - entity: media_player.bad
-          - entity: media_player.kueche
-          - entity: media_player.schlafzimmer
-        state_filter:
-          - playing
+#       - type: entity-filter
+#         entities:
+#           - entity: media_player.wohnzimmer
+#           - entity: media_player.bad
+#           - entity: media_player.kueche
+#           - entity: media_player.schlafzimmer
+#         state_filter:
+#           - playing
 
-      - type: custom:auto-entities
-        card:
-          type: custom:badge-card
-        filter:
-          include:
-            - domain: timer
-              state: "active"
-              options:
-                tap_action:
-                  action: call-service
-                  service: timer.finish
-                  service_data:
-                    entity_id: this.entity_id
-        show_empty: false
+#       - type: custom:auto-entities
+#         card:
+#           type: custom:badge-card
+#         filter:
+#           include:
+#             - domain: timer
+#               state: "active"
+#               options:
+#                 tap_action:
+#                   action: call-service
+#                   service: timer.finish
+#                   service_data:
+#                     entity_id: this.entity_id
+#         show_empty: false
         
 template_badges_services: 
   card:

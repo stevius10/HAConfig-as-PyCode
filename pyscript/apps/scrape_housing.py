@@ -28,8 +28,8 @@ class Apartment:
   text: Optional[str] = None
 
   def get_summary(self):
-    return f"{self.address} ({', '.join(filter(None, [self.rent, self.rooms, self.size]))})"
-
+    return f"{self.address} ({self.rent if self.rent else ''}{', ' if self.rent and self.rooms else ''}{self.rooms if self.rooms else ''}{', ' if (self.rent or self.rooms) and self.size else ''}{self.size if self.size else ''})".strip(" ()")
+    
 def scrape_housing_factory(provider):
   @event_trigger(MAP_EVENT_SYSTEM_STARTED)
   @time_trigger('shutdown')
@@ -69,7 +69,6 @@ def scrape_housings(housing_provider=housing_provider, event_trigger=None):
 
   return {"result": results_housing}
 
-@debugged
 def filtering(apartment: Apartment) -> Optional[Apartment]:
   if all(value is None for value in [apartment.rent, apartment.size, apartment.rooms, apartment.details]) or apartment.address is None:
     return resulted(RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.NO_VALUE, details=str(apartment))

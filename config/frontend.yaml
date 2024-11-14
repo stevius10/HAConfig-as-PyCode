@@ -14,7 +14,7 @@ lovelace:
   resources:
     - url: /hacsfiles/swipe-card/swipe-card.js
       type: module
-    - url: /hacsfiles/lovelace-badge-card/badge-card.js
+    - url: /hacsfiles/lovelace-badge-card/badge-card.j
       type: module
     - url: /hacsfiles/lovelace-layout-card/layout-card.js
       type: module
