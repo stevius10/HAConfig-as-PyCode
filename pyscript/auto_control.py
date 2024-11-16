@@ -6,15 +6,15 @@ from utils import *
 trigger = []
 
 def on_press_factory(entity): 
-  @state_trigger(expr(entity, expression=['on-press', 'off-press', 'up-press', 'down-press', 'single-press', 'double-press', 'long-press'], comparator="in", defined=False))
+  @state_trigger(expr(entity, expression=['on_press', 'off_press', 'up_press', 'down_press'], comparator="in", defined=False))
   @debugged
   def on_press(var_name=None, value=None):
-    action = ENTITIES_CONTROL.get(entity).get(value.split("-")[0])
+    action = ENTITIES_CONTROL.get(entity).get(value.split("_")[0])
     if action:
       scene.turn_on(entity_id=action)
   trigger.append(on_press)
 
-  @state_trigger(expr(entity, expression=['on-press'], comparator="in", defined=False), state_hold=SET_CONTROL_ON_LONG_HOLD)
+  @state_trigger(expr(entity, expression=['on_press'], comparator="in", defined=False), state_hold=SET_CONTROL_ON_LONG_HOLD)
   @debugged
   def on_long_press(var_name=None, value=None):
     action_on = ENTITIES_CONTROL.get(entity).get('on')
