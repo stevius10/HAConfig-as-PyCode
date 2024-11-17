@@ -6,11 +6,10 @@ from utils import expr
 
 ENTITIES_AUTO = {
   "climate.k": { "default": "off", "call": "climate.turn_off" },
-  # "media_player.schlafzimmer": { "default": ["off", "paused"], "call": "media_player.media_stop", "duration": 60, "delay": 4800 },
   "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
   "switch.bett": { "default": "off", "delay": 1800 },
   "switch.heizdecke": { "default": "off", "delay": 1800 }, 
-  # "switch.g_tischlampe": { "default": "off", "delay": 90 }, 
+  "switch.g_tischlampe": { "default": "off", "delay": 90 }, 
   "switch.k_lampe": { "default": "off", "delay": 600 }, 
   "switch.sofa": { "default": "off", "delay": 1800 }, 
   "fan.wz_ventilator": { "default": "off", "delay": 7200 }, 
@@ -20,7 +19,9 @@ ENTITIES_AUTO = {
   "switch.wz_luftung": { "default": "off", "delay": 600 },
   "switch.sz_luftung": { "default": "off", "delay": 600 },
   
-  "switch.sofa": { 'default': 'switch.sofa == on and sensor.sofa_current_power > 5', 'duration': 60, 'delay': 4800 },
+  # "media_player.schlafzimmer": { "default": ["off", "paused"], "call": "media_player.media_stop", "duration": 60, "delay": 4800 },
+
+  # "switch.sofa": { 'default': 'switch.sofa == on and sensor.sofa_current_power > 5', 'duration': 60, 'delay': 4800 },
   # "media_player.schlafzimmer": { "default": f"media_player.schlafzimmer.volume_level < {SET_ENTITIES_GLOBAL_VOLUME_MAX}", "call": "media_player.volume_set", "params": {"volume_level": (SET_ENTITIES_GLOBAL_VOLUME_MAX / 100) } }
   
 }
