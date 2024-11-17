@@ -32,3 +32,5 @@ lovelace:
       type: module
     - url: /hacsfiles/lovelace-hui-element/hui-element.js
       type: module
+    - url: /hacsfiles/lovelace-mushroom/mushroom.js
+      type: module

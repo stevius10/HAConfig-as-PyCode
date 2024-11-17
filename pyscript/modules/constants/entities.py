@@ -6,7 +6,7 @@ from utils import expr
 
 ENTITIES_AUTO = {
   "climate.k": { "default": "off", "call": "climate.turn_off" },
-  "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
+  # "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
   "switch.bett": { "default": "off", "delay": 1800 },
   "switch.heizdecke": { "default": "off", "delay": 1800 }, 
   "switch.g_tischlampe": { "default": "off", "delay": 90 }, 

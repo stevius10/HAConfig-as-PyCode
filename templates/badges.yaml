@@ -2,6 +2,7 @@
 
 badge_webfilter:
   &badge_webfilter
+  type: custom:hui-state-badge-element
   entity: switch.adguard_home_schutz # sensor.adguard_home_dns_abfragen_blockiert
   name: Web-Filter
   card_mod:
@@ -20,6 +21,7 @@ badge_webfilter:
 
 badge_backup:
   &badge_backup
+  type: custom:hui-state-badge-element
   entity: sensor.v_cli_lastbackup
   name: Sicherung
   card_mod:
@@ -36,6 +38,7 @@ badge_backup:
 
 badge_air_quality:
   &badge_air_quality
+  type: custom:hui-state-badge-element
   entity: sensor.luftqualitat
   name: Luft reinigen
   card_mod:
@@ -60,9 +63,14 @@ badge_air_quality:
 
 template_badges_general: 
   card:
-    type: 'custom:badge-card'
-    badges: 
+    type: custom:badge-card
+    entities: 
     
+    - type: custom:hui-state-badge-element
+      entity: sensor.fritz_box_7590_ax_download_durchsatz
+    - type: custom:hui-state-badge-element
+      entity: sensor.fritz_box_7590_ax_upload_durchsatz
+
     - type: entity-filter
       entities: 
         - *badge_webfilter
@@ -83,12 +91,7 @@ template_badges_general:
       conditions:
         - operator: regex
           value: "d{2}"
-  
-    - entity: sensor.fritz_box_7590_ax_download_durchsatz
-      name: "⇩"
-    - entity: sensor.fritz_box_7590_ax_upload_durchsatz
-      name: "⇧"
-  
+
     - type: entity-filter
       entities:
         - entity: media_player.wohnzimmer
@@ -112,65 +115,7 @@ template_badges_general:
                 service_data:
                   entity_id: this.entity_id
       show_empty: false
-        
-# template_badges_general: 
-#   card:
-#     type: custom:layout-card
-#     layout: vertical
-#     cards:
-#     - type: 'custom:badge-card'
-#       badges: 
-      
-#       - type: entity-filter
-#         entities: 
-#           - *badge_webfilter
-#         conditions:
-#         - condition: state
-#           state_not: "on"
-          
-#       - type: entity-filter
-#         entities: 
-#           - *badge_backup
-#         state_filter:
-#           - operator: regex
-#             value: "[d]"
-            
-#       - type: entity-filter
-#         entities: 
-#           - *badge_air_quality
-#         conditions:
-#           - operator: regex
-#             value: "d{2}"
 
-#       - entity: sensor.fritz_box_7590_ax_download_durchsatz
-#         name: "⇩"
-#       - entity: sensor.fritz_box_7590_ax_upload_durchsatz
-#         name: "⇧"
-
-#       - type: entity-filter
-#         entities:
-#           - entity: media_player.wohnzimmer
-#           - entity: media_player.bad
-#           - entity: media_player.kueche
-#           - entity: media_player.schlafzimmer
-#         state_filter:
-#           - playing
-
-#       - type: custom:auto-entities
-#         card:
-#           type: custom:badge-card
-#         filter:
-#           include:
-#             - domain: timer
-#               state: "active"
-#               options:
-#                 tap_action:
-#                   action: call-service
-#                   service: timer.finish
-#                   service_data:
-#                     entity_id: this.entity_id
-#         show_empty: false
-        
 template_badges_services: 
   card:
     type: custom:layout-card
@@ -183,8 +128,8 @@ template_badges_services:
       
       - *badge_air_quality
 
-      - entity: sensor.none
-        name: Alles aus- schalten
+      - type: custom:hui-state-badge-element
+        entity: sensor.none
         tap_action:
           action: call-service
           service: pyscript.turnoff
@@ -194,7 +139,7 @@ template_badges_services:
           action: call-service
           service: homeassistant.turn_off
           data:
-            entity_id: pyscript.uturnoff
+            entity_id: pyscript.turnoff
             
 template_badges_system: 
   card:
@@ -207,7 +152,8 @@ template_badges_system:
       badges:
       - *badge_webfilter
       - *badge_backup
-      - entity: image.fritz_box_7590_ax_generation_lockdown
+      - type: custom:hui-state-badge-element
+        entity: image.fritz_box_7590_ax_generation_lockdown
         name: Erneut verbinden
         double_tap_action:
           action: call-service
