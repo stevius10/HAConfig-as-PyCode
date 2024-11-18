@@ -5,23 +5,34 @@ from utils import expr
 # Automation
 
 ENTITIES_AUTO = {
-  "climate.k": { "default": "off", "call": "climate.turn_off" },
-  # "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
-  "switch.bett": { "default": "off", "delay": 1800 },
-  "switch.heizdecke": { "default": "off", "delay": 1800 }, 
-  "switch.g_tischlampe": { "default": "off", "delay": 90 }, 
-  "switch.k_lampe": { "default": "off", "delay": 600 }, 
-  "switch.sofa": { "default": "off", "delay": 1800 }, 
-  "fan.wz_ventilator": { "default": "off", "delay": 7200 }, 
-  "fan.sz_ventilator": { "default": "off", "delay": 7200 }, 
-  "fan.wz_luft": { "default": "off", "delay": 21600 }, 
-  "fan.sz_luft": { "default": "off", "delay": 21600 }, 
-  "switch.wz_luftung": { "default": "off", "delay": 600 },
-  "switch.sz_luftung": { "default": "off", "delay": 600 },
   
-  # "media_player.schlafzimmer": { "default": ["off", "paused"], "call": "media_player.media_stop", "duration": 60, "delay": 4800 },
+  # General
+  "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
 
+  # Küche
+  "climate.k": { "default": "off", "call": "climate.turn_off" },
+  "switch.k_lampe": { "default": "off", "delay": 600 }, 
+
+  # Gang
+  "switch.g_tischlampe": { "default": "off", "delay": 90 }, 
+
+  # Wohnzimmer
+  "fan.wz_luft": { "default": "off", "delay": 21600 }, 
+  "fan.wz_ventilator": { "default": "off", "delay": 7200 }, 
+  "switch.heizdecke": { "default": "off", "delay": 1800 }, 
+  "switch.sofa": { "default": "off", "delay": 1800 }, 
+  "switch.wz_luftung": { "default": "off", "delay": 600 },
+  
+  # Schlafzimmer
+  "fan.sz_luft": { "default": "off", "delay": 21600 }, 
+  "fan.sz_ventilator": { "default": "off", "delay": 7200 }, 
+  "light.sz_beleuchtung": { "default": "off", "delay": 1800 },
+  "switch.bett": { "default": "off", "delay": 1800 },
+  "switch.sz_luftung": { "default": "off", "delay": 600 },
+
+  # Erweitert
   # "switch.sofa": { 'default': 'switch.sofa == on and sensor.sofa_current_power > 5', 'duration': 60, 'delay': 4800 },
+  # "media_player.schlafzimmer": { "default": ["off", "paused"], "call": "media_player.media_stop", "duration": 60, "delay": 4800 },
   # "media_player.schlafzimmer": { "default": f"media_player.schlafzimmer.volume_level < {SET_ENTITIES_GLOBAL_VOLUME_MAX}", "call": "media_player.volume_set", "params": {"volume_level": (SET_ENTITIES_GLOBAL_VOLUME_MAX / 100) } }
   
 }

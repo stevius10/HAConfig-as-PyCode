@@ -3,6 +3,8 @@ timer:
     name: adguard_home_schutz
   heizdecke:
     name: heizdecke
+  g_tischlampe:
+    name: g_tischlampe
   sofa:
     name: sofa
   bett:
