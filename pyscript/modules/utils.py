@@ -2,7 +2,7 @@ import importlib
 import sys 
 
 from constants.config import CFG_LOG_LOGGER, CFG_LOG_LEVEL, CFG_LOGFILE_DEBUG_FUNCTION_STARTED, CFG_LOGFILE_IMPORT_RETRIES, CFG_LOGFILE_IMPORT_TIMEOUT, CFG_PATH_DIR_PY_NATIVE
-from constants.mappings import MAP_STATE_HA_UNDEFINED
+from constants.mappings import MAP_STATE_HA_UNDEFINED, MAP_EVENT_SYSTEM_STARTED
 
 from generic import ForwardException
 

@@ -10,8 +10,9 @@ os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
 class Logfile:
   _logger = None
 
-  def __init__(self, name=None, component_log=True):
+  def __init__(self, name=None, component_log=True, timestamp=True):
     self.component_log = component_log
+    self.timestamp = timestamp
     if name:
       self.name = name.split(".")[1] if not name.isalpha() else name
       self._logger = self._get_file_logger()
@@ -38,7 +39,6 @@ class Logfile:
     if logger.hasHandlers():
       logger.handlers.clear()
     handler = logging.FileHandler(logfile, mode='w+')
-    handler.setFormatter(logging.Formatter(CFG_LOGFILE_FORMAT))
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
     logger.propagate = False

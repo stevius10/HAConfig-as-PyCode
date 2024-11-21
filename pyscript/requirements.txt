@@ -4,3 +4,8 @@ importlib
 regex
 pytest
 requests
+
+# machine learning
+numpy
+pandas
+joblib
