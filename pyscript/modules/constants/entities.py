@@ -45,7 +45,7 @@ ENTITIES_MOTION = {
 ENTITIES_CONTROL = {
   'sensor.wz_schalter_action': { 'on': 'scene.wz_indirekt', 'off': ['scene.wz_aus', 'scene.k_aus'], 'up': 'scene.wz_hell', 'down': 'scene.wz_schwach' }, 
   'sensor.sz_schalter_action': { 'on': 'scene.sz_normal', 'off': 'scene.sz_aus', 'up': 'scene.sz_hell', 'down': 'scene.sz_indirekt' },
-  'sensor.g_schalter_action': { 'on': 'scene.g_normal', 'off': 'scene.g_aus', 'up': 'scene.g_hell', 'down': 'scene.g_indirekt' },
+  'sensor.g_schalter_action': { 'on': 'scene.g_normal', 'off': [ 'scene.g_aus', 'scene.wz_aus', 'scene.k_aus' ], 'up': 'scene.g_hell', 'down': 'scene.g_indirekt' },
 }
 
 ENTITIES_PRESENCE = {
