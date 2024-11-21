@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from constants.config import CFG_SERVICE_ENABLED_SCRAPE_HOUSING
 from constants.data import DATA_SCRAPE_HOUSING_PROVIDERS
 from constants.expressions import EXPR_TIME_SCRAPE_HOUSINGS_UPDATE, EXPR_TIME_GENERAL_WORKTIME
-from constants.mappings import MAP_EVENT_SYSTEM_STARTED, MAP_PERSISTENCE_PREFIX_SCRAPE_HOUSING
+from constants.mappings import MAP_EVENT_SYSTEM_STARTED, MAP_PERSISTENCE_PREFIX_SCRAPE_HOUSING, MAP_RESULT_REASON, MAP_RESULT_STATUS
 from constants.settings import *
 
 from utils import *
@@ -25,15 +25,13 @@ def scrape_housing_factory(provider):
     store(entity=get_entity(provider))
 
   @service(f"pyscript.scrape_housing_{provider}", supports_response="optional")
+  @logged
   def scrape_housing(provider=provider):
     try:
       structure = housing_provider[provider]["structure"]
       apartments = scrape(fetch(provider), 
         structure["item"], structure["address_selector"], structure["rent_selector"],
         structure["size_selector"], structure["rooms_selector"], structure["details_selector"])
-      print(apartments)
-      apartments = f"{apartment.get('address', '')} ({apartment.get('rent', '')}{', ' if apartment.get('rent') and apartment.get('rooms') else ''}{apartment.get('rooms', '')}{', ' if (apartment.get('rent') or apartment.get('rooms')) and apartment.get('size') else ''}{apartment.get('size', '')})".strip(" ()")
-      print(apartments)
       store(entity=get_entity(provider), value=apartments)
       return { "result": { "entity": get_entity(provider), "value": apartments } }
     except Exception as e:
@@ -59,20 +57,19 @@ def scrape_housings(housing_provider=housing_provider, event_trigger=None):
 
   return {"result": results_housing}
 
-@logged
 def filtering(apartment):
   if [apartment.get('rent'), apartment.get('size'), apartment.get('rooms'), apartment.get('details')].count(None) == 4 or apartment.get('address') is None:
-    return resulted(RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.NO_VALUE, details=str(apartment))
+    return resulted(MAP_RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.NO_VALUE, details=str(apartment))
   plz = re.search(r'\b1\d{4}\b', apartment.get('address'))
   if plz and (not plz.group().startswith('10') or plz.group() not in ['12043', '12045', '12047', '12049', '12051', '12053', '13573', '12089']):
-    return resulted(RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.FILTERED, details=str(apartment))
+    return resulted(MAP_RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.FILTERED, details=str(apartment))
   if apartment.get('rent') is not None and re.findall(r'\d', apartment.get('rent')) and not (400 < int(''.join(re.findall(r'\d', apartment.get('rent'))[:3])) < SET_SCRAPE_HOUSING_FILTER_RENT):
-    return resulted(RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.FILTERED, details=str(apartment))
+    return resulted(MAP_RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.FILTERED, details=str(apartment))
   if apartment.get('text') is not None:
     for blacklist_item in SET_SCRAPE_HOUSING_BLACKLIST:
       if re.search(r'\b' + re.escape(blacklist_item.lower()) + r'\b', apartment.get('text').lower()):
-        return resulted(RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.FILTERED, details=str(apartment))
-  return apartment
+        return resulted(MAP_RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.FILTERED, details=str(apartment))
+  return f"{apartment.get('address', '')} ({apartment.get('rent', '')}{', ' if apartment.get('rent') and apartment.get('rooms') else ''}{apartment.get('rooms', '')}{', ' if (apartment.get('rent') or apartment.get('rooms')) and apartment.get('size') else ''}{apartment.get('size', '')})"[:254].strip(" ()")
 
 def scrape(content, item, address_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None) -> List[Apartment]:
   apartments = []
@@ -105,13 +102,10 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
     if not details:
       details = element_text
 
-    apartment = { "address": address, "rent": rent, "size": size, "rooms": rooms, "details": details, "text": element_text }
-    apartment = filtering(apartment)
+    apartment: str = filtering({ "address": address, "rent": rent, "size": size, "rooms": rooms, "details": details, "text": element_text })
     if apartment:
-      log(apartment.get('address'))
-      log(apartment)
       apartments.append(apartment)
-  
+
   return apartments
 
 @pyscript_executor

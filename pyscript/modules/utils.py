@@ -97,7 +97,7 @@ def expr(entity, expression="", comparator="==", defined=True, previous=False, o
 def store(entity, value=None, result=True, **kwargs): 
 
   if value is not None:
-    state.set(entity, value, kwargs if kwargs else {})
+    state.set(entity, value[:255], kwargs if kwargs else {})
     homeassistant.update_entity(entity_id=entity)
     state.persist(entity)
   else: 

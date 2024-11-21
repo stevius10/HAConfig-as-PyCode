@@ -7,8 +7,7 @@ from pathlib import Path
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 
 from constants.config import * 
-from constants.mappings import MAP_EVENT_SETUP_STARTED, MAP_EVENT_SYSTEM_STARTED
-from generic import RESULT_STATUS
+from constants.mappings import MAP_EVENT_SETUP_STARTED, MAP_EVENT_SYSTEM_STARTED, MAP_RESULT_STATUS
 
 from utils import *
 
@@ -47,7 +46,7 @@ def ha_setup_environment(variables=CFG_SYSTEM_ENVIRONMENT):
 
   os.environ.update({k: v for k, v in variables.items() if not (k.startswith('S6') or k.startswith('__'))})
   env_vars = [f"{k}={shorten(os.environ[k])}" for k in sorted(os.environ.keys()) if not (k.startswith('S6') or k.startswith('__'))]
-  return resulted(status=RESULT_STATUS.SUCCEED, entity=ha_setup_environment.get_name(), message=", ".join(env_vars))
+  return resulted(status=MAP_RESULT_STATUS.SUCCEED, entity=ha_setup_environment.get_name(), message=", ".join(env_vars))
 
 @logged
 def ha_setup_files(files=CFG_SYSTEM_FILES):
@@ -76,7 +75,7 @@ def ha_setup_files(files=CFG_SYSTEM_FILES):
       formatted_paths.append(f"{key}/…")
     else:
       formatted_paths.append(", ".join(paths[key]))
-  return resulted(status=RESULT_STATUS.SUCCEED, entity=ha_setup_files.get_name(), message="\n  ".join(formatted_paths))
+  return resulted(status=MAP_RESULT_STATUS.SUCCEED, entity=ha_setup_files.get_name(), message="\n  ".join(formatted_paths))
 
 @logged
 def ha_setup_links(links=CFG_SYSTEM_LINKS):
@@ -85,9 +84,9 @@ def ha_setup_links(links=CFG_SYSTEM_LINKS):
       os.unlink(dest)
     os.symlink(src, dest)
   formatted_links = "\n".join([f"{src} <- {dest}" for src, dest in links.items()])
-  return resulted(status=RESULT_STATUS.SUCCEED, entity=ha_setup_links.get_name(), message=formatted_links)
+  return resulted(status=MAP_RESULT_STATUS.SUCCEED, entity=ha_setup_links.get_name(), message=formatted_links)
 
 @logged
 def ha_setup_logging():  # sync. task due logging scope
   logger.set_level(**{CFG_LOG_LOGGER: CFG_LOG_LEVEL})
-  return resulted(status=RESULT_STATUS.SUCCEED, entity=ha_setup_logging.get_name(), message=Path(CFG_PATH_DIR_LOG, f"{CFG_LOGFILE_DEBUG_FILE}.log"))
+  return resulted(status=MAP_RESULT_STATUS.SUCCEED, entity=ha_setup_logging.get_name(), message=Path(CFG_PATH_DIR_LOG, f"{CFG_LOGFILE_DEBUG_FILE}.log"))

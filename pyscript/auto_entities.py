@@ -1,7 +1,6 @@
 import regex as re
 from constants.entities import ENTITIES_AUTO
-from constants.mappings import MAP_EVENT_SYSTEM_STARTED, MAP_SERVICE_HA_TURNOFF, MAP_STATE_HA_TIMER_ACTIVE
-from generic import RESULT_STATUS
+from constants.mappings import MAP_EVENT_SYSTEM_STARTED, MAP_SERVICE_HA_TURNOFF, MAP_STATE_HA_TIMER_ACTIVE, MAP_RESULT_STATUS
 from utils import *
 
 trigger = []
@@ -23,7 +22,7 @@ def default_factory(entity, default, call=MAP_SERVICE_HA_TURNOFF, params={}, del
   def default_timer(delay=delay):
     if delay > 0:
       timer.start(entity_id=entity_timer, duration=delay)
-      return resulted(RESULT_STATUS.STARTED, entity=entity_timer, duration=delay)
+      return resulted(MAP_RESULT_STATUS.STARTED, entity=entity_timer, duration=delay)
     else:
       return default_call()
 
@@ -34,7 +33,7 @@ def default_factory(entity, default, call=MAP_SERVICE_HA_TURNOFF, params={}, del
     @debugged
     def default_reset(**kwargs):
       timer.cancel(entity_id=entity_timer)
-      return resulted(RESULT_STATUS.STOPPED, entity=entity_timer, details=default_call())
+      return resulted(MAP_RESULT_STATUS.STOPPED, entity=entity_timer, details=default_call())
 
     trigger.extend([default_reset])
   trigger.extend([default_timer])
