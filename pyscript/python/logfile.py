@@ -10,7 +10,7 @@ os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
 class Logfile:
   _logger = None
 
-  def __init__(self, name=None, log_dir, timestamp):
+  def __init__(self, name=None, log_dir=None, timestamp=True):
     self.timestamp = timestamp
     if name:
       self.name = name.split(".")[1] if not name.isalpha() else name

@@ -110,12 +110,12 @@ def store(entity, value=None, result=True, **kwargs):
   
 # Utility
 
-def get_logfile(name=None):
+def get_logfile(name=None, log_dir=None):
   logfile = None
   for attempt in range(CFG_LOGFILE_IMPORT_RETRIES):
     try:
       from logfile import Logfile
-      logfile = Logfile(name if name else None)
+      logfile = Logfile(name, log_dir)
       return logfile
     except Exception as e:
       if attempt < CFG_LOGFILE_IMPORT_RETRIES - 1: 
