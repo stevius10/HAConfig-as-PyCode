@@ -27,6 +27,7 @@ ENTITIES_AUTO = {
   "fan.sz_luft": { "default": "off", "delay": 21600 }, 
   "fan.sz_ventilator": { "default": "off", "delay": 7200 }, 
   "light.sz_beleuchtung": { "default": "off", "delay": 1800 },
+  "light.sz_bettleuchte": { "default": "off", "call": "light.turn_on", "params": { "brightness": 1 } },
   "switch.bett": { "default": "off", "delay": 1800 },
   "switch.sz_luftung": { "default": "off", "delay": 600 },
 
@@ -56,12 +57,12 @@ ENTITIES_PRESENCE = {
     },
     "exclusions": {
       "media_player.sz_fernseher": {"condition": "playing"},
-      "media_player.schlafzimmer": {"condition": "playing"},
+      # "media_player.schlafzimmer": {"condition": "playing"},
     }
   },
   "schlafzimmer": {
     "indicators": {
-      "media_player.schlafzimmer": {"condition": "playing"},
+      # "media_player.schlafzimmer": {"condition": "playing"},
       "media_player.sz_fernseher": {"condition": "playing"},
       "fan.sz_ventilator": {"condition": "on", "weight": 0.1}
     },
@@ -74,7 +75,7 @@ ENTITIES_PRESENCE = {
       "person.steven": {"condition": "not_home"}
     },
     "exclusions": {
-      "media_player.schlafzimmer": {"condition": "playing"},
+      # "media_player.schlafzimmer": {"condition": "playing"},
       "media_player.sz_fernseher": {"condition": "playing"},
       "media_player.wz_fernseher": {"condition": "playing"}
     }

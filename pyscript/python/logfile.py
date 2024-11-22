@@ -10,19 +10,19 @@ os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
 class Logfile:
   _logger = None
 
-  def __init__(self, name=None, component_log=True, timestamp=True):
-    self.component_log = component_log
+  def __init__(self, name=None, log_dir, timestamp):
     self.timestamp = timestamp
     if name:
       self.name = name.split(".")[1] if not name.isalpha() else name
+      self.log_dir = log_dir if log_dir else CFG_PATH_DIR_PY_LOGS_COMPONENTS
       self._logger = self._get_file_logger()
     else:
+      self.log_dir = log_dir if log_dir else CFG_PATH_DIR_LOG
       self._logger = self._get_debug_logger()
 
   def _get_file_logger(self):
     self.history = []
-    log_dir = CFG_PATH_DIR_PY_LOGS_COMPONENTS if self.component_log else CFG_PATH_DIR_LOG
-    self.logfile = Path(log_dir, f"{self.name}.log")
+    self.logfile = Path(self.log_dir, f"{self.name}.log")
     logger = self._create_logger(self.logfile)
     return logger
 

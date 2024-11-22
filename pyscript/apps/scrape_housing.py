@@ -52,11 +52,7 @@ def scrape_housings(housing_provider=housing_provider, event_trigger=None):
     task.sleep(random.randint(SET_SCRAPE_HOUSING_DELAY_RANDOM_MIN, SET_SCRAPE_HOUSING_DELAY_RANDOM_MAX))
 
   for provider in housing_provider.keys():
-    result_housing = service.call("pyscript", f"scrape_housing_{provider}", return_response=True)
-    if result_housing.get('result', {}).get('value'):
-      results_housing.append(result_housing)
-
-  return {"result": results_housing}
+    service.call("pyscript", f"scrape_housing_{provider}", return_response=True)
 
 def filtering(apartment):
   if [apartment.get('rent'), apartment.get('size'), apartment.get('rooms'), apartment.get('details')].count(None) == 4 or apartment.get('address') is None:
