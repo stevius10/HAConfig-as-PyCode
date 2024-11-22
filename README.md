@@ -48,34 +48,7 @@ HAConfig-as-PyCode is built on an event-driven architecture, integrating Python 
 
 ---
 
-## Project-wide Logging
-
-Project-wide logging is implemented using observability decorators from `utils.py`, leveraging `logfile.py` for structured logging operations. It uses a singleton pattern to ensure uniform log handling across the entire project, providing centralized logging functionalities and facilitating debugging and monitoring function calls.
-
-![Log](www/example-log.png)
-
----
-
 ## Project Structure
-
-```plaintext
-root/
-├── pyscript/
-│   ├── apps/          # Application-specific automations
-│   ├── modules/       # Reusable constants and utilities
-│   │   ├── constants/ # Global constant definitions
-│   │   └── utils.py   # Shared helper functions
-│   ├── scripts/       # High-level automation logic
-│   └── tests/         # Test cases for validation
-├── config/            # Global configuration files
-│   └── settings.yaml  # Home Assistant settings
-├── templates/         # UI templates for dashboards
-└── www/               # Static assets for the frontend
-```
-
----
-
-## Data Structure 
 
 ```json
 {
