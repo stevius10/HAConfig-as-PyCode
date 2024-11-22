@@ -36,9 +36,9 @@ class Logfile:
   @staticmethod
   def _create_logger(logfile):
     logger = logging.getLogger(logfile.stem)
-    if logger.hasHandlers():
-      logger.handlers.clear()
+    if logger.hasHandlers():logger.handlers.clear()
     handler = logging.FileHandler(logfile, mode='w+')
+    if self.timestamp: handler.setFormatter(logging.Formatter(CFG_LOGFILE_FORMAT))
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
