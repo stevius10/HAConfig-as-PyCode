@@ -31,11 +31,12 @@ class Logfile:
     return cls._logger
 
   @staticmethod
-  def _create_logger(logfile):
+  def _create_logger(logfile, timestamp=True):
     logger = logging.getLogger(logfile.stem)
     if logger.hasHandlers():
       logger.handlers.clear()
     handler = logging.FileHandler(logfile, mode='w+')
+    if timestamp: handler.setFormatter(logging.Formatter(CFG_LOGFILE_FORMAT))
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
