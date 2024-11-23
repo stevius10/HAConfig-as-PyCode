@@ -27,7 +27,7 @@ ENTITIES_AUTO = {
   "fan.sz_luft": { "default": "off", "delay": 21600 }, 
   "fan.sz_ventilator": { "default": "off", "delay": 7200 }, 
   "light.sz_beleuchtung": { "default": "off", "delay": 1800 },
-  "light.sz_bettleuchte": { "default": "off", "call": "light.turn_on", "params": { "brightness": 1 } },
+  "light.sz_bettlampe": { "default": "off", "call": "light.turn_on", "params": { "brightness": 1 } },
   "switch.bett": { "default": "off", "delay": 1800 },
   "switch.sz_luftung": { "default": "off", "delay": 600 },
 

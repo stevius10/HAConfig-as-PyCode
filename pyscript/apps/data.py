@@ -4,7 +4,7 @@ from utils import *
 
 @service(supports_response="optional")
 def ml_create_sensors():
-  logfile = get_logfile(f"{pyscript.get_global_ctx()}_sensors")
+  logfile = get_logfile(f"{pyscript.get_global_ctx()}_sensors", "/config/logs/data")
 
   sensors = {sensor: state.get(sensor) for sensor in state.names()}
   relevant_categories = ["sensor", "binary_sensor", "climate", "light", "fan", "switch"]

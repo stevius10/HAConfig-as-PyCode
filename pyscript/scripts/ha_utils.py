@@ -22,7 +22,8 @@ def notify(message, data=None, target=CFG_NOTIFICATION_TARGET_DEFAULT, default=T
       return False
 
   for device in devices:
-    service.call("notify", f"mobile_app_{device['id']}", message=message, data=data)
+    try: service.call("notify", f"mobile_app_{device['id']}", message=message, data=data)
+    except Exception as e: log(str(e))
 
   return True
 

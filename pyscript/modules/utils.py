@@ -115,7 +115,7 @@ def get_logfile(name=None, log_dir=None):
   for attempt in range(CFG_LOGFILE_IMPORT_RETRIES):
     try:
       from logfile import Logfile
-      logfile = Logfile(name, log_dir)
+      logfile = Logfile(name, log_dir) if log_dir else Logfile(name)
       return logfile
     except Exception as e:
       if attempt < CFG_LOGFILE_IMPORT_RETRIES - 1: 

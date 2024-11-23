@@ -25,7 +25,7 @@ def scrape_housing_factory(provider):
     store(entity=get_entity(provider))
 
   @service(f"pyscript.scrape_housing_{provider}", supports_response="optional")
-  @logged
+  @debugged
   def scrape_housing(provider=provider):
     try:
       structure = housing_provider[provider]["structure"]
@@ -36,7 +36,7 @@ def scrape_housing_factory(provider):
       store(entity=get_entity(provider), value=apartments)
       return { "result": { "entity": get_entity(provider), "value": apartments } }
     except Exception as e:
-      return { "result": { "entity": get_entity(provider), "error": str(e) } }
+      return { "result": { "entity": get_entity(provider), "error": str(e) }, "description": apartments}
 
   trigger.append([scrape_housing_persistence, scrape_housing])
 
@@ -55,18 +55,29 @@ def scrape_housings(housing_provider=housing_provider, event_trigger=None):
     service.call("pyscript", f"scrape_housing_{provider}", return_response=True)
 
 def filtering(apartment):
-  if [apartment.get('rent'), apartment.get('size'), apartment.get('rooms'), apartment.get('details')].count(None) == 4 or apartment.get('address') is None:
-    return resulted(MAP_RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.NO_VALUE, details=str(apartment))
   plz = re.search(r'\b1\d{4}\b', apartment.get('address'))
-  if plz and (not plz.group().startswith('10') or plz.group() not in ['12043', '12045', '12047', '12049', '12051', '12053', '13573', '12089']):
-    return resulted(MAP_RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.FILTERED, details=str(apartment))
-  if apartment.get('rent') is not None and re.findall(r'\d', apartment.get('rent')) and not (400 < int(''.join(re.findall(r'\d', apartment.get('rent'))[:3])) < SET_SCRAPE_HOUSING_FILTER_RENT):
-    return resulted(MAP_RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.FILTERED, details=str(apartment))
-  if apartment.get('text') is not None:
-    for blacklist_item in SET_SCRAPE_HOUSING_BLACKLIST:
-      if re.search(r'\b' + re.escape(blacklist_item.lower()) + r'\b', apartment.get('text').lower()):
-        return resulted(MAP_RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.FILTERED, details=str(apartment))
-  return f"{apartment.get('address', '')} ({apartment.get('rent', '')}{', ' if apartment.get('rent') and apartment.get('rooms') else ''}{apartment.get('rooms', '')}{', ' if (apartment.get('rent') or apartment.get('rooms')) and apartment.get('size') else ''}{apartment.get('size', '')})"[:254].strip(" ()")
+
+  if [apartment.get('rent'), apartment.get('size'), apartment.get('rooms'), apartment.get('details')].count(None) == 4 or apartment.get('address') is None or \
+  (apartment.get('rent') is not None and re.findall(r'\d', apartment.get('rent')) and not (400 < int(''.join(re.findall(r'\d', apartment.get('rent'))[:3])) < SET_SCRAPE_HOUSING_FILTER_RENT)) or \
+  (plz and hasattr(plz, 'group') and plz.group().startswith('1') and plz.group() not in ['12043', '12045', '12047', '12049', '12051', '12053', '13573', '12089']) or \
+  (apartment.get('text') is not None and True in [re.search(r'\b' + re.escape(item.lower()) + r'\b', apartment.get('text').lower()) for item in SET_SCRAPE_HOUSING_BLACKLIST]):
+    debug(f"{MAP_RESULT_STATUS.DISCARDED}: {apartment}"); return ""
+  else:
+    return f"{apartment.get('address', '')} ({apartment.get('rent', '')}{', ' if apartment.get('rent') and apartment.get('rooms') else ''}{apartment.get('rooms', '')}{', ' if (apartment.get('rent') or apartment.get('rooms')) and apartment.get('size') else ''}{apartment.get('size', '')})"[:254].strip(" ()")
+
+# def filtering(apartment):
+#   if [apartment.get('rent'), apartment.get('size'), apartment.get('rooms'), apartment.get('details')].count(None) == 4 or apartment.get('address') is None:
+#     return resulted(MAP_RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.NO_VALUE, details=str(apartment))
+#   plz = re.search(r'\b1\d{4}\b', apartment.get('address'))
+#   if plz and (not plz.group().startswith('10') or plz.group() not in ['12043', '12045', '12047', '12049', '12051', '12053', '13573', '12089']):
+#     return resulted(MAP_RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.FILTERED, details=str(apartment))
+#   if apartment.get('rent') is not None and re.findall(r'\d', apartment.get('rent')) and not (400 < int(''.join(re.findall(r'\d', apartment.get('rent'))[:3])) < SET_SCRAPE_HOUSING_FILTER_RENT):
+#     return resulted(MAP_RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.FILTERED, details=str(apartment))
+#   if apartment.get('text') is not None:
+#     for blacklist_item in SET_SCRAPE_HOUSING_BLACKLIST:
+#       if re.search(r'\b' + re.escape(blacklist_item.lower()) + r'\b', apartment.get('text').lower()):
+#         return resulted(MAP_RESULT_STATUS.DISCARDED, message=MAP_RESULT_REASON.FILTERED, details=str(apartment))
+#   return f"{apartment.get('address', '')} ({apartment.get('rent', '')}{', ' if apartment.get('rent') and apartment.get('rooms') else ''}{apartment.get('rooms', '')}{', ' if (apartment.get('rent') or apartment.get('rooms')) and apartment.get('size') else ''}{apartment.get('size', '')})"[:254].strip(" ()")
 
 def scrape(content, item, address_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None) -> List[Apartment]:
   apartments = []
@@ -100,7 +111,7 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
       details = element_text
 
     apartment: str = filtering({ "address": address, "rent": rent, "size": size, "rooms": rooms, "details": details, "text": element_text })
-    if apartment:
+    if apartment and isinstance(apartment, str):
       apartments.append(apartment)
 
   return apartments

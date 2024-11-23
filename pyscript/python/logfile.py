@@ -10,19 +10,16 @@ os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
 class Logfile:
   _logger = None
 
-  def __init__(self, name=None, log_dir=None, timestamp=True):
-    self.timestamp = timestamp
+  def __init__(self, name=None, log_dir=None):
     if name:
       self.name = name.split(".")[1] if not name.isalpha() else name
-      self.log_dir = log_dir if log_dir else CFG_PATH_DIR_PY_LOGS_COMPONENTS
-      self._logger = self._get_file_logger()
+      self._logger = self._get_file_logger(log_dir) if log_dir else  self._get_file_logger()
     else:
-      self.log_dir = log_dir if log_dir else CFG_PATH_DIR_LOG
       self._logger = self._get_debug_logger()
 
-  def _get_file_logger(self):
+  def _get_file_logger(self, log_dir=CFG_PATH_DIR_PY_LOGS_COMPONENTS):
     self.history = []
-    self.logfile = Path(self.log_dir, f"{self.name}.log")
+    self.logfile = Path(log_dir, f"{self.name}.log")
     logger = self._create_logger(self.logfile)
     return logger
 
@@ -36,7 +33,8 @@ class Logfile:
   @staticmethod
   def _create_logger(logfile):
     logger = logging.getLogger(logfile.stem)
-    if logger.hasHandlers(): logger.handlers.clear()
+    if logger.hasHandlers():
+      logger.handlers.clear()
     handler = logging.FileHandler(logfile, mode='w+')
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
