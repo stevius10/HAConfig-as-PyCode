@@ -24,7 +24,7 @@ def subprocess_factory(service):
   @service(f"pyscript.subprocess_{name}", supports_response="optional")
   def execute_subprocess(name=name, log_command=False):
     logfile = get_logfile(f"{pyscript.get_global_ctx()}_{name}")
-    #logfile.log(datetime.now().strftime("[%d.%m.%Y %H:%M]"))
+    logfile.log(datetime.now().strftime("[%d.%m.%Y-%H:%M]"))
 
     for command in commands:
       try:

@@ -20,7 +20,7 @@ class Logfile:
   def _get_file_logger(self, log_dir=CFG_PATH_DIR_PY_LOGS_COMPONENTS):
     self.history = []
     self.logfile = Path(log_dir, f"{self.name}.log")
-    logger = self._create_logger(self.logfile)
+    logger = self._create_logger(self.logfile, timestamp=False)
     return logger
 
   @classmethod
@@ -36,7 +36,7 @@ class Logfile:
     if logger.hasHandlers():
       logger.handlers.clear()
     handler = logging.FileHandler(logfile, mode='w+')
-    if timestamp: handler.setFormatter(logging.Formatter(CFG_LOGFILE_FORMAT))
+    # if timestamp: handler.setFormatter(logging.Formatter(CFG_LOGFILE_FORMAT))
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
