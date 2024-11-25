@@ -1,10 +1,12 @@
+from constants.config import CFG_PATH_DIR_LOG
+
 from utils import *
 
 @logged
 @service
 def run_tests():
   from logfile import Logfile
-  logfile = Logfile(name="tests", component_log=False)
+  logfile = Logfile(name="tests", log_dir=CFG_PATH_DIR_LOG)
   try:
     test_results = __run_test("tmp")
     logfile.log(test_results)

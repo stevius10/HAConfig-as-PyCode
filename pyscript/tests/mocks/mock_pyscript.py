@@ -1,96 +1,171 @@
-from functools import wraps
-from unittest.mock import MagicMock
-from utils import *
+import os
+import sys
 
 class MockPyscript:
-
-  class MockState:
-    def __init__(self):
-      self.get = MagicMock()
-      self.set = MagicMock()
-      self.delete = MagicMock()
-      self.getattr = MagicMock()
-      self.names = MagicMock()
-      self.persist = MagicMock()
-      self.setattr = MagicMock()
-
-  class MockEvent:
-    def __init__(self):
-      self.fire = MagicMock()
-
-  class MockLog:
-    def __init__(self):
-      self.debug = MagicMock()
-      self.info = MagicMock()
-      self.warning = MagicMock()
-      self.error = MagicMock()
-      self.print = MagicMock()
-
-  class MockTask:
-    def __init__(self):
-      self.create = MagicMock()
-      self.cancel = MagicMock()
-      self.current_task = MagicMock()
-      self.name2id = MagicMock()
-      self.wait = MagicMock()
-      self.add_done_callback = MagicMock()
-      self.remove_done_callback = MagicMock()
-      self.executor = MagicMock()
-      self.sleep = MagicMock()
-      self.unique = MagicMock()
-      self.wait_until = MagicMock()
-
   def __init__(self):
-    self.state = self.MockState()
-    self.event = self.MockEvent()
-    self.log = self.MockLog()
-    self.task = self.MockTask()
+    self.global_vars = {}
+    self.triggers = []
+    self.services = {}
+    self.states = {}
+    self.timers = {}
+    self.events = []
+    self.config = {
+      'allow_all_imports': True,
+      'hass_is_global': True
+    }
+    self.setup_environment()
+
+  def setup_environment(self):
+    os.environ['HASS_CONFIG'] = '/config'
+    pyscript_paths = [
+      '/config/pyscript',
+      '/config/pyscript/apps',
+      '/config/pyscript/modules',
+      '/config/pyscript/scripts',
+      '/config/pyscript/tests',
+      '/config/pyscript/tests/unit',
+      '/config/pyscript/tests/integration',
+      '/config/pyscript/tests/functional'
+    ]
+    for path in pyscript_paths:
+      if path not in sys.path:
+        sys.path.append(path)
+
+  def call_service(self, domain, service, **kwargs):
+    if domain in self.services and service in self.services[domain]:
+      return self.services[domain][service](**kwargs)
+    else:
+      raise ValueError(f"Service {domain}.{service} not found")
+
+  def set_state(self, entity_id, state, **kwargs):
+    self.states[entity_id] = {'state': state, 'attributes': kwargs}
+
+  def get_state(self, entity_id, attribute=None):
+    if entity_id not in self.states:
+      return None
+    if attribute is None:
+      return self.states[entity_id]['state']
+    return self.states[entity_id]['attributes'].get(attribute)
+
+  def fire_event(self, event_type, **kwargs):
+    self.events.append({'event_type': event_type, 'data': kwargs})
+
+  @staticmethod
+  def pyscript_executor(func):
+    def decorator(func):
+      def wrapper():
+        return func()
+      return wrapper
+    return decorator
 
   @staticmethod
   def service(func):
-    @wraps(func)
-    def decorator(*args, **kwargs):
-      kwargs.pop('file', None)
-      kwargs.pop('logfile', None)
-      return func(*args, **kwargs)
-    return decorator
-
-  @staticmethod
-  def time_trigger(func):
-    @wraps(func)
-    def decorator(*args, **kwargs):
-      kwargs.pop('trigger_type', None)
-      return func(*args, **kwargs)
-    return decorator
-
-  @staticmethod
-  def event_trigger(func, **kwargs):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-      result = func(*args, **kwargs)
-      return result
-    return wrapper
-
-  @staticmethod
-  def state_active(func):
-    @wraps(func)
-    def decorator(*args, **kwargs):
-      return func(*args, **kwargs)
-    return decorator
-
-  @staticmethod
-  def time_active(func):
-    @wraps(func)
-    def decorator(*args, **kwargs):
-      return func(*args, **kwargs)
-    return decorator
-
-  @staticmethod
-  def task_unique(*args, **kwargs):
     def decorator(func):
-      def wrapper(*func_args, **func_kwargs):
-        print(func)
-        log(func)
-        return func(*func_args, **func_kwargs)
+      def wrapper():
+        return func()
       return wrapper
     return decorator
+
+  @staticmethod
+  def state_trigger(*args, **kwargs):
+    def decorator(func):
+      def wrapper(var_name=None, value=None, old_value=None, **kwargs):
+        return func(var_name=var_name, value=value, old_value=old_value, **kwargs)
+      return wrapper
+    return decorator
+
+  @staticmethod
+  def time_trigger(*args, **kwargs):
+    def decorator(func):
+      def wrapper(trigger_type="time", **kwargs):
+        return func(trigger_type=trigger_type, **kwargs)
+      return wrapper
+    return decorator
+
+  @staticmethod
+  def event_trigger(*args, **kwargs):
+    def decorator(func):
+      def wrapper(trigger_type="event", event_type=None, **kwargs):
+        return func(trigger_type=trigger_type, event_type=event_type, **kwargs)
+      return wrapper
+    return decorator
+
+  @staticmethod
+  def state_active(*args, **kwargs):
+    def decorator(func):
+      def wrapper(var_name=None, value=None, old_value=None, **kwargs):
+        return func(var_name=var_name, value=value, old_value=old_value, **kwargs)
+      return wrapper
+    return decorator
+
+  @staticmethod
+  def time_active(*args, **kwargs):
+    def decorator(func):
+      def wrapper(trigger_type="time", **kwargs):
+        return func(trigger_type=trigger_type, **kwargs)
+      return wrapper
+    return decorator
+
+  @staticmethod
+  def event_active(*args, **kwargs):
+    def decorator(func):
+      def wrapper(trigger_type="event", event_type=None, **kwargs):
+        return func(trigger_type=trigger_type, event_type=event_type, **kwargs)
+      return wrapper
+    return decorator
+
+def pyscript_executor(func):
+  def decorator(func):
+    def wrapper():
+      return func()
+    return wrapper
+  return decorator
+
+def service(func):
+  def decorator(func):
+    def wrapper():
+      return func()
+    return wrapper
+  return decorator
+
+def state_trigger(*args, **kwargs):
+  def decorator(func):
+    def wrapper(var_name=None, value=None, old_value=None, **kwargs):
+      return func(var_name=var_name, value=value, old_value=old_value, **kwargs)
+    return wrapper
+  return decorator
+
+def time_trigger(*args, **kwargs):
+  def decorator(func):
+    def wrapper(trigger_type="time", **kwargs):
+      return func(trigger_type=trigger_type, **kwargs)
+    return wrapper
+  return decorator
+
+def event_trigger(*args, **kwargs):
+  def decorator(func):
+    def wrapper(trigger_type="event", event_type=None, **kwargs):
+      return func(trigger_type=trigger_type, event_type=event_type, **kwargs)
+    return wrapper
+  return decorator
+
+def state_active(*args, **kwargs):
+  def decorator(func):
+    def wrapper(var_name=None, value=None, old_value=None, **kwargs):
+      return func(var_name=var_name, value=value, old_value=old_value, **kwargs)
+    return wrapper
+  return decorator
+
+def time_active(*args, **kwargs):
+  def decorator(func):
+    def wrapper(trigger_type="time", **kwargs):
+      return func(trigger_type=trigger_type, **kwargs)
+    return wrapper
+  return decorator
+
+def event_active(*args, **kwargs):
+  def decorator(func):
+    def wrapper(trigger_type="event", event_type=None, **kwargs):
+      return func(trigger_type=trigger_type, event_type=event_type, **kwargs)
+    return wrapper
+  return decorator
