@@ -1,8 +1,7 @@
-import os
 import subprocess
-import sys
 from datetime import datetime
 
+from constants.config import CFG_PATH_DIR_PY_LOGS_COMPONENTS
 from constants.data import DATA_SUBPROCESS_SERVICES
 from constants.mappings import MAP_EVENT_SYSTEM_STARTED
 
@@ -23,7 +22,7 @@ def subprocess_factory(service):
   @debugged
   @service(f"pyscript.subprocess_{name}", supports_response="optional")
   def execute_subprocess(name=name, log_command=False):
-    logfile = get_logfile(f"{pyscript.get_global_ctx()}_{name}")
+    logfile = get_logfile(name=name, namespace=pyscript.get_global_ctx(), log_dir=CFG_PATH_DIR_PY_LOGS_COMPONENTS, timestamp=False)
     logfile.log(datetime.now().strftime("[%d.%m.%Y-%H:%M]"))
 
     for command in commands:

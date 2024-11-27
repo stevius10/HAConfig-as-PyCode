@@ -76,7 +76,6 @@ def expr(entity, expression="", comparator="==", defined=True, previous=False, o
       else:
         conditions.append(f"{entity}.old {comparator} '{previous}'")
 
-
   if expression:
     if isinstance(expression, list):
       if comparator in [None, "==", "in"]:
@@ -110,18 +109,18 @@ def store(entity, value=None, result=True, **kwargs):
   
 # Utility
 
-def get_logfile(name=None, log_dir=None):
-  logfile = None
-  for attempt in range(CFG_LOGFILE_IMPORT_RETRIES):
-    try:
+def get_logfile(name=None, namespace=None, log_dir=None, timestamp=True):
+  name = "_".join(filter(None, [(namespace.split(".")[1] if (namespace and not namespace.isalpha() and "." in namespace) else namespace), name]))
+  try:
+    for attempt in range(CFG_LOGFILE_IMPORT_RETRIES):
       from logfile import Logfile
-      logfile = Logfile(name, log_dir) if log_dir else Logfile(name)
+      logfile = Logfile(name, log_dir, timestamp=timestamp) if log_dir else Logfile(name, timestamp=timestamp)
       return logfile
-    except Exception as e:
-      if attempt < CFG_LOGFILE_IMPORT_RETRIES - 1: 
-        task.wait_until(event_trigger=MAP_EVENT_SYSTEM_STARTED, timeout=CFG_LOGFILE_IMPORT_TIMEOUT)
-      else: 
-        raise e
+  except Exception as e:
+    if attempt < CFG_LOGFILE_IMPORT_RETRIES - 1: 
+      task.wait_until(event_trigger=MAP_EVENT_SYSTEM_STARTED, timeout=CFG_LOGFILE_IMPORT_TIMEOUT)
+    else: 
+      raise e
 
 def format_observed(func, args, kwargs, result=None):
   str_args = ", ".join([str(arg) if arg is not None else "" for arg in args]) if args else ""
