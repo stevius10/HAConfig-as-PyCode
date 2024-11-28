@@ -1,22 +1,19 @@
 import json
 import regex as re
 import requests
-from typing import Optional, List, Dict
 from bs4 import BeautifulSoup
 
 from constants.data import DATA_SCRAPE_HOUSING_PROVIDERS
 
-from scrape_housing.apartment import Apartment
-from scrape_housing.utils import get_or_default
+from .apartment import *
+from .utils import *
 
 from utils import *
 
 providers = DATA_SCRAPE_HOUSING_PROVIDERS
 
-@pyscript_executor
-def scrape(content, item, address_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None) -> List[Apartment]:
+def scrape(content, item, address_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None):
     apartments = []
-
     elements = content.select(item)
     for element in elements:
         element_text = element.get_text(strip=True)
@@ -44,8 +41,8 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
         text = get_or_default(element, details_selector) or element_text
         plz = re.search(r'\b1\d{4}\b', address)
 
-        apartment = Apartment(address=address, rent=rent, size=size, rooms=rooms, text=text)
-        if apartment.filter():
+        apartment = apartment_create(address=address, rent=rent, size=size, rooms=rooms, text=text)
+        if apartment_filter(apartment):
           apartments.append(apartment)
 
     return apartments

@@ -3,7 +3,6 @@ from datetime import datetime
 
 from constants.config import CFG_PATH_DIR_PY_LOGS_COMPONENTS
 from constants.data import DATA_SUBPROCESS_SERVICES
-from constants.mappings import MAP_EVENT_SYSTEM_STARTED
 
 from utils import *
 
