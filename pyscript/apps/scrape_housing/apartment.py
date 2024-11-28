@@ -3,6 +3,9 @@ import re
 
 from constants.settings import SET_SCRAPE_HOUSING_BLACKLIST, SET_SCRAPE_HOUSING_FILTER_AREA, SET_SCRAPE_HOUSING_FILTER_ROOMS, SET_SCRAPE_HOUSING_FILTER_RENT, SET_SCRAPE_HOUSING_FILTER_PLZ
 
+from utils import *
+
+@debugged
 def apartment_create(address, rent, size, rooms, text):
     return {
         "address": address,
@@ -28,12 +31,7 @@ def apartment_hash(a):
     return hash((a["address"], a["rent"], a["size"], a["rooms"]))
 
 def apartment_string(a):
-    return (
-               f"{a['address'] or ''}"
-               f"{', ' if a['rent'] else ''}{a['rent'] or ''}"
-               f"{', ' if a['rooms'] else ''}{a['rooms'] or ''}"
-               f"{', ' if a['size'] else ''}{a['size'] or ''}"
-           )[:254].strip(" ()")
+    return "{address} ({rent}{rooms}{size})".format(address=a['address'], rent=", {}".format(a['rent']) if a['rent'] else '', rooms=", {}".format(a['rooms']) if a['rooms'] else '', size=", {}".format(a['size']) if a['size'] else '' )[:254].strip(" ()")
 
 def apartment_filter(a):
     if not has_required_fields(a):
@@ -62,13 +60,13 @@ def is_rent_in_range(a):
 def is_size_in_range(a):
     if a["size"] and re.findall(r"\d", a["size"]):
         size_value = int("".join(re.findall(r"\d", a["size"])[:3]))
-        return SET_SCRAPE_HOUSING_FILTER_AREA[0] <= size_value <= SET_SCRAPE_HOUSING_FILTER_AREA[1]
+        return SET_SCRAPE_HOUSING_FILTER_AREA <= size_value
     return True
 
 def is_rooms_in_range(a):
     if a["rooms"] and re.findall(r"\d", a["rooms"]):
         rooms_value = int("".join(re.findall(r"\d", a["rooms"])[:2]))
-        return SET_SCRAPE_HOUSING_FILTER_ROOMS[0] <= rooms_value <= SET_SCRAPE_HOUSING_FILTER_ROOMS[1]
+        return SET_SCRAPE_HOUSING_FILTER_ROOMS <= rooms_value
     return True
 
 def has_invalid_plz(a):
@@ -79,10 +77,10 @@ def has_invalid_plz(a):
 
 def is_blacklisted(a):
     if a["text"]:
-        return any(
-            re.search(r"\b" + re.escape(item.lower()) + r"\b", a["text"].lower())
-            for item in SET_SCRAPE_HOUSING_BLACKLIST
-        )
+        for item in SET_SCRAPE_HOUSING_BLACKLIST:
+            if re.search(r"\b" + re.escape(item.lower()) + r"\b", a["text"].lower()):
+                return True
+        return False
     return False
 
 # from datetime import datetime

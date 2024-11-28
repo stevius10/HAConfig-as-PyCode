@@ -8,12 +8,10 @@ from constants.data import DATA_SCRAPE_HOUSING_PROVIDERS
 from .apartment import *
 from .utils import *
 
-from utils import *
-
 providers = DATA_SCRAPE_HOUSING_PROVIDERS
 
 def scrape(content, item, address_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None):
-    apartments = []
+    apartments: List[Dict] = []
     elements = content.select(item)
     for element in elements:
         element_text = element.get_text(strip=True)

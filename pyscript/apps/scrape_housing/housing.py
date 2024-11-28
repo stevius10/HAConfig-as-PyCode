@@ -1,14 +1,18 @@
 from typing import List
 
 from constants.data import DATA_SCRAPE_HOUSING_PROVIDERS
+from constants.mappings import MAP_KEY_RESULT
 
-from .scrape import *
+from .scrape import fetch, scrape
+
+from utils import *
 
 def scrape_housing(provider):
-    apartments_string = List[str]
-    structure = DATA_SCRAPE_HOUSING_PROVIDERS[provider]["structure"]
-    apartments = scrape(fetch(provider), structure["item"], structure["address_selector"], structure["rent_selector"], structure["size_selector"], structure["rooms_selector"], structure["details_selector"])
-    for apartment in apartments:
-        apartments_string.append(apartment_string(apartment))
+    result = []
 
-    return { provider: str(apartments) }
+    structure = DATA_SCRAPE_HOUSING_PROVIDERS[provider]["structure"]
+
+    content = fetch(provider)
+    result = scrape(content, structure["item"], structure["address_selector"], structure["rent_selector"], structure["size_selector"], structure["rooms_selector"], structure["details_selector"])
+
+    return { MAP_KEY_RESULT: result or "" }
