@@ -4,6 +4,8 @@ HAConfig-as-PyCode is an event-driven, programmatic Home Assistant configuration
 
 ![Desktop](www/overview-desktop.png)
 
+---
+
 ## Implementation
 
 HAConfig-as-PyCode is built on an event-driven architecture, integrating Python via PyScript and Home Assistant's built-in automation capabilities. It combines declarative data structures for desired state configuration with imperative logic to process these data structures in an event-driven manner, leveraging an MQTT broker.
@@ -41,86 +43,235 @@ HAConfig-as-PyCode is built on an event-driven architecture, integrating Python 
   - **[`expressions.py`](pyscript/modules/constants/expressions.py)**: Expressions for various automation scenarios.
   - **[`mappings.py`](pyscript/modules/constants/mappings.py)**: Naming and mappings.
   - **[`settings.py`](pyscript/modules/constants/settings.py)**: Specific configuration values for independent service logic.
-- **[`gernic.py`](pyscript/modules/generic.py)**: Generic classes like various enumerations and custom exceptions for error handling.
+- **[`generic.py`](pyscript/modules/generic.py)**: Generic classes like various enumerations and custom exceptions for error handling.
 - **[`utils.py`](pyscript/modules/utils.py)**: Central functions for project-wide logging, log rotation, expression generation, and diagnostics.
 
-### Native Python
+---
 
-- **[`filesystem.py`](pyscript/python/filesystem.py)**: Handles file system operations requiring privileges beyond the PyScript sandbox.
-- **[`logfile.py`](pyscript/python/logfile.py)**: Structured file logging operations with a partly singleton pattern for consistent log handling.
+## Project Structure
 
-
-### Project-wide Logging
-
-Project-wide logging is implemented using observability decorators from `utils.py`, leveraging `logfile.py` for structured logging operations. It uses a singleton pattern to ensure uniform log handling across the entire project, providing centralized logging functionalities and facilitating debugging and monitoring function calls.
-
-![Log](www/example-log.png)
-
-### Customization
-
-![Mobile](www/overview-mobile.png)
-
-- **User Interface**: The project includes various custom templates for the Home Assistant Lovelace UI. These are implemented through the **`templates/`** directory and external data integration.
-
-    - **`badges.yaml`**: Defines badge cards for displaying system status, backup information, air quality, and providing quick access to common actions like turning everything off.
-    - **`bar.yaml`**: Implements customizable button bars for room-specific lighting and device control.
-    - **`calendar.yaml`**: Includes a customized calendar view for displaying upcoming events from various calendars.
-    - **`card-art.yaml`**: Provides a comprehensive overview card with weather information, badges, and a calendar view.
-    - **`card.yaml`**: Defines room-specific overview cards with dynamic images, thermostat controls, and button bars.
-    - **`clima.yaml`**: Implements a custom thermostat card with temperature graphs and trend indicators.
-    - **`weather.yaml`**: Includes a weather forecast card and a custom weather display.
-
-- **Backup and Synchronization**: Automated backup and synchronization of the Home Assistant configuration and data.
-
-- **External Data**: The project integrates external data from various sources through sensors defined in the **`config/.sensors/`** directory:
-  
-  - **Housing Offers**: Scrapes and delivers housing offers and real estate listings from various companies in Berlin. The data is delivered via notifications to trigger mobile services.
-
-- **Customized Shell**: The project includes a customized shell environment with an optimized configuration for the Zsh shell, located in **`files/.zshrc`**.
-
-### Project Structure
-
-```plaintext
-pyscript/
-  apps/
-    air_control.py
-    scrape_housing.py
-  auto_control.py
-  auto_entities.py
-  auto_motion.py
-  auto_notify.py
-  auto_presence.py
-  modules/
-    constants/
-      config.py
-      data.py
-      entities.py
-      expressions.py
-      mappings.py
-      settings.py
-    generic.py
-    utils.py
-  python/
-    filesystem.py
-    logfile.py
-  requirements.txt
-  scripts/
-    ha_helper.py
-    ha_off.py
-    ha_system.py
-    ha_utils.py
-    subprocesses.py
-    tests.py
-config/
-  assistant.yaml
-  calendar.yaml
-  frontend.yaml
-  http.yaml
-  log.yaml
-  pyscript.yaml
-  sensors.yaml
-  timer.yaml
-  utils.yaml
-files/
-  .zshrc
+```json
+{
+  "project_overview": {
+    "structure": [
+      {
+        "name": "pyscript",
+        "description": "Core directory for Home Assistant automations and reusable logic.",
+        "contents": [
+          {
+            "name": "apps",
+            "description": "Contains application-specific automation scripts.",
+            "dependencies": ["modules/constants", "modules/utils"],
+            "files": [
+              {
+                "name": "air_control.py",
+                "description": "Automates air control.",
+                "depends_on": [
+                  "modules/constants/config.py",
+                  "modules/constants/entities.py",
+                  "modules/constants/expressions.py",
+                  "modules/constants/mappings.py",
+                  "modules/constants/settings.py",
+                  "modules/utils.py"
+                ]
+              },
+              {
+                "name": "app_debug.py",
+                "description": "Debugging tools for testing.",
+                "depends_on": [
+                  "modules/constants/expressions.py",
+                  "modules/constants/secrets.py",
+                  "modules/constants/settings.py",
+                  "modules/utils.py"
+                ]
+              },
+              {
+                "name": "run_tests.py",
+                "description": "Executes test cases.",
+                "depends_on": [
+                  "modules/utils.py"
+                ]
+              },
+              {
+                "name": "scrape_housing.py",
+                "description": "Scrapes housing data.",
+                "depends_on": [
+                  "modules/constants/config.py",
+                  "modules/constants/data.py",
+                  "modules/constants/expressions.py",
+                  "modules/constants/mappings.py",
+                  "modules/constants/settings.py",
+                  "modules/utils.py"
+                ]
+              },
+              {
+                "name": "subprocesses.py",
+                "description": "Handles subprocess execution.",
+                "depends_on": [
+                  "modules/constants/data.py",
+                  "modules/constants/mappings.py",
+                  "modules/utils.py"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "modules",
+            "description": "Reusable components for constants and utilities.",
+            "contents": [
+              {
+                "name": "constants",
+                "description": "Defines global constants used across automations.",
+                "files": [
+                  {
+                    "name": "config.py",
+                    "description": "Configuration constants.",
+                    "depends_on": ["modules/constants/secrets.py"]
+                  },
+                  {
+                    "name": "data.py",
+                    "description": "Data-related constants.",
+                    "depends_on": [
+                      "modules/constants/expressions.py",
+                      "modules/constants/secrets.py",
+                      "modules/constants/settings.py",
+                      "modules/utils.py"
+                    ]
+                  },
+                  {
+                    "name": "entities.py",
+                    "description": "Entity mappings.",
+                    "depends_on": [
+                      "modules/constants/settings.py",
+                      "modules/utils.py"
+                    ]
+                  },
+                  {
+                    "name": "expressions.py",
+                    "description": "Predefined expressions.",
+                    "depends_on": []
+                  },
+                  {
+                    "name": "mappings.py",
+                    "description": "Mappings for state handling.",
+                    "depends_on": []
+                  },
+                  {
+                    "name": "settings.py",
+                    "description": "General project settings.",
+                    "depends_on": []
+                  }
+                ]
+              },
+              {
+                "name": "utils",
+                "description": "Provides shared helper functions for debugging and automation tasks.",
+                "depends_on": [
+                  "modules/constants/config.py",
+                  "modules/constants/mappings.py",
+                  "modules/generic.py"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "scripts",
+            "description": "High-level automation scripts integrating constants and utilities.",
+            "dependencies": ["modules/constants", "modules/utils"]
+          },
+          {
+            "name": "tests",
+            "description": "Test cases for validating scripts and modules.",
+            "dependencies": ["apps", "modules"]
+          }
+        ]
+      },
+      {
+        "name": "templates",
+        "description": "Dashboard and UI templates for Home Assistant."
+      },
+      {
+        "name": "www",
+        "description": "Static assets for the Home Assistant frontend, such as CSS, images, and JavaScript."
+      }
+    ]
+  },
+  "dependency_map": {
+    "relationships": [
+      {
+        "source": "pyscript/apps/air_control.py",
+        "targets": [
+          "pyscript/modules/constants/config.py",
+          "pyscript/modules/constants/entities.py",
+          "pyscript/modules/constants/expressions.py",
+          "pyscript/modules/constants/mappings.py",
+          "pyscript/modules/constants/settings.py",
+          "pyscript/modules/utils.py"
+        ]
+      },
+      {
+        "source": "pyscript/apps/app_debug.py",
+        "targets": [
+          "pyscript/modules/constants/expressions.py",
+          "pyscript/modules/constants/secrets.py",
+          "pyscript/modules/constants/settings.py",
+          "pyscript/modules/utils.py"
+        ]
+      },
+      {
+        "source": "pyscript/apps/run_tests.py",
+        "targets": [
+          "pyscript/modules/utils.py"
+        ]
+      },
+      {
+        "source": "pyscript/apps/scrape_housing.py",
+        "targets": [
+          "pyscript/modules/constants/config.py",
+          "pyscript/modules/constants/data.py",
+          "pyscript/modules/constants/expressions.py",
+          "pyscript/modules/constants/mappings.py",
+          "pyscript/modules/constants/settings.py",
+          "pyscript/modules/utils.py"
+        ]
+      },
+      {
+        "source": "pyscript/apps/subprocesses.py",
+        "targets": [
+          "pyscript/modules/constants/data.py",
+          "pyscript/modules/constants/mappings.py",
+          "pyscript/modules/utils.py"
+        ]
+      }
+    ]
+  },
+  "access_guidelines": {
+    "paths": [
+      {
+        "path": "pyscript/apps",
+        "description": "Explore application-specific automation logic."
+      },
+      {
+        "path": "pyscript/modules/constants",
+        "description": "Access global constants for entity definitions and behavior settings."
+      },
+      {
+        "path": "pyscript/modules/utils",
+        "description": "Use shared utility functions for debugging and automation."
+      },
+      {
+        "path": "pyscript/scripts",
+        "description": "Review high-level logic combining constants and utilities."
+      },
+      {
+        "path": "templates",
+        "description": "Browse reusable UI templates for dashboards."
+      },
+      {
+        "path": "www",
+        "description": "Locate static assets for frontend integration."
+      }
+    ]
+  }
+}
 ```

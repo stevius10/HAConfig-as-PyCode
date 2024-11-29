@@ -1,9 +1,9 @@
 #!/bin/bash
 
-folder="/share/Extern/Sicherungen/Pi/"
+folder="/share/EXTERN/Sicherungen/Pi/"
 cd "$folder" || exit
 
-last_change=$(stat -c %Y $(ls -t "$folder" | head -1))
+last_change=$(stat -c %Y "$(ls -t | head -1)")
 current_time=$(date +%s)
 diff=$((current_time - last_change))
 hours=$((diff / 3600))

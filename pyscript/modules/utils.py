@@ -2,46 +2,37 @@ import importlib
 import sys 
 
 from constants.config import CFG_LOG_LOGGER, CFG_LOG_LEVEL, CFG_LOGFILE_DEBUG_FUNCTION_STARTED, CFG_LOGFILE_IMPORT_RETRIES, CFG_LOGFILE_IMPORT_TIMEOUT, CFG_PATH_DIR_PY_NATIVE
-from constants.mappings import MAP_STATE_HA_UNDEFINED
+from constants.mappings import MAP_STATE_HA_UNDEFINED, MAP_EVENT_SYSTEM_STARTED
 
 from generic import ForwardException
 
 # Logging
 
 def debug(msg="", title=""):
-  if title: 
-    msg = f"[{title}] {msg}"
-  if msg:
+  if msg := f"[{title}] {msg}" if title else msg:
     try:
-      logfile = get_logfile()
-      logfile.debug(msg)
-    except: # avoid startup validation
-      pass  # handled functional
+      get_logfile().debug(msg)
+    except: pass # avoid startup validation
 
 def log(msg="", title="", logger=CFG_LOG_LOGGER, level=CFG_LOG_LEVEL, **kwargs):
-  if title: 
-    msg = f"[{title}] {msg}"
-  if msg: 
+  if msg := f"[{title}] {msg}" if title else msg:
     system_log.write(message=str(msg), logger=logger, level=level)
 
 # Monitoring 
 
 def _observed(func, log_func, debug_function_started=CFG_LOGFILE_DEBUG_FUNCTION_STARTED):
   def wrapper(*args, **kwargs):
-    if kwargs.get('context'): del kwargs['context']
-    context = ".".join([func.global_ctx_name, func.name]) if hasattr(func, 'global_ctx_name') and hasattr(func, 'name') else ""
-    if debug_function_started:
-      debug(f"{format_observed(func, args, kwargs)}", title=context)
+    log_title = func.global_ctx_name if hasattr(func, 'global_ctx_name') and hasattr(func, 'name') else ""
+    kwargs.pop('context', None)
+    debug_function_started and debug(format_observed(func, args, kwargs), title=log_title)
     try:
       result = func(*args, **kwargs)
+      log_func == "log" and result and log(format_observed(func, args, kwargs, result), title=log_title)
+      debug(format_observed(func, args, kwargs, result), title=log_title)
+      return result
     except Exception as e:
-      raise ForwardException(e, context)
-    finally:
-      if result:
-        if log_func == "log":
-          log(format_observed(func, args, kwargs, result), title=context)
-        debug(format_observed(func, args, kwargs, result), title=context)
-    return result
+      raise ForwardException(e, func.global_ctx_name)
+
   return wrapper
 
 def debugged(func):
@@ -58,19 +49,33 @@ def resulted(status, entity=None, message=None, **kwargs):
 
 # Functional 
 
-def expr(entity, expression="", comparator="==", defined=True, operator='or'):
+def expr(entity, expression="", comparator="==", defined=True, previous=False, operator='or'):
   if entity and not isinstance(entity, str):
     if isinstance(entity, list):
-      items = [f"({expr(item, expression, comparator, defined)})" for item in entity]
+      items = [f"({expr(item, expression, comparator, defined, previous)})" for item in entity]
     if isinstance(entity, dict):
-      items = [f"({expr(key, value, expression, comparator, defined)})" for key, value in entity.items()]
+      items = [f"({expr(key, value, expression, comparator, defined, previous)})" for key, value in entity.items()]
     return f" {operator} ".join(items) if items else None
 
   conditions = []
+  
+  states_undefined_str = ", ".join([f' \"{state}\" ' for state in MAP_STATE_HA_UNDEFINED])
   if defined:
-    states_undefined_str = ", ".join([f' \"{state}\" ' for state in MAP_STATE_HA_UNDEFINED])
     conditions.append(f'{entity} is not None and {entity} not in [{states_undefined_str}]')
-      
+
+  if previous:
+    if isinstance(previous, bool):
+      conditions.append(f'{entity}.old is not None and {entity}.old not in [{states_undefined_str}]')
+    else:
+      if isinstance(entity, dict):
+        items = [f"({expr(f'{key}.old', value, comparator=comparator, defined=defined)})" for key, value in entity.items()]
+        conditions.append(f" {operator} ".join(items))
+      elif isinstance(entity, list):
+        items = [f"({expr(f'{item}.old', previous, comparator=comparator, defined=defined)})" for item in entity]
+        conditions.append(f" {operator} ".join(items))
+      else:
+        conditions.append(f"{entity}.old {comparator} '{previous}'")
+
   if expression:
     if isinstance(expression, list):
       if comparator in [None, "==", "in"]:
@@ -91,7 +96,7 @@ def expr(entity, expression="", comparator="==", defined=True, operator='or'):
 def store(entity, value=None, result=True, **kwargs): 
 
   if value is not None:
-    state.set(entity, value, kwargs if kwargs else {})
+    state.set(entity, value[:255], kwargs if kwargs else {})
     homeassistant.update_entity(entity_id=entity)
     state.persist(entity)
   else: 
@@ -104,20 +109,20 @@ def store(entity, value=None, result=True, **kwargs):
   
 # Utility
 
-def get_logfile(name=None):
-  logfile = None
-  for attempt in range(CFG_LOGFILE_IMPORT_RETRIES):
-    try:
+def get_logfile(name=None, namespace=None, log_dir=None, timestamp=True):
+  name = "_".join(filter(None, [(namespace.split(".")[1] if (namespace and not namespace.isalpha() and "." in namespace) else namespace), name]))
+  try:
+    for attempt in range(CFG_LOGFILE_IMPORT_RETRIES):
       from logfile import Logfile
-      logfile = Logfile(name if name else None)
+      logfile = Logfile(name, log_dir, timestamp=timestamp) if log_dir else Logfile(name, timestamp=timestamp)
       return logfile
-    except Exception as e:
-      if attempt < CFG_LOGFILE_IMPORT_RETRIES - 1: 
-        task.wait_until(event_trigger=MAP_EVENT_SYSTEM_STARTED, timeout=CFG_LOGFILE_IMPORT_TIMEOUT)
-      else: 
-        raise e
+  except Exception as e:
+    if attempt < CFG_LOGFILE_IMPORT_RETRIES - 1: 
+      task.wait_until(event_trigger=MAP_EVENT_SYSTEM_STARTED, timeout=CFG_LOGFILE_IMPORT_TIMEOUT)
+    else: 
+      raise e
 
 def format_observed(func, args, kwargs, result=None):
   str_args = ", ".join([str(arg) if arg is not None else "" for arg in args]) if args else ""
   str_kwargs = ", ".join([f"{k}={v}" for k, v in kwargs.items() if k != "context"]) if kwargs else ""
-  return f"{func.name if hasattr(func, 'name') else ''}({", ".join(filter(None, [str_args, str_kwargs]))})" + (f": \n-> {result}" if result else "")
+  return f"{func.name if hasattr(func, 'name') else ''}({", ".join(filter(None, [str_args, str_kwargs]))})" + (f": -> {result}" if result else "")

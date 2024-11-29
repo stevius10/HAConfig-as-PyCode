@@ -9,7 +9,7 @@ trigger = []
 
 def on_motion_factory(entity):
 
-  @state_trigger(expr(entity, STATE_ON))
+  @state_trigger(expr(entity, STATE_ON), state_hold_false=0)
   @time_active((f"range(sunset - {ENTITIES_MOTION.get(entity)['sun_diff']}min, sunrise + {ENTITIES_MOTION.get(entity)['sun_diff']}min)" if 'sun_diff' in ENTITIES_MOTION.get(entity) else EXPR_TIME_MOTION_DAY))
   @debugged
   def on_motion(var_name=None): 
@@ -17,7 +17,7 @@ def on_motion_factory(entity):
   trigger.append(on_motion) 
 
 def off_motion_factory(entity):
-
+#
   @state_trigger(expr(entity, STATE_OFF), state_hold=SET_MOTION_TIMEOUT)
   def off_motion(var_name=None):
     transition = float(ENTITIES_MOTION.get(var_name, {}).get("transition", 0))

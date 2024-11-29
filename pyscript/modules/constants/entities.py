@@ -1,21 +1,41 @@
 from constants.settings import SET_CONTROL_ON_LONG_DURATION, SET_ENTITIES_GLOBAL_VOLUME_MAX
 
+from utils import expr 
+
 # Automation
 
 ENTITIES_AUTO = {
-  "climate.k": { "default": "off", "call": "climate.turn_off", "params": {}},
-  "media_player.schlafzimmer.volume_level": { "default": [f"< {SET_ENTITIES_GLOBAL_VOLUME_MAX}"], "call": "media_player.volume_set", "params": {"volume_level": SET_ENTITIES_GLOBAL_VOLUME_MAX } },
-  "media_player.schlafzimmer": { "default": ["off", "paused"], "delay": 4800 },
+  
+  # General
   "switch.adguard_home_schutz": { "default": "on", "delay": 1800 }, 
-  "switch.bett": { "default": "off", "delay": 1800 },
+
+  # Küche
+  "climate.k": { "default": "off", "call": "climate.turn_off" },
+  "switch.k_lampe": { "default": "off", "delay": 600 }, 
+
+  # Gang
+  "switch.g_tischlampe": { "default": "off", "delay": 90 }, 
+
+  # Wohnzimmer
+  "fan.wz_luft": { "default": "off", "delay": 21600 }, 
+  "fan.wz_ventilator": { "default": "off", "delay": 7200 }, 
   "switch.heizdecke": { "default": "off", "delay": 1800 }, 
   "switch.sofa": { "default": "off", "delay": 1800 }, 
-  "fan.wz_ventilator": { "default": "off", "delay": 7200 }, 
-  "fan.sz_ventilator": { "default": "off", "delay": 7200 }, 
-  "fan.wz_luft": { "default": "off", "delay": 21600 }, 
-  "fan.sz_luft": { "default": "off", "delay": 21600 }, 
   "switch.wz_luftung": { "default": "off", "delay": 600 },
-  "switch.sz_luftung": { "default": "off", "delay": 600 }
+  
+  # Schlafzimmer
+  "fan.sz_luft": { "default": "off", "delay": 21600 }, 
+  "fan.sz_ventilator": { "default": "off", "delay": 7200 }, 
+  "light.sz_beleuchtung": { "default": "off", "delay": 1800 },
+  "light.sz_bettlampe": { "default": "off", "call": "light.turn_on", "params": { "brightness": 1 } },
+  "switch.bett": { "default": "off", "delay": 1800 },
+  "switch.sz_luftung": { "default": "off", "delay": 600 },
+
+  # Erweitert
+  # "switch.sofa": { 'default': 'switch.sofa == on and sensor.sofa_current_power > 5', 'duration': 60, 'delay': 4800 },
+  # "media_player.schlafzimmer": { "default": ["off", "paused"], "call": "media_player.media_stop", "duration": 60, "delay": 4800 },
+  # "media_player.schlafzimmer": { "default": f"media_player.schlafzimmer.volume_level < {SET_ENTITIES_GLOBAL_VOLUME_MAX}", "call": "media_player.volume_set", "params": {"volume_level": (SET_ENTITIES_GLOBAL_VOLUME_MAX / 100) } }
+  
 }
 
 ENTITIES_MOTION = { 
@@ -24,9 +44,9 @@ ENTITIES_MOTION = {
 }
 
 ENTITIES_CONTROL = {
-  'sensor.wz_schalter_action': { 'on': 'scene.wz_indirekt', 'off': ['scene.wz_aus', 'scene.k_aus'], 'up': 'scene.wz_hell', 'down': 'scene.wz_schwach', 'on_long': { 'scene': 'scene.wz_long', 'duration': SET_CONTROL_ON_LONG_DURATION } }, 
-  'sensor.sz_schalter_action': { 'on': 'scene.sz_indirekt', 'off': 'scene.sz_aus', 'up': 'scene.sz_hell', 'down': 'scene.sz_schwach', 'on_long': { 'scene': 'scene.sz_long', 'duration': SET_CONTROL_ON_LONG_DURATION } },
-  'sensor.g_schalter_action': { 'single': 'scene.g_indirekt', 'double': 'scene.g_aus', 'long': '' }
+  'sensor.wz_schalter_action': { 'on': 'scene.wz_normal', 'off': ['scene.wz_aus', 'scene.k_aus'], 'up': 'scene.wz_hell', 'down': 'scene.wz_indirekt' }, 
+  'sensor.sz_schalter_action': { 'on': 'scene.sz_normal', 'off': 'scene.sz_aus', 'up': 'scene.sz_hell', 'down': 'scene.sz_indirekt' },
+  'sensor.g_schalter_action': { 'on': 'scene.g_normal', 'off': [ 'scene.g_aus', 'scene.wz_aus', 'scene.k_aus' ], 'up': 'scene.g_hell', 'down': 'scene.g_indirekt' },
 }
 
 ENTITIES_PRESENCE = {
@@ -37,12 +57,12 @@ ENTITIES_PRESENCE = {
     },
     "exclusions": {
       "media_player.sz_fernseher": {"condition": "playing"},
-      "media_player.schlafzimmer": {"condition": "playing"},
+      # "media_player.schlafzimmer": {"condition": "playing"},
     }
   },
   "schlafzimmer": {
     "indicators": {
-      "media_player.schlafzimmer": {"condition": "playing"},
+      # "media_player.schlafzimmer": {"condition": "playing"},
       "media_player.sz_fernseher": {"condition": "playing"},
       "fan.sz_ventilator": {"condition": "on", "weight": 0.1}
     },
@@ -55,7 +75,7 @@ ENTITIES_PRESENCE = {
       "person.steven": {"condition": "not_home"}
     },
     "exclusions": {
-      "media_player.schlafzimmer": {"condition": "playing"},
+      # "media_player.schlafzimmer": {"condition": "playing"},
       "media_player.sz_fernseher": {"condition": "playing"},
       "media_player.wz_fernseher": {"condition": "playing"}
     }

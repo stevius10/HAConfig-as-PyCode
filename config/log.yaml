@@ -17,6 +17,8 @@ logger:
       - "Future exception was never retrieved"
     homeassistant.components.braviatv.coordinator:
       - "braviatv"
+    homeassistant.components.caldav.coordinator: 
+      - "CalDAV"
     homeassistant.components.command_line.utils: 
       - "Timeout for command: python3"
     homeassistant.components.google_assistant.http: 
@@ -25,6 +27,8 @@ logger:
       - "/addons"
     homeassistant.components.hassio.handlers:
       - "/addons"
+    homeassistant.components.hassio.http:
+      - "core/logs/follow"
     homeassistant.components.websocket_api.http.connection:
       - "not found"
       - "Unexpected error inside websocket API"
@@ -64,11 +68,16 @@ recorder:
     - switch.bett
     - switch.sofa
     - switch.heizdecke
+    - sensor.sofa_current_power
     entity_globs:
     - fritz_box_*_durchsatz
     - sensor.system_monitor_*
     - sensor.*temperature
-    - pyscript.*
+
+  exclude: 
+    entities: 
+      - sensor.graph_fix_up_temperature
+      - sensor.graph_fix_down_temperature
 
 system_log:
   max_entries: 3

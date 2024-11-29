@@ -1,127 +1,96 @@
+import asyncio
+import importlib
 import os
 import sys
 import unittest
 from unittest.mock import patch, MagicMock
-import asyncio
 from datetime import datetime
 
-os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
+sys.dont_write_bytecode = True
 
-# Print sys.path and current working directory for debugging
-print(f"sys.path: {sys.path}")
-print(f"Current working directory: {os.getcwd()}")
-
-try:
-  from pyscript.tests.mocks.mock_pyscript import MockPyscript
-  print("Imported MockPyscript successfully")
-except Exception as e:
-  print(f"Error importing MockPyscript: {e}")
+# wip
 
 class TestHaHelper(unittest.TestCase):
+  patches = []
 
   @classmethod
   def setUpClass(cls):
-    from pyscript.tests.mocks.mock_pyscript import MockPyscript
-    sys.modules['custom_components.pyscript'] = MockPyscript()
-    from ha_helper import ha_log_truncate, log_truncate, log_rotate
-    
-    print("Setting up class TestHaHelper")
+    from mocks.mock_pyscript import MockPyscript
     cls.mock_pyscript = MockPyscript()
-    def mock_event_trigger(event_type, expr=None):
-      def decorator(func):
-        def wrapper(*args, **kwargs):
-          return func(*args, **kwargs)
-        return wrapper
-      return decorator
-    cls.mock_event_trigger = mock_event_trigger
+    cls.mock_task = cls.mock_pyscript.MockTask()
     
-    try:
-      import custom_components.pyscript as pyscript_module
-      print(f"Attributes of custom_components.pyscript: {dir(pyscript_module)}")
-    except Exception as e:
-      print(f"Error importing custom_components.pyscript: {e}")
-
-    # Adjusted patches based on available attributes
-    cls.patches = [
-      patch.dict('custom_components.pyscript.trigger.__dict__', {'event_trigger': mock_event_trigger}),
-      patch.dict('custom_components.pyscript.__init__.__dict__', {'event_trigger': mock_event_trigger}),
-      patch('custom_components.pyscript.trigger.AstEval', new=MagicMock()),
-      patch('custom_components.pyscript.trigger.Event.notify_add', new=MagicMock())
-    ]
-
+    for attr in dir(cls.mock_pyscript):
+      if callable(getattr(cls.mock_pyscript, attr)) and not attr.startswith("__"):
+        cls.patches.append(patch.dict('builtins.__dict__', {attr: getattr(cls.mock_pyscript, attr)}))
+        
+    cls.patches.append(patch('ha_helper.task_unique', new=cls.mock_pyscript.task_unique))
+    cls.patches.append(patch('ha_helper.Task', new=cls.mock_task))
+    cls.patches.append(patch('ha_helper.Task.sleep', new=cls.mock_task.sleep))
+    
     for p in cls.patches:
-      print(f"Starting patch: {p}")
       p.start()
 
-    from ha_helper import ha_log_truncate, log_truncate, log_rotate, log_read, log_write
-    from constants.config import (
-      CFG_LOG_DIR, CFG_LOG_FILE, CFG_PATH_FILE_LOG, CFG_LOG_HISTORY_SUFFIX, 
-      CFG_LOG_ARCHIV_SUFFIX, CFG_LOG_BACKUP_COUNT
-    )
-    cls.ha_log_truncate = ha_log_truncate
-    cls.log_truncate = log_truncate
-    cls.log_rotate = log_rotate
-    cls.log_read = log_read
-    cls.log_write = log_write
+    try:
+      from ha_helper import ha_log_truncate, log_truncate, log_rotate, file_read, file_write
+      cls.ha_log_truncate = ha_log_truncate
+      cls.log_truncate = log_truncate
+      cls.log_rotate = log_rotate
+      cls.file_read = file_read
+      cls.file_write = file_write
+    except Exception as e:
+      print(f"Error importing ha_helper: {e}")
 
   def setUp(self):
-    self.loop = asyncio.get_event_loop()
-    self.addCleanup(self.loop.close)
-    self.mock_open = patch('builtins.open', new_callable=unittest.mock.mock_open).start()
-    self.mock_log_read = patch('ha_helper.log_read', new=MagicMock()).start()
-    self.mock_log_write = patch('ha_helper.log_write', new=MagicMock()).start()
+    self.mock_file_read = patch('ha_helper.file_read', new=MagicMock()).start()
+    self.mock_file_write = patch('ha_helper.file_write', new=MagicMock()).start()
 
   def tearDown(self):
     patch.stopall()
 
-  def test_ha_log_truncate(self):
-    print("Running test_ha_log_truncate")
-    self.mock_log_read.side_effect = [
-      ['log1', 'log2'],
-      ['history1', 'history2'],
-      'log3\n# 1 / 1000 at ' + str(datetime.now()) + '\n'
+  def test_ha_log_truncate_event_modified(self):
+    self.mock_file_read.side_effect = [
+      ['log1', 'log2', 'log3'],
+      ['history1', 'history2']
     ]
+    
     async def run_test():
-      await self.ha_log_truncate()
-      self.mock_log_read.assert_any_call(CFG_PATH_FILE_LOG)
-      self.mock_log_read.assert_any_call(f"{CFG_PATH_FILE_LOG}.{CFG_LOG_HISTORY_SUFFIX}")
-      self.mock_log_write.assert_any_call(CFG_PATH_FILE_LOG, ['log3\n', '# 1 / 1000 at ' + str(datetime.now()) + '\n'])
-      self.mock_log_write.assert_any_call(f"{CFG_PATH_FILE_LOG}.{CFG_LOG_HISTORY_SUFFIX}", ['log1', 'log2', 'history1', 'history2'])
-    self.loop.run_until_complete(run_test())
+      await self.ha_log_truncate(trigger_type="event", event_type="modified")
+      self.mock_file_read.assert_any_call('/config/home-assistant.log')
+
+    asyncio.run(run_test())
+
+  def test_ha_log_truncate_time_trigger(self):
+    self.mock_file_read.side_effect = [
+      ['log1', 'log2', 'log3'],
+      ['history1', 'history2']
+    ]
+    
+    async def run_test():
+      await self.ha_log_truncate(trigger_type="time")
+      self.mock_file_read.assert_any_call('/config/home-assistant.log')
+
+    asyncio.run(run_test())
+
+  def test_log_truncate(self):
+    self.mock_file_read.side_effect = [
+      ['line1', 'line2', 'line3', 'line4', 'line5'],
+      ['history1', 'history2']
+    ]
+    
+    self.log_truncate(logfile='test.log', log_size_truncated=2, log_tail_size=2, log_history_size=4)
+    
+    self.mock_file_write.assert_any_call('test.log', ['line4', 'line5', '# 5 / 2 at ' + str(datetime.now()) + '\n'])
+    self.mock_file_write.assert_any_call('test.log.history', ['line3', 'line4', 'line5', 'history1', 'history2'])
 
   def test_log_rotate(self):
-    print("Running test_log_rotate")
-    self.mock_log_read.side_effect = [
-      ['history1', 'history2'], 
-      ['archive1', 'archive2', 'archive3'],
-      'log_content'
+    self.mock_file_read.side_effect = [
+      ['line1', 'line2', 'line3'],
+      ['archive1', 'archive2']
     ]
-    async def run_test():
-      await self.log_rotate()
-      self.mock_log_read.assert_any_call(f"{CFG_PATH_FILE_LOG}.{CFG_LOG_HISTORY_SUFFIX}")
-      self.mock_log_read.assert_any_call(f"{CFG_PATH_FILE_LOG}.{CFG_LOG_ARCHIV_SUFFIX}", lines=True)
-      self.mock_log_read.assert_any_call(CFG_PATH_FILE_LOG)
-      self.mock_log_write.assert_any_call(f"{CFG_PATH_FILE_LOG}.{CFG_LOG_ARCHIV_SUFFIX}", 'archive2\narchive3\n')
-      self.mock_log_write.assert_any_call(f"{CFG_PATH_FILE_LOG}.{CFG_LOG_HISTORY_SUFFIX}", 'log_content')
-    self.loop.run_until_complete(run_test())
-
-  def test_log_read(self):
-    print("Running test_log_read")
-    self.mock_open.return_value.read.return_value = 'log_content'
-    async def run_test():
-      result = await self.log_read('test_logfile')
-      self.assertEqual(result, 'log_content')
-      self.mock_open.assert_called_with('test_logfile', mode='r')
-    self.loop.run_until_complete(run_test())
-
-  def test_log_write(self):
-    print("Running test_log_write")
-    async def run_test():
-      result = await self.log_write('test_logfile', 'test_content')
-      self.assertTrue(result)
-      self.mock_open.assert_called_with('test_logfile', mode='w+')
-      self.mock_open().write.assert_called_with('test_content')
-    self.loop.run_until_complete(run_test())
+    
+    self.log_rotate(file='test.log')
+    
+    self.mock_file_write.assert_called_with('test.log.archive', ['line3', 'line2', 'line1', 'archive1', 'archive2'])
 
 if __name__ == '__main__':
   unittest.main()

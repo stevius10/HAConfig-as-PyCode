@@ -1,0 +1,51 @@
+# immutable requires privileged ssh addon run init command to 
+# append 'source .zshrc' via supervisor /root/.zshrc, e. g. 
+# echo "source /homeassistant/.storage/zsh/.zshrc" >> /root/.zshrc
+# or echo "ZDOTDIR=/config/.storage/zsh" >> /root/.zshrc
+
+export PATH=$HOME/bin:/usr/local/bin:$PATH
+
+alias python=python3
+alias py=python
+alias pip=pip3
+alias grep='grep --color=auto'
+alias ls='ls -lhA --color=auto --group-directories-first'
+alias mkdir='mkdir -pv'
+alias vi="vim -c 'startinsert'"
+alias vim="vim -c 'startinsert'"
+alias redo='sudo $(fc -ln -1)'
+alias cdp='cd /homeassistant/pyscript/'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+
+# Application 
+
+# Git
+alias gst='git status'
+alias gco='git checkout'
+alias gbr='git branch'
+alias gci='git commit'
+alias gpl='git pull'
+alias gps='git push'
+alias glg='git log --oneline --graph --all --decorate'
+alias grm='git rebase master'
+alias gcb='git checkout -b'
+alias gamd='git commit --amend'
+alias grs='git reset --soft HEAD~1'
+alias grh='git reset --hard HEAD~1'
+alias gclean='git branch --merged | grep -v "\*" | xargs -n 1 git branch -d'
+alias gfp='git fetch --prune'
+alias gundo='git reset --soft HEAD~1'
+alias glp='git log --pretty=format:"%h - %an, %ar : %s"'
+
+greset() { git reset --hard "$1"; }
+grebase() { git rebase -i HEAD~"$1"; }
+
+alias gignore='git update-index --assume-unchanged'
+alias gunignore='git update-index --no-assume-unchanged'
+
+# Functions 
+
+copy_to_extern() { cp "$1" /share/Extern }

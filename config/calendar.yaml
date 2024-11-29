@@ -6,11 +6,3 @@ calendar:
     calendars:
     - "Privat"
     - "Daten und Zeiträume"
-    - "TV-Aktenzeichen XY"
-    - "Misc"
-
-# ics_calendar:
-#   calendars:
-#   - name: "aktenzeichen"
-#     url: "http://i.cal.to/ical/2188/zdf/aktenzeichen-xy-ungeloest/02c6eb54.8cd0681b-6db20df7.ics"
-#     include_all_day: True

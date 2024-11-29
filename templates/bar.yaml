@@ -109,6 +109,7 @@ template_data_footer_wz:
       template: template_bar_icon_button
       variables: 
         - entity: light.wz_lampe_3_7
+        - icon_height: 24
     - type: custom:decluttering-card
       template: template_bar_icon_button
       variables: 
@@ -163,7 +164,9 @@ template_data_footer_sz:
     - type: custom:decluttering-card
       template: template_bar_icon_button
       variables: 
-        - entity: light.sz_stehlampe
+        - entity: light.sz_indirekt
+        - icon_height: 24
+
     - type: custom:decluttering-card
       template: template_bar_icon_button
       variables: 

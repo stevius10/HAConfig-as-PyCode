@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 from pathlib import Path
@@ -10,19 +9,19 @@ os.environ['PYTHONDONTWRITEBYTECODE'] = "1"
 class Logfile:
   _logger = None
 
-  def __init__(self, name=None, component_log=True):
-    self.component_log = component_log
+  def __init__(self, name=None, log_dir=None, timestamp=True):
+    Path(log_dir).mkdir(parents=True, exist_ok=True)
     if name:
-      self.name = name.split(".")[1] if not name.isalpha() else name
-      self._logger = self._get_file_logger()
+      self._logger = self._get_file_logger(name, log_dir, timestamp) if log_dir else self._get_file_logger(name=name, timestamp=timestamp)
     else:
       self._logger = self._get_debug_logger()
 
-  def _get_file_logger(self):
+  # Handler
+  
+  def _get_file_logger(self, name, log_dir=CFG_PATH_DIR_PY_LOGS_COMPONENTS, timestamp=False):
     self.history = []
-    log_dir = CFG_PATH_DIR_PY_LOGS_COMPONENTS if self.component_log else CFG_PATH_DIR_LOG
-    self.logfile = Path(log_dir, f"{self.name}.log")
-    logger = self._create_logger(self.logfile)
+    self.logfile = Path(log_dir, f"{name}.log")
+    logger = self._create_logger(self.logfile, timestamp=timestamp)
     return logger
 
   @classmethod
@@ -33,16 +32,22 @@ class Logfile:
     return cls._logger
 
   @staticmethod
-  def _create_logger(logfile):
+  def _create_logger(logfile, timestamp=True):
     logger = logging.getLogger(logfile.stem)
+
     if logger.hasHandlers():
       logger.handlers.clear()
     handler = logging.FileHandler(logfile, mode='w+')
-    handler.setFormatter(logging.Formatter(CFG_LOGFILE_FORMAT))
+
+    if timestamp:
+      handler.setFormatter(logging.Formatter(CFG_LOGFILE_FORMAT))
+
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
     return logger
+
+  # Functionality
 
   def log(self, message=None):
     if message:
@@ -69,7 +74,7 @@ class Logfile:
       elif isinstance(message, list):
         for msg in message:
           cls.debug(msg)
-          
+
   def close(self):
     try:
       if hasattr(self, 'history'):

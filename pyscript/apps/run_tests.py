@@ -1,15 +1,16 @@
+from constants.config import CFG_PATH_DIR_LOG
+
 from utils import *
 
 @logged
 @service
 def run_tests():
   from logfile import Logfile
-  logfile = Logfile(name="tests", component_log=False)
+  logfile = Logfile(name="tests", log_dir=CFG_PATH_DIR_LOG)
   try:
     test_results = __run_test("tmp")
     logfile.log(test_results)
   except Exception as e:
-    log(str(e))
     logfile.log(str(e))
   finally:
     return { "result": logfile.close() }
@@ -22,19 +23,11 @@ def __run_test(test_type):
   import sys
   import unittest
 
-  os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
-  print(f"Current working directory: {os.getcwd()}")  # Debug statement
-  print(f"sys.path: {sys.path}")  # Debug statement
-
   f = io.StringIO()
   with redirect_stdout(f):
     try:
-      loader = unittest.TestLoader()
-      print(f"Discovering tests in /config/pyscript/tests/{test_type}")  # Debug statement
-      suite = loader.discover(f"/config/pyscript/tests/{test_type}")
-      
-      runner = unittest.TextTestRunner(stream=f, verbosity=3)
-      result = runner.run(suite)
+      suite = unittest.TestLoader().discover(f"/config/pyscript/tests/{test_type}")
+      unittest.TextTestRunner(stream=f, verbosity=3).run(suite)
     except Exception as e:
-      return f"Exception occurred: {str(e)}"
+      raise e
   return f.getvalue()
