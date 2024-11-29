@@ -1,109 +1,102 @@
-import aiofiles
 import os
+import sys
+import unittest
+from unittest.mock import AsyncMock, patch, MagicMock
+import asyncio
 from datetime import datetime
 
 from constants.config import *
-from constants.mappings import MAP_EVENT_FOLDER_WATCHER
+from ha_helper import ha_log_truncate, log_truncate, log_rotate, file_read, file_write
 
-from utils import *
+class TestHaHelper(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        pyscript_paths = [
+            '/config/pyscript',
+            '/config/pyscript/apps',
+            '/config/pyscript/modules',
+            '/config/pyscript/scripts',
+            '/config/pyscript/tests',
+            '/config/pyscript/tests/unit',
+            '/config/pyscript/tests/integration',
+            '/config/pyscript/tests/functional'
+        ]
+        for path in pyscript_paths:
+            if path not in sys.path:
+                sys.path.append(path)
 
-from generic import IORetriesExceededException
+        cls.mock_files = {
+            CFG_PATH_FILE_LOG: ['line1\n', 'line2\n', 'line3\n', 'line4\n', 'line5\n'],
+            f"{CFG_PATH_FILE_LOG}.{CFG_LOG_HISTORY_SUFFIX}": ['history1\n', 'history2\n'],
+            f"{CFG_PATH_FILE_LOG}.{CFG_LOG_ARCHIV_SUFFIX}": ['archive1\n', 'archive2\n'],
+        }
 
-# Automation
+    def setUp(self):
+        self.file_read_patch = patch("ha_helper.file_read", new=AsyncMock(side_effect=self.mock_file_read))
+        self.file_write_patch = patch("ha_helper.file_write", new=AsyncMock())
+        self.mock_file_read = self.file_read_patch.start()
+        self.mock_file_write = self.file_write_patch.start()
+        self.sleep_patch = patch("ha_helper.task.sleep", new=AsyncMock())
+        self.mock_sleep = self.sleep_patch.start()
 
-@event_trigger(MAP_EVENT_FOLDER_WATCHER)
-@time_trigger
-@task_unique("ha_log_truncate", kill_me=True)
-@debugged
-async def ha_log_truncate(trigger_type=None, event_type=None, file="", folder="", path="", **kwargs):
-  try: 
+    def tearDown(self):
+        self.file_read_patch.stop()
+        self.file_write_patch.stop()
+        self.sleep_patch.stop()
 
-    if trigger_type == "time": 
-      log_truncate(log_size_truncated=0)
-      system_log.clear()
-    elif trigger_type == "event" and event_type == "modified": 
-      log_truncate(log_size_truncated=CFG_LOG_SIZE)
-  except Exception as e: 
-    raise e
-  finally: 
-    task.sleep(CFG_LOG_SETTINGS_DELAY_BLOCK)
+    def mock_file_read(self, logfile):
+        return self.mock_files.get(logfile, [])
 
-@debugged
-@service
-async def log_truncate(logfile=CFG_PATH_FILE_LOG, log_size_truncated=CFG_LOG_SIZE, log_tail_size=CFG_LOG_TAIL, log_history_size=CFG_LOG_HISTORY_SIZE):
-  history_file = f"{logfile}.{CFG_LOG_HISTORY_SUFFIX}"
-  
-  logs = file_read(logfile)
-  history = file_read(history_file)
-  
-  if logs is not None and len(logs) > log_size_truncated: 
-    logs_trunc = logs[:-log_tail_size]
-    logs_truncated = logs[-log_tail_size:]
-    logs_truncated.append(f"# {len(logs)} / {len(logs_truncated)} at {datetime.now()}\n")
-    file_write(logfile, logs_truncated)
+    def test_ha_log_truncate_time_trigger(self):
+        async def run_test():
+            await ha_log_truncate(trigger_type="time")
+            self.mock_file_write.assert_called_with(CFG_PATH_FILE_LOG, [])
+            self.mock_sleep.assert_awaited_with(CFG_LOG_SETTINGS_DELAY_BLOCK)
+        asyncio.run(run_test())
 
-    if history is not None and len(history) > 0: 
-      logs_trunc.extend(history)
-      file_write(history_file, logs_trunc[-log_history_size:])
-    
-    if len(logs_trunc) > log_history_size:
-      log_rotate()
+    def test_ha_log_truncate_event_trigger(self):
+        async def run_test():
+            await ha_log_truncate(trigger_type="event", event_type="modified")
+            self.mock_file_write.assert_any_call(CFG_PATH_FILE_LOG, ['line4\n', 'line5\n', f"# 5 / 2 at {datetime.now()}\n"])
+            self.mock_file_write.assert_any_call(
+                f"{CFG_PATH_FILE_LOG}.{CFG_LOG_HISTORY_SUFFIX}",
+                ['line3\n', 'line4\n', 'line5\n', 'history1\n', 'history2\n']
+            )
+            self.mock_sleep.assert_awaited_with(CFG_LOG_SETTINGS_DELAY_BLOCK)
+        asyncio.run(run_test())
 
-@debugged
-@service
-def log_rotate(file=CFG_PATH_FILE_LOG):
-  history_file = f"{file}.{CFG_LOG_HISTORY_SUFFIX}"
-  archive_file = f"{file}.{CFG_LOG_ARCHIV_SUFFIX}"
+    def test_log_truncate(self):
+        async def run_test():
+            await log_truncate()
+            self.mock_file_write.assert_any_call(CFG_PATH_FILE_LOG, ['line4\n', 'line5\n', f"# 5 / 2 at {datetime.now()}\n"])
+            self.mock_file_write.assert_any_call(
+                f"{CFG_PATH_FILE_LOG}.{CFG_LOG_HISTORY_SUFFIX}",
+                ['line3\n', 'line4\n', 'line5\n', 'history1\n', 'history2\n']
+            )
+        asyncio.run(run_test())
 
-  try:
-    if os.path.exists(history_file):
-      history = file_read(history_file)
-      if history: 
-        history.reverse()
-        archive_content = file_read(archive_file)
-        if archive_content:
-          history.extend(archive_content)
+    def test_log_rotate(self):
+        async def run_test():
+            await log_rotate()
+            self.mock_file_write.assert_any_call(
+                f"{CFG_PATH_FILE_LOG}.{CFG_LOG_ARCHIV_SUFFIX}",
+                ['history2\n', 'history1\n', 'archive1\n', 'archive2\n']
+            )
+            self.mock_file_write.assert_called_with(CFG_PATH_FILE_LOG, [])
+        asyncio.run(run_test())
 
-        file_write(archive_file, history)
-        file_write(history_file, [])
+    def test_file_read(self):
+        async def run_test():
+            content = await file_read(CFG_PATH_FILE_LOG)
+            self.assertEqual(content, ['line1\n', 'line2\n', 'line3\n', 'line4\n', 'line5\n'])
+        asyncio.run(run_test())
 
-    if os.path.exists(file):
-      content = file_read(file)
-      file_write(history_file, content)
-      file_write(file, [])
-    else:
-      file_write(file, [])
+    def test_file_write(self):
+        async def run_test():
+            result = await file_write(CFG_PATH_FILE_LOG, ['new line 1\n', 'new line 2\n'])
+            self.assertTrue(result)
+            self.mock_file_write.assert_called_with(CFG_PATH_FILE_LOG, ['new line 1\n', 'new line 2\n'])
+        asyncio.run(run_test())
 
-  except Exception as e:
-    raise e
-
-# Helper
-
-async def file_read(logfile):
-  exception = None
-  for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
-    try:
-      async with aiofiles.open(logfile, mode='r') as l:
-        content = l.readlines()
-      return content
-    except Exception as e:
-      exception = e
-  if exception:
-    raise IORetriesExceededException(exception, logfile)
-  return []
-
-async def file_write(logfile, lines, mode='w+'):
-  exception = None
-  for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
-    try:
-      async with aiofiles.open(logfile, mode=mode) as l:
-        if isinstance(lines, list):
-          l.writelines([line if line.endswith('\n') else line + '\n' for line in lines])
-        else:
-          l.write(lines + '\n')
-      return True
-    except Exception as e:
-      exception = e
-  if exception:
-    raise IORetriesExceededException(exception, logfile)
-  return False
+if __name__ == "__main__":
+    unittest.main()
