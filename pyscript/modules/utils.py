@@ -110,7 +110,7 @@ def store(entity, value=None, result=True, **kwargs):
 # Utility
 
 def get_logfile(name=None, namespace=None, log_dir=None, timestamp=True):
-  name = "_".join(filter(None, [(namespace.split(".")[1] if (namespace and not namespace.isalpha() and "." in namespace) else namespace), name]))
+  name = "_".join(filter(None, [(namespace.split(".")[1] if (namespace and not namespace.isalpha() and "." in namespace) else None), name]))
   try:
     for attempt in range(CFG_LOGFILE_IMPORT_RETRIES):
       from logfile import Logfile

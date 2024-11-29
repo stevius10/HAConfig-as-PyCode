@@ -22,7 +22,7 @@ def __run_test(test_type):
   import os
   import sys
   import unittest
-
+        
   f = io.StringIO()
   with redirect_stdout(f):
     try:

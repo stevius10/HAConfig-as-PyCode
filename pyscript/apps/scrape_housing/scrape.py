@@ -32,7 +32,7 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
         if rent:
             match = re.search(r'\d+(?:,\d+)?', rent)
             if match: 
-                rent = float(match.group(0).replace(',', '.'))
+                rent = match.group(0).replace(',', '.')
 
         size = get_or_default(element, size_selector)
         if not size:
