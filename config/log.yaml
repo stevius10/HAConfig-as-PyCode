@@ -27,6 +27,8 @@ logger:
       - "/addons"
     homeassistant.components.hassio.handlers:
       - "/addons"
+    homeassistant.components.hassio.http:
+      - "core/logs/follow"
     homeassistant.components.websocket_api.http.connection:
       - "not found"
       - "Unexpected error inside websocket API"

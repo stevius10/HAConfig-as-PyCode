@@ -31,8 +31,9 @@ def apartment_hash(a):
     return hash((a["address"], a["rent"], a["size"], a["rooms"]))
 
 def apartment_string(a):
-    return "{address} ({rent}{rooms}{size})".format(address=a['address'], rent=", {}".format(a['rent']) if a['rent'] else '', rooms=", {}".format(a['rooms']) if a['rooms'] else '', size=", {}".format(a['size']) if a['size'] else '' )[:254].strip(" ()")
+    return "{address} ({rent}, {rooms}, {size})".format(address=a['address'], rent=", {}".format(a['rent']) if a['rent'] else '', rooms=", {}".format(a['rooms']) if a['rooms'] else '', size=", {}".format(a['size']) if a['size'] else '' )[:254].strip(" ()")
 
+@debugged
 def apartment_filter(a):
     if not has_required_fields(a):
         return False

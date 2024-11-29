@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 from constants.data import DATA_SCRAPE_HOUSING_PROVIDERS
 
 from .apartment import *
-from .utils import *
 
 providers = DATA_SCRAPE_HOUSING_PROVIDERS
 
@@ -20,11 +19,20 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
         if not address:
             address_match = re.search(r'([A-Za-zäöüß\s.-]+\s\d+(?:,\s*[A-Za-zäöüß\s-]+)?)', element_text)
             address = address_match.group(1) if address_match else None
+            address = re.split(r',', address)[0].strip()
+        if address: 
+            match = re.match(r'([A-Za-zäöüß\s.-]+)\s(\d+)', address)
+            if match:
+                address = f"{match.group(1).strip()} {match.group(2).strip()}"
 
         rent = get_or_default(element, rent_selector)
         if not rent:
             rent_match = re.search(r'(\d+(?:,\d+)?)\s*€', element_text)
-            rent = rent_match.group(1) + ' €' if rent_match else None
+            rent = rent_match.group(1) if rent_match else None
+        if rent:
+            match = re.search(r'\d+(?:,\d+)?', rent)
+            if match: 
+                rent = float(match.group(0).replace(',', '.'))
 
         size = get_or_default(element, size_selector)
         if not size:
@@ -54,3 +62,14 @@ def fetch(provider):
         response = requests.get(providers[provider]["url"], verify=False)
         content = BeautifulSoup(response.content, 'html.parser')
     return content
+
+# Format
+
+def get_or_default(element, selector, default=None):
+    if not selector:
+        return default
+        item = element.select_one(selector)
+        return item.get_text().strip() if item else default
+    elif callable(selector):
+        return selector(element)
+    return default
