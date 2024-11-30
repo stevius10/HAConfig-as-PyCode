@@ -1,3 +1,4 @@
+import sys
 import unittest
 from unittest.mock import MagicMock, patch
 import asyncio
@@ -31,7 +32,7 @@ class TestHaHelper(unittest.TestCase):
         cls.patches = [
             patch("ha_helper.task.sleep", cls.mock_task.sleep),
             patch("ha_helper.task.wait_until", cls.mock_task.wait_until),
-            patch("ha_helper.CFG_PATH_FILE_LOG", 'test.log'),  # Standardpfad überschreiben
+            patch("constants.config.CFG_PATH_FILE_LOG", 'test.log'),  # Standardpfad überschreiben
         ]
         for p in cls.patches:
             p.start()
