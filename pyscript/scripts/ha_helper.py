@@ -80,7 +80,7 @@ def log_rotate(file=CFG_PATH_FILE_LOG):
 
 async def file_read(logfile):
   exception = None
-  for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
+  for _ in range(CFG_FILE_SETTINGS_IO_RETRY):
     try:
       async with aiofiles.open(logfile, mode='r') as l:
         content = l.readlines()
@@ -93,7 +93,7 @@ async def file_read(logfile):
 
 async def file_write(logfile, lines, mode='w+'):
   exception = None
-  for _ in range(CFG_LOG_SETTINGS_IO_RETRY):
+  for _ in range(CFG_FILE_SETTINGS_IO_RETRY):
     try:
       async with aiofiles.open(logfile, mode=mode) as l:
         if isinstance(lines, list):
