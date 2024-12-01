@@ -49,6 +49,7 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
 
         apartment = apartment_create(address=address, rent=rent, size=size, rooms=rooms, text=text)
         if apartment_filter(apartment):
+          del apartment['text']
           apartments.append(apartment)
 
     return apartments

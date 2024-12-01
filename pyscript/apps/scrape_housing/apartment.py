@@ -1,7 +1,12 @@
-from datetime import datetime
 import re
 
-from constants.settings import SET_SCRAPE_HOUSING_BLACKLIST, SET_SCRAPE_HOUSING_FILTER_AREA, SET_SCRAPE_HOUSING_FILTER_ROOMS, SET_SCRAPE_HOUSING_FILTER_RENT, SET_SCRAPE_HOUSING_FILTER_PLZ
+from constants.settings import (
+    SET_SCRAPE_HOUSING_BLACKLIST,
+    SET_SCRAPE_HOUSING_FILTER_AREA,
+    SET_SCRAPE_HOUSING_FILTER_ROOMS,
+    SET_SCRAPE_HOUSING_FILTER_RENT,
+    SET_SCRAPE_HOUSING_FILTER_PLZ,
+)
 
 from utils import *
 
@@ -13,11 +18,7 @@ def apartment_create(address, rent, size, rooms, text):
         "size": size,
         "rooms": rooms,
         "text": text,
-        "time": {"first_time": datetime.now(), "last_time": datetime.now()},
     }
-
-def apartment_update(apartment):
-    apartment["time"]["last_time"] = datetime.now()
 
 def apartment_compare(a1, a2):
     return (
@@ -31,7 +32,12 @@ def apartment_hash(a):
     return hash((a["address"], a["rent"], a["size"], a["rooms"]))
 
 def apartment_string(a):
-    return "{address} ({rent}, {rooms}, {size})".format(address=a['address'], rent=", {}".format(a['rent']) if a['rent'] else '', rooms=", {}".format(a['rooms']) if a['rooms'] else '', size=", {}".format(a['size']) if a['size'] else '' )[:254].strip(" ()")
+    return "{address} ({rent}, {rooms}, {size})".format(
+        address=a["address"],
+        rent=", {}".format(a["rent"]) if a["rent"] else "",
+        rooms=", {}".format(a["rooms"]) if a["rooms"] else "",
+        size=", {}".format(a["size"]) if a["size"] else "",
+    )[:254].strip(" ()")
 
 @debugged
 def apartment_filter(a):

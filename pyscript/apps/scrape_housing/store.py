@@ -3,18 +3,11 @@ import os
 import aiofiles
 
 from datetime import datetime
-
-from scrape_housing.apartment import apartment_compare, apartment_update
+from scrape_housing.apartment import apartment_compare
 from generic import IORetriesExceededException
-
 from constants.config import CFG_PATH_DIR_PY_LOGS_DATA, CFG_FILE_SETTINGS_IO_RETRY
 
 # Initialization
-
-def store_dir_create(path):
-    """Ensure the directory exists."""
-    if not os.path.exists(path):
-        os.makedirs(path, exist_ok=True)
 
 def store_path():
     """Generate and ensure the file path."""
@@ -22,21 +15,22 @@ def store_path():
     month = datetime.now().strftime("%m")
     day = datetime.now().strftime("%d")
     path = f"{CFG_PATH_DIR_PY_LOGS_DATA}/scrape_housings/{year}-{month}"
-    store_dir_create(path)
+    if not os.path.exists(path):
+        os.makedirs(path, exist_ok=True)
     return f"{path}/{day}-{month}-{year[-2:]}.csv"
 
 # Logic
 
-def process(apartments):
+def store_apartments(apartments):
     """Process apartments and update the data file."""
     if not isinstance(apartments, list):
         raise TypeError("Expected a list of apartments")
     apartments = flatten_list(apartments)  # Flatten nested lists
-    file = store_path()  # Correctly call the sync function
-    existing = file_read(file) or []  # Ensure `existing` is a list
+    file = store_path()
+    existing = file_read(file) or []  # Call the read function
     updated = merge(existing, apartments)
     if updated:
-        file_write(file, updated)
+        file_write(file, updated)  # Call the write function
 
 def flatten_list(nested_list):
     """Flattens a nested list into a single list."""
@@ -60,23 +54,20 @@ def merge(existing, new):
             found = False
             for e in result:
                 if apartment_compare(apt, e):
-                    apartment_update(e)
+                    e["last_time"] = datetime.now().strftime("%H:%M")  # Update time
                     found = True
                     break
             if not found:
+                apt["first_time"] = datetime.now().strftime("%H:%M")
+                apt["last_time"] = datetime.now().strftime("%H:%M")
                 result.append(apt)
     return result
 
-async def store_file(apartments):
-    """Public function to store apartments."""
-    process(apartments)
-
 # Utilities
 
-async def file_read(file):
+def file_read(file):
     """Read data from the file."""
-    if not os.path.exists(file):
-        # Return empty list if the file does not exist
+    if not aiofiles.os.path.exists(file):
         return []
     exception = None
     for _ in range(CFG_FILE_SETTINGS_IO_RETRY):
@@ -96,7 +87,7 @@ async def file_read(file):
     if exception:
         raise IORetriesExceededException(exception, file)
 
-async def file_write(file, data):
+def file_write(file, data):
     """Write data to the file."""
     if not data or not isinstance(data, list):
         raise TypeError("Data must be a list of dictionaries")
@@ -114,7 +105,8 @@ async def file_write(file, data):
                 for row in data:
                     row_values = []
                     for field in writer.fieldnames:
-                        row_values.append(str(row.get(field, "")))
+                        value = row.get(field, "")
+                        row_values.append(str(value))
                     row_line = ",".join(row_values) + "\n"
                     f.write(row_line)
             return
