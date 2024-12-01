@@ -19,8 +19,6 @@ def run_tests():
 def __run_test(test_type):
   from contextlib import redirect_stdout
   import io
-  import os
-  import sys
   import unittest
         
   f = io.StringIO()
