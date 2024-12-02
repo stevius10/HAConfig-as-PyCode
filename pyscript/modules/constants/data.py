@@ -94,5 +94,13 @@ DATA_SCRAPE_HOUSING_PROVIDERS = {
 
   "wbm": { # approved 190624
       "url": "https://www.wbm.de/wohnungen-berlin/angebote/",
-      "structure": { "item": ".openimmo-search-list-item", "address_selector": ".address", "rent_selector": ".main-property-rent", "size_selector": ".main-property-size", "rooms_selector": ".main-property-rooms", "details_selector": "h2 .check-property-list", "url_selector": "a" } }
+      "structure": {
+        "item": ".row.openimmo-search-list-item",
+        "address_selector": ".address",
+        "rent_selector": ".main-property-list .main-property-value.main-property-rent",
+        "size_selector": ".main-property-list .main-property-value.main-property-size",
+        "rooms_selector": ".main-property-list .main-property-value.main-property-rooms",
+        "details_selector": ".btn-holder a",
+        "url_selector": ".btn-holder a"
+      }}
 }

@@ -15,8 +15,6 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
     apartments: List[Dict] = []
     elements = content.select(item)
     for element in elements:
-        log(element)
-        log("-------------------------")
         element_text = element.get_text(strip=True)
 
         address = get_or_default(element, address_selector)

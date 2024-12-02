@@ -1,13 +1,12 @@
-import aiofiles
-import aiofiles.os
 import csv
 import os
 from datetime import datetime
 
 from scrape_housing.apartment import apartment_compare
-from generic import IORetriesExceededException
 
 from constants.config import CFG_PATH_DIR_PY_LOGS_DATA, CFG_FILE_SETTINGS_IO_RETRY
+
+from utils import *
 
 def store_path():
     path = f"{CFG_PATH_DIR_PY_LOGS_DATA}/scrape_housings/{datetime.now().strftime("%Y")}-{datetime.now().strftime("%m")}"
@@ -20,9 +19,12 @@ def store_apartments(apartments):
     if not isinstance(apartments, list):
         raise TypeError("Expected a list of apartments")
     apartments = flatten_list(apartments)
+    log(f"Apartments:  {apartments}")
     file = store_path()
     existing = file_read(file) or []
+    log(f"Gelesen:  {existing}")
     updated = merge(existing, apartments)
+    log(f"Zu schreiben:  {updated}")
     if updated:
         file_write(file, updated)
 
@@ -57,13 +59,14 @@ def merge(existing, new):
 
 # Utilities
 
-async def file_read(file):
-    if not aiofiles.os.path.exists(file):
+@pyscript_executor
+def file_read(file):
+    if not os.path.exists(file):
         return []
     exception = None
     for _ in range(CFG_FILE_SETTINGS_IO_RETRY):
         try:
-            async with aiofiles.open(file, mode="r", encoding="utf-8") as f:
+            with open(file, encoding="utf-8") as f:
                 content = f.read()
                 if not content.strip():
                     return []
@@ -74,15 +77,17 @@ async def file_read(file):
                         result.append(row)
                 return result
         except Exception as e:
-            exception = e
-    if exception:
-        raise IORetriesExceededException(exception, file)
+            raise e
 
-async def file_write(file, data):
-    exception = None
+@pyscript_executor
+def file_write(file, data):
     for _ in range(CFG_FILE_SETTINGS_IO_RETRY):
         try:
-            async with aiofiles.open(file, mode="w", encoding="utf-8", newline="") as f:
+            for row in data:
+                for key, value in row.items():
+                    if value is None:
+                        row[key] = ""
+            with open(file, mode="w", encoding="utf-8", newline="") as f:
                 writer = csv.DictWriter(f, fieldnames=data[0].keys())
                 header_row = ",".join(writer.fieldnames) + "\n"
                 f.write(header_row)
@@ -95,6 +100,4 @@ async def file_write(file, data):
                     f.write(row_line)
             return
         except Exception as e:
-            exception = e
-    if exception:
-        raise IORetriesExceededException(exception, file)
+            raise e
