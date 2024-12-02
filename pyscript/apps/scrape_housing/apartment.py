@@ -11,7 +11,7 @@ from constants.settings import (
 from utils import *
 
 @debugged
-def apartment_create(address, rent, size, rooms, text):
+def apartment_create(address, rent=None, size=None, rooms=None, text=None):
     return {
         "address": address,
         "rent": rent,
@@ -20,16 +20,13 @@ def apartment_create(address, rent, size, rooms, text):
         "text": text,
     }
 
-def apartment_compare(a1, a2):
+def apartment_compare(apartment, address, rent=None, size=None, rooms=None):
     return (
-            a1["address"] == a2["address"]
-            and a1["rent"] == a2["rent"]
-            and a1["size"] == a2["size"]
-            and a1["rooms"] == a2["rooms"]
+            apartment["address"] == address
+            and (not apartment.get("rent") or apartment.get("rent")  == rent)
+            and (not apartment.get("size") or apartment.get("size")  == size)
+            and (not apartment.get("rooms") or apartment.get("rooms")  == rooms)
     )
-
-def apartment_hash(a):
-    return hash((a["address"], a["rent"], a["size"], a["rooms"]))
 
 def apartment_string(a):
     return "{address} ({rent}, {rooms}, {size})".format(

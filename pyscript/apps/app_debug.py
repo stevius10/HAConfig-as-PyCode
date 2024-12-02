@@ -1,16 +1,5 @@
-import subprocess
-import requests
-import sys
-import pkgutil
-import importlib
-import logging
-
-from constants.expressions import *
-from constants.secrets import *
-from constants.settings import *
 from utils import *
 
-from homeassistant.const import EVENT_STATE_CHANGED
 
 @logged
 @service(supports_response="optional")

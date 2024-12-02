@@ -1,39 +1,32 @@
+import aiofiles
+import aiofiles.os
 import csv
 import os
-import aiofiles
-
 from datetime import datetime
+
 from scrape_housing.apartment import apartment_compare
 from generic import IORetriesExceededException
+
 from constants.config import CFG_PATH_DIR_PY_LOGS_DATA, CFG_FILE_SETTINGS_IO_RETRY
 
-# Initialization
-
 def store_path():
-    """Generate and ensure the file path."""
-    year = datetime.now().strftime("%Y")
-    month = datetime.now().strftime("%m")
-    day = datetime.now().strftime("%d")
-    path = f"{CFG_PATH_DIR_PY_LOGS_DATA}/scrape_housings/{year}-{month}"
+    path = f"{CFG_PATH_DIR_PY_LOGS_DATA}/scrape_housings/{datetime.now().strftime("%Y")}-{datetime.now().strftime("%m")}"
     if not os.path.exists(path):
         os.makedirs(path, exist_ok=True)
-    return f"{path}/{day}-{month}-{year[-2:]}.csv"
 
-# Logic
+    return f"{path}/{datetime.now().strftime("%d")}-{datetime.now().strftime("%m")}-{datetime.now().strftime("%Y")[-2:]}.csv"
 
 def store_apartments(apartments):
-    """Process apartments and update the data file."""
     if not isinstance(apartments, list):
         raise TypeError("Expected a list of apartments")
-    apartments = flatten_list(apartments)  # Flatten nested lists
+    apartments = flatten_list(apartments)
     file = store_path()
-    existing = file_read(file) or []  # Call the read function
+    existing = file_read(file) or []
     updated = merge(existing, apartments)
     if updated:
-        file_write(file, updated)  # Call the write function
+        file_write(file, updated)
 
 def flatten_list(nested_list):
-    """Flattens a nested list into a single list."""
     flat_list = []
     for item in nested_list:
         if isinstance(item, list):
@@ -43,7 +36,6 @@ def flatten_list(nested_list):
     return flat_list
 
 def merge(existing, new):
-    """Merge new apartments into the existing list."""
     if not isinstance(existing, list):
         raise TypeError("Existing data must be a list")
     existing_filtered = [e for e in existing if isinstance(e, dict)]
@@ -65,8 +57,7 @@ def merge(existing, new):
 
 # Utilities
 
-def file_read(file):
-    """Read data from the file."""
+async def file_read(file):
     if not aiofiles.os.path.exists(file):
         return []
     exception = None
@@ -74,7 +65,7 @@ def file_read(file):
         try:
             async with aiofiles.open(file, mode="r", encoding="utf-8") as f:
                 content = f.read()
-                if not content.strip():  # Check if file is empty
+                if not content.strip():
                     return []
                 reader = csv.DictReader(content.splitlines())
                 result = []
@@ -87,14 +78,7 @@ def file_read(file):
     if exception:
         raise IORetriesExceededException(exception, file)
 
-def file_write(file, data):
-    """Write data to the file."""
-    if not data or not isinstance(data, list):
-        raise TypeError("Data must be a list of dictionaries")
-    for d in data:
-        if not isinstance(d, dict):
-            raise TypeError("All items in data must be dictionaries")
-
+async def file_write(file, data):
     exception = None
     for _ in range(CFG_FILE_SETTINGS_IO_RETRY):
         try:

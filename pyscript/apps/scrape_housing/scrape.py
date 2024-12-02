@@ -7,12 +7,16 @@ from constants.data import DATA_SCRAPE_HOUSING_PROVIDERS
 
 from .apartment import *
 
+from utils import *
+
 providers = DATA_SCRAPE_HOUSING_PROVIDERS
 
 def scrape(content, item, address_selector, rent_selector, size_selector=None, rooms_selector=None, details_selector=None):
     apartments: List[Dict] = []
     elements = content.select(item)
     for element in elements:
+        log(element)
+        log("-------------------------")
         element_text = element.get_text(strip=True)
 
         address = get_or_default(element, address_selector)
@@ -20,7 +24,7 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
             address_match = re.search(r'([A-Za-zäöüß\s.-]+\s\d+(?:,\s*[A-Za-zäöüß\s-]+)?)', element_text)
             address = address_match.group(1) if address_match else None
             address = re.split(r',', address)[0].strip()
-        if address: 
+        if address:
             match = re.match(r'([A-Za-zäöüß\s.-]+)\s(\d+)', address)
             if match:
                 address = f"{match.group(1).strip()} {match.group(2).strip()}"
@@ -31,7 +35,7 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
             rent = rent_match.group(1) if rent_match else None
         if rent:
             match = re.search(r'\d+(?:,\d+)?', rent)
-            if match: 
+            if match:
                 rent = match.group(0).replace(',', '.')
 
         size = get_or_default(element, size_selector)

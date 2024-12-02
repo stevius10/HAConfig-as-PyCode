@@ -1,5 +1,3 @@
-from typing import List
-
 from constants.data import DATA_SCRAPE_HOUSING_PROVIDERS
 from constants.mappings import MAP_KEY_ERROR, MAP_KEY_RESULT
 
