@@ -1,2 +1,10 @@
+proxmoxve:
+  - host: !secret prox_host
+    username: !secret prox_user
+    password: !secret prox_password
+    verify_ssl: false
+    nodes:
+      - node: pve
+    
 tts:
   - platform: google_translate
