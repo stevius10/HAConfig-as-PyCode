@@ -32,9 +32,9 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
             rent_match = re.search(r'(\d+(?:,\d+)?)\s*€', element_text)
             rent = rent_match.group(1) if rent_match else None
         if rent:
-            match = re.search(r'\d+(?:,\d+)?', rent)
+            match = re.search(r'\d+(?:.\d+)?', rent)
             if match:
-                rent = match.group(0).replace(',', '.')
+                rent = match.group(0).replace('.', ',')
 
         size = get_or_default(element, size_selector)
         if not size:
@@ -44,7 +44,7 @@ def scrape(content, item, address_selector, rent_selector, size_selector=None, r
         rooms = get_or_default(element, rooms_selector)
         if not rooms:
             rooms_match = re.search(r'(\d+(?:,\d+)?)\s*Zimmer', element_text)
-            rooms = rooms_match.group(1) + ' Zimmer' if rooms_match else None
+            rooms = rooms_match.group(1) + ' Z.' if rooms_match else None
 
         text = get_or_default(element, details_selector) or element_text
         plz = re.search(r'\b1\d{4}\b', address)

@@ -29,11 +29,11 @@ def apartment_compare(apartment, address, rent=None, size=None, rooms=None):
     )
 
 def apartment_string(a):
-    return "{address} ({rent}, {rooms}, {size})".format(
+    return "{address} ({rent}{rooms}{size})".format(
         address=a["address"],
-        rent=", {}".format(a["rent"]) if a["rent"] else "",
-        rooms=", {}".format(a["rooms"]) if a["rooms"] else "",
-        size=", {}".format(a["size"]) if a["size"] else "",
+        rent="{}, ".format(a["rent"]) if a["rent"] else "",
+        rooms="{}, ".format(a["rooms"]) if a["rooms"] else "",
+        size="{}".format(a["size"]) if a["size"] else "",
     )[:254].strip(" ()")
 
 @debugged
