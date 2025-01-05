@@ -9,8 +9,8 @@ from utils import expr
 # Automation
 
 DATA_DEVICES = {
-    "default": [{"id": entry["id"], "default": entry["default"]} for entry in SEC_DEVICES["default"]],
-    "other": [{"id": entry["id"], "default": entry["default"]} for entry in SEC_DEVICES["other"]]
+    "home": [{"id": entry["id"], "default": entry["default"]} for entry in SEC_DEVICES["home"]],
+    "mobile": [{"id": entry["id"], "default": entry["default"]} for entry in SEC_DEVICES["mobile"]]
 }
 
 DATA_PRESENCE = {

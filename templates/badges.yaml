@@ -1,23 +1,23 @@
 # Alarm badges
 
-badge_webfilter:
-  &badge_webfilter
-  type: custom:hui-state-badge-element
-  entity: switch.adguard_home_schutz # sensor.adguard_home_dns_abfragen_blockiert
-  name: Web-Filter
-  card_mod:
-    style: | 
-      :host { 
-        {% if states('switch.adguard_home_schutz') == 'on' %}
-          --label-badge-red: var(--info-color)
-        {% else %}
-          --label-badge-red: var(--error-color); 
-        {% endif %}
-  tap_action: 
-    action: call-service
-    service: switch.toggle
-    data:
-      entity_id: switch.adguard_home_schutz
+# badge_webfilter:
+#   &badge_webfilter
+#   type: custom:hui-state-badge-element
+#   entity: switch.adguard_home_schutz # sensor.adguard_home_dns_abfragen_blockiert
+#   name: Web-Filter
+#   card_mod:
+#     style: | 
+#       :host { 
+#         {% if states('switch.adguard_home_schutz') == 'on' %}
+#           --label-badge-red: var(--info-color)
+#         {% else %}
+#           --label-badge-red: var(--error-color); 
+#         {% endif %}
+#   tap_action: 
+#     action: call-service
+#     service: switch.toggle
+#     data:
+#       entity_id: switch.adguard_home_schutz
 
 badge_backup:
   &badge_backup
@@ -71,12 +71,12 @@ template_badges_general:
     - type: custom:hui-state-badge-element
       entity: sensor.fritz_box_7590_ax_upload_durchsatz
 
-    - type: entity-filter
-      entities: 
-        - *badge_webfilter
-      conditions:
-      - condition: state
-        state_not: "on"
+    # - type: entity-filter
+    #   entities: 
+    #     - *badge_webfilter
+    #   conditions:
+    #   - condition: state
+    #     state_not: "on"
         
     - type: entity-filter
       entities: 
@@ -150,7 +150,7 @@ template_badges_system:
       state_color: false
       show_header_toggle: false
       badges:
-      - *badge_webfilter
+    #   - *badge_webfilter
       - *badge_backup
       - type: custom:hui-state-badge-element
         entity: image.fritz_box_7590_ax_generation_lockdown

@@ -1,7 +1,7 @@
 # Paths
 
-SET_SUBPROCESS_COMPILE_PATH="/share/EXTERN/Sicherungen/Pi/compile"
-SET_SUBPROCESS_FILEBACKUP_FOLDER = "/share/EXTERN/Sicherungen/Pi"
+SET_SUBPROCESS_COMPILE_PATH="/share/extern/Sicherungen/Pi/compile"
+SET_SUBPROCESS_FILEBACKUP_FOLDER = "/share/extern/Sicherungen/Pi"
 
 # Automation
 
