@@ -13,8 +13,8 @@ logger:
       - "Reloaded"
     custom_components.pyscript.trigger:
       - "will never trigger"
-    custom_components.xiaomi_miot: 
-      - "mapping"
+    custom_components.xiaomi_miot.core.device.zhimi.fan.za4:
+      - "MiioException"
     homeassistant: 
       - "Future exception was never retrieved"
     homeassistant.components.braviatv.coordinator:
