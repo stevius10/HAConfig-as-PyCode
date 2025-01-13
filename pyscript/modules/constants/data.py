@@ -9,8 +9,8 @@ from utils import expr
 # Automation
 
 DATA_DEVICES = {
-    "home": [{"id": entry["id"], "default": entry["default"]} for entry in SEC_DEVICES["home"]],
-    "mobile": [{"id": entry["id"], "default": entry["default"]} for entry in SEC_DEVICES["mobile"]]
+  "default": [d["id"] for devices in SEC_DEVICES.values() for d in devices if d["default"]],
+  "other":   [d["id"] for devices in SEC_DEVICES.values() for d in devices if not d["default"]]
 }
 
 DATA_PRESENCE = {
@@ -49,8 +49,8 @@ DATA_SUBPROCESS_SERVICES = {
   "commands": [
     "apk add rsync && ulimit -n 4096 && "
     f'backup_folder="{SET_SUBPROCESS_FILEBACKUP_FOLDER}/$(date +%Y-%m-%d_%H-%M)" && echo "-> $backup_folder" && mkdir -p "$backup_folder" && '
-    f'/usr/bin/find "$backup_folder" -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1 && '
-    f'/usr/bin/find "$backup_folder" -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r {{}} \\; 2>&1 && '
+    f'/usr/bin/find "{SET_SUBPROCESS_FILEBACKUP_FOLDER}" -type f -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -delete 2>&1 && '
+    f'/usr/bin/find "{SET_SUBPROCESS_FILEBACKUP_FOLDER}" -mindepth 1 -maxdepth 1 -mtime +{SET_SUBPROCESS_FILEBACKUP_RETENTION} -type d -exec rm -r {{}} \\; 2>&1 && '
     f'rsync -azv --partial --ignore-existing --exclude=".git/" --exclude="/homeassistant/.git/" --exclude=".storage/xiaomi_miot" --exclude="/homeassistant/.storage/xiaomi_miot" --exclude="www/community" --exclude="custom_components" --exclude="*.log" --exclude=".storage/hacs.*" --exclude=".storage/icloud" --exclude=".storage/hacs.repositories.*" /config/ "$backup_folder" 2>&1 && '
     f'echo "$(find "$backup_folder" -type f | wc -l) files in $(du -sh "$backup_folder" | cut -f1)" 2>&1'
   ], 

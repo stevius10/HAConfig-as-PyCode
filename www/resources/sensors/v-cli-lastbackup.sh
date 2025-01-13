@@ -1,6 +1,6 @@
 #!/bin/bash
 
-folder="/share/EXTERN/Sicherungen/Pi/"
+folder="/share/extern/Sicherungen/Pi/"
 cd "$folder" || exit
 
 last_change=$(stat -c %Y "$(ls -t | head -1)")

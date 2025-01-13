@@ -8,10 +8,7 @@ from utils import *
 
 @service
 def notify(message, data=None, target=CFG_NOTIFICATION_TARGET_DEFAULT, default=True, interruptable=False, synced=True):
-  devices = DATA_DEVICES.get(target) if target else [target for targets in DATA_DEVICES.values() for target in targets]
-
-  if default:
-    devices = [device for device in devices if device.get("default")]
+  devices = ([target] if target not in DATA_DEVICES else DATA_DEVICES.get(target, [])) if default else [d for devs in DATA_DEVICES.values() for d in devs]
 
   if synced:
     data = data or {}
@@ -22,7 +19,7 @@ def notify(message, data=None, target=CFG_NOTIFICATION_TARGET_DEFAULT, default=T
       return False
 
   for device in devices:
-    try: service.call("notify", f"mobile_app_{device['id']}", message=message, data=data)
+    try: service.call("notify", f"mobile_app_{device}", message=message, data=data)
     except Exception as e: log(str(e))
 
   return True
