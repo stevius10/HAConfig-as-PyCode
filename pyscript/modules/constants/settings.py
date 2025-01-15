@@ -31,7 +31,8 @@ SET_AIR_CONTROL_WAIT_ACTIVE_RETRIES = 3
 SET_SCRAPE_HOUSING_BLACKLIST = [
   "WBS erforderlich", "mit WBS", "WBS 160", "Wohnberechtigungsschein erforderlich", "Seniorenwohnung",
   "nur mit WBS", "nur WBS", "nur mit Wohnberechtigungsschein", "mit Wohnberechtigungsschein", 
-  "WBS 140", "WBS Pflicht", "WBS benötigt", "nur für WBS Inhaber", "wbs pflichtig", "wbs-pflichtig"
+  "WBS 140", "WBS Pflicht", "WBS benötigt", "nur für WBS Inhaber", "wbs pflichtig", "wbs-pflichtig",
+  "Azubis"
 ]
 SET_SCRAPE_HOUSING_DELAY_RANDOM_MIN = 1
 SET_SCRAPE_HOUSING_DELAY_RANDOM_MAX = 301
@@ -39,6 +40,7 @@ SET_SCRAPE_HOUSING_FILTER_AREA = 50
 SET_SCRAPE_HOUSING_FILTER_PLZ = ['12043', '12045', '12047', '12049', '12051', '12053', '13573', '12089']
 SET_SCRAPE_HOUSING_FILTER_RENT = 680
 SET_SCRAPE_HOUSING_FILTER_ROOMS = 2
+SET_SCRAPE_HOUSING_FILTER_SQM_PRICE = 9
 SET_SCRAPE_HOUSING_SENSOR_LENGTH = 254
 
 SET_SUBPROCESS_FILEBACKUP_RETENTION = 7

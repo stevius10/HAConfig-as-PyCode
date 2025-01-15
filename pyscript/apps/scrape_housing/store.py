@@ -21,12 +21,9 @@ def store_apartments(apartments):
     if not isinstance(apartments, list):
         raise TypeError("Expected a list of apartments")
     apartments = flatten_list(apartments)
-    log(f"Apartments:  {apartments}")
     file = store_path()
     existing = file_read(file) or []
-    log(f"Gelesen:  {existing}")
     updated = merge(existing, apartments)
-    log(f"Zu schreiben:  {updated}")
     if updated:
         file_write(file, updated)
 
@@ -39,7 +36,6 @@ def flatten_list(nested_list):
         else:
             flat_list.append(item)
     return flat_list
-
 
 def merge(existing, new):
     if not isinstance(existing, list):
@@ -56,16 +52,13 @@ def merge(existing, new):
         
         now_time = datetime.now().strftime("%H:%M")
         if key in result:
-            # Bestehenden Eintrag aktualisieren
             result[key]["last_time"] = now_time
         else:
-            # Neuer Eintrag
             apt["first_time"] = now_time
             apt["last_time"] = now_time
             result[key] = apt
     
     return list(result.values())
-
 
 @pyscript_executor
 def file_read(file):
@@ -110,13 +103,3 @@ def file_write(file, data):
             return
         except Exception as e:
             raise e
-
-
-# Vergleichsfunktion
-def apartment_compare(apartment, address, rent=None, size=None, rooms=None):
-    return (
-        apartment.get("address") == address
-        and (rent is None or apartment.get("rent") == rent)
-        and (size is None or apartment.get("size") == size)
-        and (rooms is None or apartment.get("rooms") == rooms)
-    )
