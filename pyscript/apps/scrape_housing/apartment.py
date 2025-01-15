@@ -22,19 +22,15 @@ def apartment_create(address, rent=None, size=None, rooms=None, text=None):
 
 def apartment_compare(apartment, address, rent=None, size=None, rooms=None):
     return (
-            apartment["address"] == address
-            and (not apartment.get("rent") or apartment.get("rent")  == rent)
-            and (not apartment.get("size") or apartment.get("size")  == size)
-            and (not apartment.get("rooms") or apartment.get("rooms")  == rooms)
+        apartment.get("address") == address
+        and (rent is None or apartment.get("rent") == rent)
+        and (size is None or apartment.get("size") == size)
+        and (rooms is None or apartment.get("rooms") == rooms)
     )
 
 def apartment_string(a):
-    return "{address} ({rent}{rooms}{size})".format(
-        address=a["address"],
-        rent="{}, ".format(a["rent"]) if a["rent"] else "",
-        rooms="{}, ".format(a["rooms"]) if a["rooms"] else "",
-        size="{}".format(a["size"]) if a["size"] else "",
-    )[:254].strip(" ()")
+    details = ", ".join([f"{str(a.get('rent'))}€" if a.get("rent") else "", f"{str(a.get('size'))}m²" if a.get("size") else "", f"{str(a.get('rooms'))}Z." if a.get("rooms") else ""])
+    return f"{a['address']} ({details})" if details else a["address"]
 
 @debugged
 def apartment_filter(a):

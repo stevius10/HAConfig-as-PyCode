@@ -8,12 +8,14 @@ from constants.config import CFG_PATH_DIR_PY_LOGS_DATA, CFG_FILE_SETTINGS_IO_RET
 
 from utils import *
 
+
 def store_path():
-    path = f"{CFG_PATH_DIR_PY_LOGS_DATA}/scrape_housings/{datetime.now().strftime("%Y")}-{datetime.now().strftime("%m")}"
+    path = f"{CFG_PATH_DIR_PY_LOGS_DATA}/scrape_housings/{datetime.now().strftime('%Y')}-{datetime.now().strftime('%m')}"
     if not os.path.exists(path):
         os.makedirs(path, exist_ok=True)
 
-    return f"{path}/{datetime.now().strftime("%d")}-{datetime.now().strftime("%m")}-{datetime.now().strftime("%Y")[-2:]}.csv"
+    return f"{path}/{datetime.now().strftime('%d')}-{datetime.now().strftime('%m')}-{datetime.now().strftime('%Y')[-2:]}.csv"
+
 
 def store_apartments(apartments):
     if not isinstance(apartments, list):
@@ -28,6 +30,7 @@ def store_apartments(apartments):
     if updated:
         file_write(file, updated)
 
+
 def flatten_list(nested_list):
     flat_list = []
     for item in nested_list:
@@ -37,27 +40,32 @@ def flatten_list(nested_list):
             flat_list.append(item)
     return flat_list
 
+
 def merge(existing, new):
     if not isinstance(existing, list):
         raise TypeError("Existing data must be a list")
+    
     existing_filtered = [e for e in existing if isinstance(e, dict)]
     new_filtered = [n for n in new if isinstance(n, dict)]
-    result = existing_filtered.copy()
+    
+    result = {e["address"]: e for e in existing_filtered}  # Schlüssel: Adresse
     for apt in new_filtered:
-        if apt:
-            found = False
-            for e in result:
-                if apartment_compare(apt, e):
-                    e["last_time"] = datetime.now().strftime("%H:%M")  # Update time
-                    found = True
-                    break
-            if not found:
-                apt["first_time"] = datetime.now().strftime("%H:%M")
-                apt["last_time"] = datetime.now().strftime("%H:%M")
-                result.append(apt)
-    return result
+        key = apt.get("address")
+        if not key:
+            continue
+        
+        now_time = datetime.now().strftime("%H:%M")
+        if key in result:
+            # Bestehenden Eintrag aktualisieren
+            result[key]["last_time"] = now_time
+        else:
+            # Neuer Eintrag
+            apt["first_time"] = now_time
+            apt["last_time"] = now_time
+            result[key] = apt
+    
+    return list(result.values())
 
-# Utilities
 
 @pyscript_executor
 def file_read(file):
@@ -78,6 +86,7 @@ def file_read(file):
                 return result
         except Exception as e:
             raise e
+
 
 @pyscript_executor
 def file_write(file, data):
@@ -101,3 +110,13 @@ def file_write(file, data):
             return
         except Exception as e:
             raise e
+
+
+# Vergleichsfunktion
+def apartment_compare(apartment, address, rent=None, size=None, rooms=None):
+    return (
+        apartment.get("address") == address
+        and (rent is None or apartment.get("rent") == rent)
+        and (size is None or apartment.get("size") == size)
+        and (rooms is None or apartment.get("rooms") == rooms)
+    )
